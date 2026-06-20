@@ -50,7 +50,7 @@ const variants = {
   },
 };
 
-function Tombol({ label, variant = "primer", onClick, type = "button", disabled = false }) {
+function Tombol({ label, variant = "primer", onClick, type = "button", disabled = false, style }) {
   const selectedVariant = variants[variant] ?? variants.primer;
   const {
     hoverBackgroundColor,
@@ -72,28 +72,29 @@ function Tombol({ label, variant = "primer", onClick, type = "button", disabled 
         opacity: disabled ? 0.4 : 1,
         cursor: disabled ? "not-allowed" : "pointer",
         pointerEvents: disabled ? "none" : "auto",
+        ...style,
       }}
       onMouseEnter={(event) => {
         event.currentTarget.style.backgroundColor = hoverBackgroundColor;
         event.currentTarget.style.border = hoverBorder ?? buttonVariant.border;
         event.currentTarget.style.color = hoverColor ?? buttonVariant.color;
         event.currentTarget.style.boxShadow = hoverBoxShadow ?? "none";
-        event.currentTarget.style.transform = "translateY(-1px)";
+        event.currentTarget.style.transform = "translateY(-1px) scale(1)";
       }}
       onMouseLeave={(event) => {
         event.currentTarget.style.backgroundColor = buttonVariant.backgroundColor;
         event.currentTarget.style.border = buttonVariant.border;
         event.currentTarget.style.color = buttonVariant.color;
         event.currentTarget.style.boxShadow = "none";
-        event.currentTarget.style.transform = "translateY(0)";
+        event.currentTarget.style.transform = "translateY(0) scale(1)";
       }}
       onMouseDown={(event) => {
-        event.currentTarget.style.transform = "translateY(0)";
+        event.currentTarget.style.transform = "translateY(0) scale(0.97)";
         event.currentTarget.style.boxShadow = "none";
         onMouseDown(event);
       }}
       onMouseUp={(event) => {
-        event.currentTarget.style.transform = "translateY(-1px)";
+        event.currentTarget.style.transform = "translateY(-1px) scale(1)";
         event.currentTarget.style.boxShadow = hoverBoxShadow ?? "none";
       }}
     >

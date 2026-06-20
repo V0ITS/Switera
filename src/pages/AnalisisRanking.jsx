@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Card from "../components/Card";
 import EmptyState from "../components/EmptyState";
-import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import Tabel from "../components/Tabel";
 import { SkeletonChart } from "../components/Skeleton";
@@ -258,12 +257,7 @@ function AnalisisRanking({ onNavigate }) {
   }));
 
   return (
-    <Layout
-      title="Switera"
-      roleAwal="Manajer Distribusi"
-      menuAwal="analisis-ranking"
-      onMenuChange={onNavigate}
-    >
+    <>
       <PageHeader
         judul="Analisis Ranking Permintaan"
         deskripsi={`Periode data: ${periodeData}`}
@@ -308,7 +302,7 @@ function AnalisisRanking({ onNavigate }) {
           <GrafikRankingHorizontal ranking={ranking} />
         </div>
       )}
-    </Layout>
+    </>
   );
 }
 

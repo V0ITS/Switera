@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Card from "../components/Card";
 import EmptyState from "../components/EmptyState";
-import Layout from "../components/Layout";
 import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
 import Tombol from "../components/Tombol";
@@ -115,12 +114,7 @@ function KeputusanDistribusi({ onNavigate }) {
   });
 
   return (
-    <Layout
-      title="Switera"
-      roleAwal="Manajer Distribusi"
-      menuAwal="keputusan-distribusi"
-      onMenuChange={onNavigate}
-    >
+    <>
       <PageHeader
         judul="Keputusan Distribusi"
         deskripsi="Tetapkan kota tujuan distribusi berdasarkan data permintaan."
@@ -440,7 +434,7 @@ function KeputusanDistribusi({ onNavigate }) {
           </Card>
         </div>
       ) : null}
-    </Layout>
+    </>
   );
 }
 

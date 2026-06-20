@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Card from "../components/Card";
 import EmptyState from "../components/EmptyState";
 import Layout from "../components/Layout";
+import PageHeader from "../components/PageHeader";
 import Tabel from "../components/Tabel";
 import store from "../store";
 import { roleOptions } from "../utils/navigation";
@@ -112,6 +113,10 @@ function RiwayatAktivitas({ onNavigate }) {
       menuAwal="riwayat-aktivitas"
       onMenuChange={onNavigate}
     >
+      <PageHeader
+        judul="Riwayat Aktivitas"
+        deskripsi="Jejak audit seluruh aksi penting pengguna pada sistem, dari yang terbaru."
+      />
       <div
         style={{
           display: "flex",
@@ -120,35 +125,6 @@ function RiwayatAktivitas({ onNavigate }) {
         }}
       >
         <Card>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.45rem",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <h2
-              style={{
-                margin: 0,
-                fontFamily: "var(--font-display)",
-                fontSize: "1.4rem",
-              }}
-            >
-              Riwayat Aktivitas
-            </h2>
-            <p
-              style={{
-                margin: 0,
-                color: "var(--color-text-secondary)",
-                lineHeight: 1.6,
-              }}
-            >
-              Jejak audit seluruh aksi penting pengguna pada sistem, dari yang
-              terbaru.
-            </p>
-          </div>
-
           <div
             style={{
               display: "grid",

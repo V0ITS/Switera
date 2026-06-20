@@ -17,10 +17,13 @@ function PageHeader({ judul, deskripsi, aksi }) {
           style={{
             margin: 0,
             fontFamily: "var(--font-display)",
-            fontSize: "var(--text-xl)",
-            fontWeight: "var(--font-weight-semibold)",
+            fontSize: "var(--text-2xl)",
+            fontWeight: "var(--font-weight-bold)",
             letterSpacing: "var(--tracking-tight)",
-            color: "var(--color-text-primary)",
+            background: "linear-gradient(90deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
           }}
         >
           {judul}
@@ -28,8 +31,15 @@ function PageHeader({ judul, deskripsi, aksi }) {
         {deskripsi ? (
           <p
             style={{
-              margin: "var(--space-1) 0 0",
-              fontSize: "var(--text-sm)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "var(--space-2)",
+              margin: "var(--space-2) 0 0",
+              backgroundColor: "var(--color-surface-2)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-full)",
+              padding: "3px 10px",
+              fontSize: "var(--text-xs)",
               color: "var(--color-text-muted)",
             }}
           >

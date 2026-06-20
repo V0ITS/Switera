@@ -97,7 +97,13 @@ function AksiTabelButtons({ onEdit, onDelete }) {
       <button
         type="button"
         onClick={onEdit}
-        onMouseDown={editRipple.onMouseDown}
+        onMouseDown={(event) => {
+          event.currentTarget.style.transform = "scale(0.97)";
+          editRipple.onMouseDown(event);
+        }}
+        onMouseUp={(event) => {
+          event.currentTarget.style.transform = "translateY(-1px)";
+        }}
         style={actionButtonStyle("var(--color-info)")}
         onMouseEnter={(event) => {
           event.currentTarget.style.backgroundColor = "var(--color-info-subtle)";
@@ -117,7 +123,13 @@ function AksiTabelButtons({ onEdit, onDelete }) {
       <button
         type="button"
         onClick={onDelete}
-        onMouseDown={deleteRipple.onMouseDown}
+        onMouseDown={(event) => {
+          event.currentTarget.style.transform = "scale(0.97)";
+          deleteRipple.onMouseDown(event);
+        }}
+        onMouseUp={(event) => {
+          event.currentTarget.style.transform = "translateY(-1px)";
+        }}
         style={actionButtonStyle("var(--color-danger)")}
         onMouseEnter={(event) => {
           event.currentTarget.style.backgroundColor = "var(--color-danger-subtle)";
@@ -147,6 +159,7 @@ function ManajemenData({ onNavigate }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [focusedField, setFocusedField] = useState("");
+  const [hoveredField, setHoveredField] = useState("");
 
   useEffect(() => {
     const unsubscribe = store.subscribe((nextSnapshot) => {
@@ -297,35 +310,56 @@ function ManajemenData({ onNavigate }) {
     keterangan: item.keterangan?.trim() ? item.keterangan : "-",
   }));
 
-  const fieldStyle = {
+  const fieldBaseStyle = {
     width: "100%",
-    border: "1px solid var(--color-border)",
+    border: "1px solid var(--color-border-mid)",
     borderRadius: "var(--radius-sm)",
     backgroundColor: "var(--color-surface-2)",
     color: "var(--color-text-primary)",
     fontFamily: "var(--font-body)",
     fontSize: "var(--text-sm)",
-    padding: "9px 12px",
+    padding: "10px 14px",
     outline: "none",
     boxSizing: "border-box",
     transition:
-      "border-color var(--transition-input), box-shadow var(--transition-input)",
+      "border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)",
   };
-  const getFieldStyle = (field) => ({
-    ...fieldStyle,
-    borderColor:
-      focusedField === field ? "var(--color-primary)" : "var(--color-border)",
-    boxShadow:
-      focusedField === field ? "0 0 0 3px var(--color-primary-subtle)" : "none",
+
+  const getFieldStyle = (field) => {
+    const isFocused = focusedField === field;
+    const isHovered = hoveredField === field && !isFocused;
+
+    return {
+      ...fieldBaseStyle,
+      backgroundColor: isHovered ? "var(--color-surface-3)" : "var(--color-surface-2)",
+      borderColor: isFocused
+        ? "var(--color-primary)"
+        : isHovered
+          ? "var(--color-border-strong)"
+          : "var(--color-border-mid)",
+      boxShadow: isFocused ? "0 0 0 3px var(--color-primary-glow)" : "none",
+    };
+  };
+
+  const getFieldHandlers = (field) => ({
+    onFocus: () => setFocusedField(field),
+    onBlur: () => setFocusedField(""),
+    onMouseEnter: () => setHoveredField(field),
+    onMouseLeave: () => setHoveredField(""),
   });
 
   const labelStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.45rem",
+    display: "block",
+  };
+
+  const fieldLabelTextStyle = {
+    display: "block",
+    marginBottom: "var(--space-2)",
+    fontSize: "var(--text-xs)",
+    fontWeight: "var(--font-weight-semibold)",
     color: "var(--color-text-secondary)",
-    fontWeight: 500,
-    fontSize: "var(--text-sm)",
+    textTransform: "uppercase",
+    letterSpacing: "var(--tracking-wider)",
   };
 
   const errorStyle = {
@@ -368,14 +402,13 @@ function ManajemenData({ onNavigate }) {
             <input
               type="search"
               value={keyword}
-              onFocus={() => setFocusedField("keyword")}
-              onBlur={() => setFocusedField("")}
               onChange={(event) => setKeyword(event.target.value)}
               placeholder="Cari berdasarkan nama kota"
               style={{
                 ...getFieldStyle("keyword"),
                 paddingLeft: "40px",
               }}
+              {...getFieldHandlers("keyword")}
             />
           </div>
         }
@@ -435,13 +468,13 @@ function ManajemenData({ onNavigate }) {
               }}
             >
               <label style={labelStyle}>
-                <span>Nama Kota</span>
+                <span style={fieldLabelTextStyle}>Nama Kota</span>
                 <select
+                  className="field-select"
                   value={editForm.kota}
-                  onFocus={() => setFocusedField("editKota")}
-                  onBlur={() => setFocusedField("")}
                   onChange={(event) => handleEditChange("kota", event.target.value)}
                   style={getFieldStyle("editKota")}
+                  {...getFieldHandlers("editKota")}
                 >
                   <option value="">Pilih kota</option>
                   {daftarKota.map((kota) => (
@@ -454,16 +487,15 @@ function ManajemenData({ onNavigate }) {
               </label>
 
               <label style={labelStyle}>
-                <span>Tanggal Permintaan</span>
+                <span style={fieldLabelTextStyle}>Tanggal Permintaan</span>
                 <input
                   type="date"
                   value={editForm.tanggalPermintaan}
-                  onFocus={() => setFocusedField("editTanggal")}
-                  onBlur={() => setFocusedField("")}
                   onChange={(event) =>
                     handleEditChange("tanggalPermintaan", event.target.value)
                   }
                   style={getFieldStyle("editTanggal")}
+                  {...getFieldHandlers("editTanggal")}
                 />
                 {editErrors.tanggalPermintaan ? (
                   <p style={errorStyle}>{editErrors.tanggalPermintaan}</p>
@@ -471,18 +503,18 @@ function ManajemenData({ onNavigate }) {
               </label>
 
               <label style={labelStyle}>
-                <span>Jumlah Permintaan dalam ton</span>
+                <span style={fieldLabelTextStyle}>Jumlah Permintaan dalam ton</span>
                 <input
                   type="number"
+                  className="field-no-spinner"
                   min="1"
                   step="1"
                   value={editForm.jumlahPermintaan}
-                  onFocus={() => setFocusedField("editJumlah")}
-                  onBlur={() => setFocusedField("")}
                   onChange={(event) =>
                     handleEditChange("jumlahPermintaan", event.target.value)
                   }
                   style={getFieldStyle("editJumlah")}
+                  {...getFieldHandlers("editJumlah")}
                 />
                 {editErrors.jumlahPermintaan ? (
                   <p style={errorStyle}>{editErrors.jumlahPermintaan}</p>
@@ -490,17 +522,18 @@ function ManajemenData({ onNavigate }) {
               </label>
 
               <label style={labelStyle}>
-                <span>Keterangan</span>
+                <span style={fieldLabelTextStyle}>Keterangan</span>
                 <textarea
                   rows="4"
                   value={editForm.keterangan}
-                  onFocus={() => setFocusedField("editKeterangan")}
-                  onBlur={() => setFocusedField("")}
                   onChange={(event) => handleEditChange("keterangan", event.target.value)}
                   style={{
                     ...getFieldStyle("editKeterangan"),
+                    minHeight: "120px",
                     resize: "vertical",
+                    lineHeight: "var(--leading-loose)",
                   }}
+                  {...getFieldHandlers("editKeterangan")}
                 />
               </label>
 

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
 import EmptyState from "../components/EmptyState";
-import Layout from "../components/Layout";
 import MetricCard from "../components/MetricCard";
 import Modal from "../components/Modal";
 import PageHeader from "../components/PageHeader";
@@ -11,6 +10,7 @@ import Tombol from "../components/Tombol";
 import { SkeletonChart } from "../components/Skeleton";
 import useRipple from "../hooks/useRipple";
 import store from "../store";
+import { formatWaktuRelatif } from "../utils/waktu";
 import {
   CHART_PALETTE,
   chartGridDefaults,
@@ -32,6 +32,28 @@ const formatterTanggal = new Intl.DateTimeFormat("id-ID", {
   month: "long",
   year: "numeric",
 });
+const formatterTanggalHero = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const formatterHari = new Intl.DateTimeFormat("id-ID", { weekday: "long" });
+const formatterJam = new Intl.DateTimeFormat("id-ID", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+const formatterTanggalSingkat = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "short",
+});
+
+const getGreeting = (hour) => {
+  if (hour < 11) return "Selamat Pagi";
+  if (hour < 15) return "Selamat Siang";
+  if (hour < 18) return "Selamat Sore";
+  return "Selamat Malam";
+};
 
 const statusOptions = ["menunggu", "dalam-pengiriman", "selesai"];
 const statusLabels = {
@@ -39,6 +61,7 @@ const statusLabels = {
   "dalam-pengiriman": "Dalam Pengiriman",
   selesai: "Selesai",
 };
+const statusUrutan = ["menunggu", "dalam-pengiriman", "selesai"];
 
 const formatDate = (value) => {
   if (!value) {
@@ -49,6 +72,14 @@ const formatDate = (value) => {
 };
 
 const formatTonase = (value) => `${formatterAngka.format(value)} ton`;
+
+const formatDateSingkat = (value) => {
+  if (!value) {
+    return "-";
+  }
+
+  return formatterTanggalSingkat.format(parseDate(value));
+};
 
 function SectionHeader({ children }) {
   return (
@@ -75,7 +106,7 @@ function IkonDatabase() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" strokeWidth="1.8" />
       <path d="M4 6V18C4 19.6569 7.58172 21 12 21C16.4183 21 20 19.6569 20 18V6" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M4 12C4 13.6569 7.58172 15 12 15C16.4183 15 20 13.6569 20 12" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M4 12C4 13.6569 7.58172 15 12 15C15.866 15 19 13.6569 19 12" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -98,12 +129,239 @@ function IkonTrendUp() {
   );
 }
 
-function IkonPaket() {
+function IkonMapPin() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 3L20.5 7.5V16.5L12 21L3.5 16.5V7.5L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M3.5 7.5L12 12L20.5 7.5M12 12V21" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M12 21C12 21 19 14.5 19 9.5C19 5.35786 15.6421 2 12 2C8.35786 2 5 5.35786 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <circle cx="12" cy="9.5" r="2.5" stroke="currentColor" strokeWidth="1.8" />
     </svg>
+  );
+}
+
+function IkonTruck() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M2.5 6H13V16H2.5V6Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M13 9.5H17L20.5 13V16H13V9.5Z" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="6.5" cy="17.5" r="1.6" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="17" cy="17.5" r="1.6" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+function IkonClock() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7V12L15.5 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IkonCheckCircle() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 12.5L11 15.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IkonPlusCircle() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IkonTableList() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4.5" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M3 9.5H21M9 9.5V19.5" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function IkonWarningTriangle() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M12 3.5L21.5 20H2.5L12 3.5Z" stroke="var(--color-warning)" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M12 10V14.5" stroke="var(--color-warning)" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="17" r="0.9" fill="var(--color-warning)" />
+    </svg>
+  );
+}
+
+function IkonEditKecil() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 20L4.6 16.4L15.5 5.5C16 5 16.7 5 17.2 5.5L18.5 6.8C19 7.3 19 8 18.5 8.5L7.6 19.4L4 20Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function RippleSpans({ ripples, removeRipple }) {
+  return ripples.map((ripple) => (
+    <span
+      key={ripple.id}
+      className="ripple-span"
+      style={{ left: ripple.x, top: ripple.y, width: ripple.size, height: ripple.size }}
+      onAnimationEnd={() => removeRipple(ripple.id)}
+    />
+  ));
+}
+
+function HeroStrip({ nama, role }) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  return (
+    <Card
+      style={{
+        background: "linear-gradient(135deg, rgba(45,106,79,0.15) 0%, rgba(45,106,79,0.06) 50%, rgba(45,106,79,0.02) 100%)",
+        border: "1px solid rgba(45,106,79,0.2)",
+        borderRadius: "var(--radius-xl)",
+        padding: "var(--space-5) var(--space-6)",
+        minHeight: "80px",
+        boxSizing: "border-box",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "var(--space-3)",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          right: "-40px",
+          top: "-40px",
+          width: "160px",
+          height: "160px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(45,106,79,0.2), transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ position: "relative" }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "var(--text-xs)",
+            color: "var(--color-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "var(--tracking-wider)",
+          }}
+        >
+          {getGreeting(now.getHours())}
+        </p>
+        <p
+          style={{
+            margin: "var(--space-1) 0 0",
+            fontSize: "var(--text-2xl)",
+            fontWeight: "var(--font-weight-bold)",
+            color: "var(--color-text-primary)",
+          }}
+        >
+          {nama ?? "Pengguna"}
+        </p>
+        {role ? (
+          <span
+            style={{
+              display: "inline-flex",
+              marginTop: "var(--space-2)",
+              backgroundColor: "var(--color-surface-2)",
+              border: "1px solid var(--color-border-mid)",
+              borderRadius: "var(--radius-full)",
+              padding: "2px 10px",
+              fontSize: "var(--text-xs)",
+              color: "var(--color-text-secondary)",
+            }}
+          >
+            {role}
+          </span>
+        ) : null}
+      </div>
+      <div style={{ position: "relative", textAlign: "right" }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "var(--text-3xl)",
+            fontWeight: "var(--font-weight-bold)",
+            fontFamily: "var(--font-mono)",
+            color: "var(--color-primary)",
+            letterSpacing: "3px",
+          }}
+        >
+          {formatterJam.format(now)}
+        </p>
+        <p style={{ margin: "var(--space-1) 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
+          {formatterTanggalHero.format(now)}
+        </p>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "var(--text-xs)",
+            color: "var(--color-text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: "var(--tracking-wider)",
+          }}
+        >
+          {formatterHari.format(now)}
+        </p>
+      </div>
+    </Card>
+  );
+}
+
+function ActionCard({ ikon, iconColor, judul, sub, onClick }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          onClick?.();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        backgroundColor: hovered ? "var(--color-surface-3)" : "var(--color-surface-2)",
+        border: `1px solid ${hovered ? "var(--color-primary)" : "var(--color-border)"}`,
+        borderRadius: "var(--radius-lg)",
+        padding: "var(--space-5)",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: "var(--space-4)",
+        transform: hovered ? "translateX(2px)" : "translateX(0)",
+        transition: "all var(--transition-base)",
+      }}
+    >
+      <span style={{ display: "flex", color: iconColor, flexShrink: 0 }}>{ikon}</span>
+      <div style={{ minWidth: 0 }}>
+        <p style={{ margin: 0, fontWeight: "var(--font-weight-semibold)", color: "var(--color-text-primary)" }}>
+          {judul}
+        </p>
+        <p style={{ margin: "2px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+          {sub}
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -220,7 +478,105 @@ function GrafikPermintaan({ rankingKota }) {
   );
 }
 
-function DashboardAdmin({ permintaan, keputusan, onNavigate }) {
+function GrafikMiniPerKota({ rankingKota }) {
+  const canvasRef = useRef(null);
+  const [chartError, setChartError] = useState("");
+  const [isChartReady, setIsChartReady] = useState(false);
+  const top5 = useMemo(() => rankingKota.slice(0, 5), [rankingKota]);
+
+  useEffect(() => {
+    if (!canvasRef.current || top5.length === 0 || typeof window === "undefined") {
+      return undefined;
+    }
+
+    setIsChartReady(false);
+    let chartInstance;
+    let isActive = true;
+
+    import("chart.js/auto")
+      .then((module) => {
+        if (!isActive || !canvasRef.current) {
+          return;
+        }
+
+        const Chart = module.default;
+        const ctx = canvasRef.current.getContext("2d");
+        const gradient = ctx.createLinearGradient(0, 0, canvasRef.current.width, 0);
+        gradient.addColorStop(0, "#2d6a4f");
+        gradient.addColorStop(1, "#40916c");
+
+        chartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: top5.map((item) => item.kota),
+            datasets: [
+              {
+                data: top5.map((item) => item.totalPermintaan),
+                backgroundColor: gradient,
+                borderRadius: 6,
+                maxBarThickness: 18,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                ...chartTooltipDefaults,
+                callbacks: {
+                  label(context) {
+                    return formatTonase(context.parsed.x);
+                  },
+                },
+              },
+            },
+            scales: {
+              x: { display: false, grid: { display: false } },
+              y: { grid: { display: false }, ticks: { ...chartTickDefaults } },
+            },
+          },
+        });
+
+        setChartError("");
+        setIsChartReady(true);
+      })
+      .catch(() => {
+        if (isActive) {
+          setChartError("Grafik tidak dapat dimuat.");
+        }
+      });
+
+    return () => {
+      isActive = false;
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+  }, [top5]);
+
+  return (
+    <Card>
+      <SectionHeader>Permintaan per Kota</SectionHeader>
+      {chartError ? (
+        <EmptyState pesan={chartError} />
+      ) : (
+        <div style={{ height: "160px" }}>
+          {isChartReady ? null : <SkeletonChart height="160px" />}
+          <canvas
+            ref={canvasRef}
+            aria-label="Grafik mini permintaan per kota"
+            style={{ display: isChartReady ? "block" : "none" }}
+          />
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
   const totalData = permintaan.length + keputusan.length;
   const allDates = [
     ...permintaan.map((item) => item.tanggal_input),
@@ -229,6 +585,30 @@ function DashboardAdmin({ permintaan, keputusan, onNavigate }) {
   const latestDate = allDates.sort((first, second) => parseDate(second) - parseDate(first))[0];
   const duplicateGroups = getDuplicateGroups(permintaan);
   const { ripples, onMouseDown, removeRipple } = useRipple();
+  const [hoveredLink, setHoveredLink] = useState(false);
+
+  const aktivitasTerbaru = useMemo(() => {
+    const dariPermintaan = permintaan
+      .filter((item) => item.tanggal_input)
+      .map((item) => ({
+        id: `p-${item.id}`,
+        teks: `Permintaan baru: ${item.kota}`,
+        waktu: item.tanggal_input,
+        ikon: <IkonPlusCircle />,
+      }));
+    const dariKeputusan = keputusan
+      .filter((item) => item.tanggal_keputusan)
+      .map((item) => ({
+        id: `k-${item.id}`,
+        teks: `Keputusan distribusi: ${item.kota_tujuan}`,
+        waktu: item.tanggal_keputusan,
+        ikon: <IkonTrendUp />,
+      }));
+
+    return [...dariPermintaan, ...dariKeputusan]
+      .sort((first, second) => parseDate(second.waktu) - parseDate(first.waktu))
+      .slice(0, 4);
+  }, [permintaan, keputusan]);
 
   return (
     <>
@@ -238,140 +618,166 @@ function DashboardAdmin({ permintaan, keputusan, onNavigate }) {
       />
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.5rem",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "var(--space-5)",
+          alignItems: "start",
         }}
       >
+        <div style={{ gridColumn: "1 / -1" }}>
+          <HeroStrip nama={userAktif?.nama} role={userAktif?.role} />
+        </div>
+
+        {duplicateGroups.length > 0 ? (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              backgroundColor: "transparent",
+              border: "1px solid rgba(245,158,11,0.3)",
+              borderLeft: "3px solid var(--color-warning)",
+              borderRadius: "var(--radius-md)",
+              padding: "var(--space-3) var(--space-4)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "var(--space-3)",
+              fontSize: "var(--text-sm)",
+              flexWrap: "wrap",
+            }}
+          >
+            <span style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flex: 1, minWidth: "200px" }}>
+              <IkonWarningTriangle />
+              <span style={{ color: "var(--color-text-secondary)" }}>
+                Ditemukan {formatterAngka.format(duplicateGroups.length)} data duplikat. Periksa Manajemen Data.
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onNavigate?.("manajemen-data")}
+              onMouseDown={onMouseDown}
+              onMouseEnter={() => setHoveredLink(true)}
+              onMouseLeave={() => setHoveredLink(false)}
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                border: "none",
+                background: "transparent",
+                color: "var(--color-warning)",
+                fontWeight: "var(--font-weight-semibold)",
+                cursor: "pointer",
+                fontFamily: "var(--font-body)",
+                fontSize: "var(--text-sm)",
+                textDecoration: hoveredLink ? "underline" : "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Periksa sekarang →
+              <RippleSpans ripples={ripples} removeRipple={removeRipple} />
+            </button>
+          </div>
+        ) : null}
+
         <div
           className="stagger-children"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            display: "flex",
+            flexDirection: "column",
             gap: "var(--space-4)",
           }}
         >
           <MetricCard
-            label="Jumlah total data tersimpan"
+            label="Total Data Tersimpan"
             nilai={formatterAngka.format(totalData)}
             ikon={<IkonDatabase />}
             accent="primary"
+            size="lg"
+            trend="Data terkini"
+            shimmer
           />
           <MetricCard
-            label="Tanggal data terbaru diinput"
-            nilai={formatDate(latestDate)}
+            label="Data Terbaru Diinput"
+            nilai={formatDateSingkat(latestDate)}
             ikon={<IkonKalender />}
             accent="accent"
+            size="lg"
+            valueFontSize="var(--text-xl)"
+            trend="Data terkini"
+            shimmer
           />
         </div>
 
-        {duplicateGroups.length > 0 ? (
-          <Card
-            style={{
-              borderLeft: "6px solid var(--color-warning)",
-              backgroundColor: "var(--color-surface)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.65rem",
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  color: "var(--color-text-primary)",
-                  fontWeight: 700,
-                }}
-              >
-                Peringatan data duplikat terdeteksi
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.6,
-                }}
-              >
-                Terdapat {formatterAngka.format(duplicateGroups.length)} kelompok data
-                dengan kota dan tanggal permintaan yang sama. Periksa halaman Manajemen
-                Data untuk validasi lebih lanjut.
-              </p>
-              <button
-                type="button"
-                onClick={() => onNavigate?.("manajemen-data")}
-                onMouseDown={onMouseDown}
-                style={{
-                  position: "relative",
-                  overflow: "hidden",
-                  width: "fit-content",
-                  padding: 0,
-                  border: "none",
-                  backgroundColor: "transparent",
-                  color: "var(--color-primary)",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-body)",
-                  fontSize: "0.95rem",
-                  fontWeight: 700,
-                  textDecoration: "underline",
-                }}
-              >
-                Buka halaman Manajemen Data
-                {ripples.map((ripple) => (
-                  <span
-                    key={ripple.id}
-                    className="ripple-span"
-                    style={{ left: ripple.x, top: ripple.y, width: ripple.size, height: ripple.size }}
-                    onAnimationEnd={() => removeRipple(ripple.id)}
-                  />
-                ))}
-              </button>
-            </div>
-          </Card>
-        ) : null}
-
-        <Card
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
           <div>
-            <h2
-              style={{
-                margin: 0,
-                fontFamily: "var(--font-display)",
-                fontSize: "1.2rem",
-              }}
-            >
-              Kelola data distribusi
-            </h2>
-            <p
-              style={{
-                margin: "0.4rem 0 0",
-                color: "var(--color-text-secondary)",
-                lineHeight: 1.6,
-              }}
-            >
-              Tambahkan data permintaan baru untuk menjaga analisis distribusi tetap mutakhir.
-            </p>
+            <SectionHeader>Aksi Cepat</SectionHeader>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+              <ActionCard
+                ikon={<IkonPlusCircle />}
+                iconColor="var(--color-primary)"
+                judul="Input Data Baru"
+                sub="Tambah permintaan kota baru"
+                onClick={() => onNavigate?.("input-data")}
+              />
+              <ActionCard
+                ikon={<IkonTableList />}
+                iconColor="var(--color-accent)"
+                judul="Kelola Data"
+                sub="Edit atau hapus data permintaan"
+                onClick={() => onNavigate?.("manajemen-data")}
+              />
+            </div>
           </div>
-          <Tombol
-            label="Menuju Input Data"
-            onClick={() => onNavigate?.("input-data")}
-          />
-        </Card>
+
+          <Card>
+            <SectionHeader>Aktivitas Terbaru</SectionHeader>
+            {aktivitasTerbaru.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                {aktivitasTerbaru.map((item) => (
+                  <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+                    <span
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "var(--radius-md)",
+                        backgroundColor: "var(--color-surface-2)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "var(--color-text-muted)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {item.ikon}
+                    </span>
+                    <span
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        fontSize: "var(--text-sm)",
+                        color: "var(--color-text-secondary)",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {item.teks}
+                    </span>
+                    <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", flexShrink: 0, whiteSpace: "nowrap" }}>
+                      {formatWaktuRelatif(item.waktu)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState pesan="Belum ada aktivitas untuk ditampilkan." />
+            )}
+          </Card>
+        </div>
       </div>
     </>
   );
 }
 
-function DashboardManajer({ permintaan, keputusan }) {
+function DashboardManajer({ permintaan, keputusan, userAktif }) {
   const [feedback, setFeedback] = useState("");
   const todayKey = getLocalDateKey();
   const rankingKota = useMemo(
@@ -396,11 +802,63 @@ function DashboardManajer({ permintaan, keputusan }) {
     .filter((item) => item.status !== "menunggu")
     .reduce((total, item) => total + (Number(item.volume_tbs) || 0), 0);
 
+  const maxTotal = rankingKota[0]?.totalPermintaan ?? 0;
+
+  const getRankBadgeStyle = (rank) => {
+    if (rank === 1) {
+      return { backgroundColor: "var(--color-accent-subtle)", color: "var(--color-accent)", fontWeight: 700 };
+    }
+    if (rank === 2) {
+      return { backgroundColor: "rgba(156,163,175,0.15)", color: "#9ca3af" };
+    }
+    if (rank === 3) {
+      return { backgroundColor: "rgba(184,135,51,0.15)", color: "#b87333" };
+    }
+    return { backgroundColor: "transparent", color: "var(--color-text-muted)" };
+  };
+
   const rankingRows = rankingKota.map((item, index) => ({
     id: item.kota,
-    nomor: index + 1,
+    nomor: (
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "26px",
+          padding: "2px 8px",
+          borderRadius: "var(--radius-xs)",
+          fontSize: "var(--text-sm)",
+          ...getRankBadgeStyle(index + 1),
+        }}
+      >
+        {index === 0 ? "🏆" : index + 1}
+      </span>
+    ),
     namaKota: item.kota,
-    totalPermintaan: formatTonase(item.totalPermintaan),
+    totalPermintaan: (
+      <div>
+        <span>{formatTonase(item.totalPermintaan)}</span>
+        <div
+          style={{
+            marginTop: "4px",
+            height: "3px",
+            borderRadius: "var(--radius-full)",
+            backgroundColor: "var(--color-border)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              borderRadius: "var(--radius-full)",
+              backgroundColor: "var(--color-primary)",
+              width: `${maxTotal > 0 ? (item.totalPermintaan / maxTotal) * 100 : 0}%`,
+            }}
+          />
+        </div>
+      </div>
+    ),
     statusDistribusi: (
       <Badge
         status={latestDecisionByKota.get(item.kota)?.status ?? "menunggu"}
@@ -455,6 +913,8 @@ function DashboardManajer({ permintaan, keputusan }) {
           gap: "1.5rem",
         }}
       >
+        <HeroStrip nama={userAktif?.nama} role={userAktif?.role} />
+
         <div
           className="stagger-children"
           style={{
@@ -464,144 +924,197 @@ function DashboardManajer({ permintaan, keputusan }) {
           }}
         >
           <MetricCard
-            label="Total kota terpantau"
+            label="Total Kota Terpantau"
             nilai={formatterAngka.format(rankingKota.length)}
-            ikon={<IkonDatabase />}
+            ikon={<IkonMapPin />}
             accent="primary"
+            size="lg"
+            trend="Data terkini"
+            shimmer
           />
           <MetricCard
-            label="Permintaan tertinggi hari ini"
+            label="Permintaan Tertinggi"
             nilai={kotaHariIni ? formatTonase(kotaHariIni.totalPermintaan) : "Belum ada"}
             ikon={<IkonTrendUp />}
             accent="accent"
+            size="lg"
+            trend="Data terkini"
+            shimmer
           />
           <MetricCard
-            label="Total TBS terdistribusi"
+            label="Total TBS Terdistribusi"
             nilai={formatTonase(totalTbsTerdistribusi)}
-            ikon={<IkonPaket />}
+            ikon={<IkonTruck />}
             accent="info"
+            size="lg"
+            trend="Data terkini"
+            shimmer
           />
         </div>
 
-        <Card>
-          <SectionHeader>Ranking Permintaan Kota</SectionHeader>
-          {rankingRows.length > 0 ? (
-            <Tabel
-              kolom={[
-                { key: "nomor", label: "No" },
-                { key: "namaKota", label: "Nama Kota" },
-                { key: "totalPermintaan", label: "Total Permintaan (ton)", numeric: true },
-                { key: "statusDistribusi", label: "Status Distribusi" },
-              ]}
-              data={rankingRows}
-            />
-          ) : (
-            <EmptyState pesan="Tambahkan data permintaan agar ranking kota dapat dihitung." />
-          )}
-        </Card>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr",
+            gap: "var(--space-5)",
+            alignItems: "start",
+          }}
+        >
+          <Card>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "var(--space-3)",
+                paddingBottom: "var(--space-3)",
+                borderBottom: "1px solid var(--color-border)",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "var(--text-sm)",
+                  fontWeight: "var(--font-weight-semibold)",
+                  color: "var(--color-text-secondary)",
+                  textTransform: "uppercase",
+                  letterSpacing: "var(--tracking-wider)",
+                }}
+              >
+                Ranking Kota
+              </span>
+              <span
+                style={{
+                  backgroundColor: "var(--color-surface-3)",
+                  border: "1px solid var(--color-border)",
+                  fontSize: "var(--text-xs)",
+                  padding: "2px 8px",
+                  borderRadius: "var(--radius-full)",
+                  color: "var(--color-text-secondary)",
+                }}
+              >
+                {rankingKota.length} kota
+              </span>
+            </div>
+            {rankingRows.length > 0 ? (
+              <Tabel
+                kolom={[
+                  { key: "nomor", label: "No" },
+                  { key: "namaKota", label: "Nama Kota" },
+                  { key: "totalPermintaan", label: "Total Permintaan (ton)", numeric: true },
+                  { key: "statusDistribusi", label: "Status Distribusi" },
+                ]}
+                data={rankingRows}
+                getRowStyle={(_baris, index) =>
+                  index === 0 ? { backgroundColor: "rgba(242,167,27,0.06)" } : undefined
+                }
+              />
+            ) : (
+              <EmptyState pesan="Tambahkan data permintaan agar ranking kota dapat dihitung." />
+            )}
+          </Card>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+            <Card
+              style={{
+                background: "linear-gradient(145deg, #1a2e23 0%, #0f1f17 100%)",
+                border: "1px solid rgba(45,106,79,0.3)",
+                borderRadius: "var(--radius-xl)",
+                padding: "var(--space-6)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  bottom: "-60px",
+                  right: "-60px",
+                  width: "200px",
+                  height: "200px",
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(45,106,79,0.2), transparent)",
+                  pointerEvents: "none",
+                }}
+              />
+              <div style={{ position: "relative" }}>
+                {rekomendasiKota ? (
+                  <>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        backgroundColor: "rgba(45,106,79,0.2)",
+                        border: "1px solid rgba(45,106,79,0.3)",
+                        color: "var(--color-primary)",
+                        fontSize: "var(--text-2xs)",
+                        fontWeight: "var(--font-weight-semibold)",
+                        padding: "3px 8px",
+                        borderRadius: "var(--radius-full)",
+                        marginBottom: "var(--space-3)",
+                      }}
+                    >
+                      Rekomendasi Sistem
+                    </span>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "var(--text-xs)",
+                        color: "rgba(255,255,255,0.5)",
+                        textTransform: "uppercase",
+                        letterSpacing: "var(--tracking-wider)",
+                      }}
+                    >
+                      Kota Tujuan Disarankan
+                    </p>
+                    <p
+                      style={{
+                        margin: "var(--space-2) 0",
+                        fontSize: "var(--text-2xl)",
+                        fontWeight: "var(--font-weight-bold)",
+                        color: "#fff",
+                      }}
+                    >
+                      {rekomendasiKota.kota}
+                    </p>
+                    <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "rgba(255,255,255,0.6)" }}>
+                      Total permintaan{" "}
+                      <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-primary)", fontWeight: "var(--font-weight-semibold)" }}>
+                        {formatTonase(rekomendasiKota.totalPermintaan)}
+                      </span>
+                    </p>
+                    <div style={{ height: "1px", backgroundColor: "rgba(255,255,255,0.08)", margin: "var(--space-4) 0" }} />
+                    <Tombol
+                      label="Tetapkan Tujuan"
+                      onClick={handleTetapkanDistribusi}
+                      style={{ width: "100%", padding: "10px" }}
+                    />
+                    {feedback ? (
+                      <p style={{ margin: "var(--space-3) 0 0", fontSize: "var(--text-xs)", color: "rgba(255,255,255,0.6)" }}>
+                        {feedback}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <EmptyState pesan="Belum ada rekomendasi karena data permintaan masih kosong." />
+                )}
+              </div>
+            </Card>
+
+            {rankingKota.length > 0 ? <GrafikMiniPerKota rankingKota={rankingKota} /> : null}
+          </div>
+        </div>
 
         {rankingKota.length > 0 ? (
           <GrafikPermintaan rankingKota={rankingKota} />
         ) : (
           <EmptyState pesan="Belum ada data untuk ditampilkan pada grafik permintaan." />
         )}
-
-        <Card
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.9rem",
-          }}
-        >
-          <div>
-            <h2
-              style={{
-                margin: 0,
-                fontFamily: "var(--font-display)",
-                fontSize: "1.2rem",
-              }}
-            >
-              Rekomendasi distribusi
-            </h2>
-            <p
-              style={{
-                margin: "0.4rem 0 0",
-                color: "var(--color-text-secondary)",
-                lineHeight: 1.6,
-              }}
-            >
-              Prioritaskan kota dengan total permintaan tertinggi untuk keputusan distribusi berikutnya.
-            </p>
-          </div>
-
-          {rekomendasiKota ? (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "1rem",
-                  flexWrap: "wrap",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      margin: 0,
-                      color: "var(--color-text-secondary)",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Kota prioritas saat ini
-                  </p>
-                  <p
-                    style={{
-                      margin: "0.3rem 0 0",
-                      color: "var(--color-text-primary)",
-                      fontFamily: "var(--font-display)",
-                      fontSize: "1.5rem",
-                      fontWeight: 800,
-                    }}
-                  >
-                    {rekomendasiKota.kota}
-                  </p>
-                  <p
-                    style={{
-                      margin: "0.3rem 0 0",
-                      color: "var(--color-text-secondary)",
-                    }}
-                  >
-                    Total permintaan {formatTonase(rekomendasiKota.totalPermintaan)}.
-                  </p>
-                </div>
-                <Tombol
-                  label="Tetapkan sebagai Tujuan Distribusi"
-                  onClick={handleTetapkanDistribusi}
-                />
-              </div>
-              {feedback ? (
-                <p
-                  style={{
-                    margin: 0,
-                    color: "var(--color-text-secondary)",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {feedback}
-                </p>
-              ) : null}
-            </>
-          ) : (
-            <EmptyState pesan="Belum ada rekomendasi karena data permintaan masih kosong." />
-          )}
-        </Card>
       </div>
     </>
   );
 }
 
-function DashboardLogistik({ keputusan }) {
+function DashboardLogistik({ keputusan, userAktif }) {
   const [selectedKeputusan, setSelectedKeputusan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("menunggu");
   const [isSelectFocused, setIsSelectFocused] = useState(false);
@@ -617,13 +1130,54 @@ function DashboardLogistik({ keputusan }) {
 
   const latestKeputusan = sortedKeputusan[0];
 
-  const statusRows = sortedKeputusan.map((item) => ({
-    id: item.id,
-    kotaTujuan: item.kota_tujuan,
-    volume: formatTonase(item.volume_tbs),
-    status: <Badge status={item.status} />,
-    tanggal: formatDate(item.tanggal_keputusan),
-  }));
+  const ringkasanStatus = useMemo(() => {
+    const counts = { menunggu: 0, "dalam-pengiriman": 0, selesai: 0 };
+    sortedKeputusan.forEach((item) => {
+      if (counts[item.status] !== undefined) {
+        counts[item.status] += 1;
+      }
+    });
+    return counts;
+  }, [sortedKeputusan]);
+
+  const statusRows = sortedKeputusan.map((item) => {
+    const stepIndex = statusUrutan.indexOf(item.status);
+
+    return {
+      id: item.id,
+      kotaTujuan: item.kota_tujuan,
+      volume: formatTonase(item.volume_tbs),
+      status: <Badge status={item.status} />,
+      tanggal: formatDate(item.tanggal_keputusan),
+      progres: (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {statusUrutan.map((_step, dotIndex) => (
+            <span key={dotIndex} style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: dotIndex <= stepIndex ? "var(--color-primary)" : "transparent",
+                  border: dotIndex <= stepIndex ? "none" : "1.5px solid var(--color-border-mid)",
+                  flexShrink: 0,
+                }}
+              />
+              {dotIndex < statusUrutan.length - 1 ? (
+                <span
+                  style={{
+                    width: "16px",
+                    height: "1.5px",
+                    backgroundColor: dotIndex < stepIndex ? "var(--color-primary)" : "var(--color-border-mid)",
+                  }}
+                />
+              ) : null}
+            </span>
+          ))}
+        </div>
+      ),
+    };
+  });
 
   const openStatusModal = (item) => {
     setSelectedKeputusan(item);
@@ -654,47 +1208,100 @@ function DashboardLogistik({ keputusan }) {
           gap: "1.5rem",
         }}
       >
+        <HeroStrip nama={userAktif?.nama} role={userAktif?.role} />
+
+        <div
+          className="stagger-children"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
+            gap: "var(--space-4)",
+          }}
+        >
+          <MetricCard
+            label="Menunggu"
+            nilai={String(ringkasanStatus.menunggu)}
+            ikon={<IkonClock />}
+            accent="warning"
+            size="lg"
+            trend="Data terkini"
+            shimmer
+          />
+          <MetricCard
+            label="Dalam Pengiriman"
+            nilai={String(ringkasanStatus["dalam-pengiriman"])}
+            ikon={<IkonTruck />}
+            accent="info"
+            size="lg"
+            trend="Data terkini"
+            shimmer
+          />
+          <MetricCard
+            label="Selesai"
+            nilai={String(ringkasanStatus.selesai)}
+            ikon={<IkonCheckCircle />}
+            accent="success"
+            size="lg"
+            trend="Data terkini"
+            shimmer
+          />
+        </div>
+
         {latestKeputusan ? (
           <Card
             style={{
+              border: "1px solid var(--color-border-mid)",
+              borderLeft: "3px solid var(--color-accent)",
+              borderRadius: "var(--radius-lg)",
+              padding: "var(--space-5) var(--space-6)",
               display: "flex",
-              alignItems: "center",
               justifyContent: "space-between",
-              gap: "1rem",
+              alignItems: "center",
               flexWrap: "wrap",
+              gap: "var(--space-3)",
             }}
           >
             <div>
               <p
                 style={{
                   margin: 0,
-                  color: "var(--color-text-secondary)",
-                  fontSize: "0.9rem",
+                  fontSize: "var(--text-2xs)",
+                  color: "var(--color-text-muted)",
+                  textTransform: "uppercase",
+                  letterSpacing: "var(--tracking-wider)",
+                  fontWeight: "var(--font-weight-semibold)",
                 }}
               >
-                Keputusan distribusi terbaru
+                Keputusan Terbaru
               </p>
-              <h2
+              <p
                 style={{
-                  margin: "0.35rem 0 0",
-                  fontFamily: "var(--font-display)",
-                  fontSize: "1.5rem",
+                  margin: "4px 0 0",
+                  fontSize: "var(--text-xl)",
+                  fontWeight: "var(--font-weight-bold)",
+                  color: "var(--color-text-primary)",
                 }}
               >
                 {latestKeputusan.kota_tujuan}
-              </h2>
-              <p
-                style={{
-                  margin: "0.45rem 0 0",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.6,
-                }}
-              >
-                Volume {formatTonase(latestKeputusan.volume_tbs)} ditetapkan pada{" "}
-                {formatDate(latestKeputusan.tanggal_keputusan)}.
+              </p>
+              <p style={{ margin: "4px 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>
+                {formatDate(latestKeputusan.tanggal_keputusan)}
               </p>
             </div>
-            <Badge status={latestKeputusan.status} />
+            <div style={{ textAlign: "right" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "var(--text-2xl)",
+                  fontWeight: "var(--font-weight-bold)",
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--color-accent)",
+                }}
+              >
+                {formatterAngka.format(latestKeputusan.volume_tbs)}
+              </p>
+              <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-text-muted)" }}>ton</p>
+            </div>
           </Card>
         ) : (
           <EmptyState pesan="Belum ada keputusan distribusi yang dapat ditindaklanjuti." />
@@ -708,6 +1315,7 @@ function DashboardLogistik({ keputusan }) {
                 { key: "kotaTujuan", label: "Kota Tujuan" },
                 { key: "volume", label: "Volume", numeric: true },
                 { key: "status", label: "Status" },
+                { key: "progres", label: "Progres" },
                 { key: "tanggal", label: "Tanggal" },
               ]}
               data={statusRows}
@@ -715,9 +1323,14 @@ function DashboardLogistik({ keputusan }) {
                 const item = sortedKeputusan.find((keputusanItem) => keputusanItem.id === baris.id);
                 return (
                   <Tombol
-                    label="Perbarui Status"
+                    label={
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <IkonEditKecil /> Perbarui Status
+                      </span>
+                    }
                     variant="sekunder"
                     onClick={() => openStatusModal(item)}
+                    style={{ padding: "5px 10px", fontSize: "var(--text-xs)" }}
                   />
                 );
               }}
@@ -814,33 +1427,27 @@ function Dashboard({ onNavigate }) {
     return unsubscribe;
   }, []);
 
-  const { roleAktif, permintaan, keputusan } = snapshot;
+  const { roleAktif, permintaan, keputusan, userAktif } = snapshot;
 
   const contentByRole = {
     Admin: (
       <DashboardAdmin
         permintaan={permintaan}
         keputusan={keputusan}
+        userAktif={userAktif}
         onNavigate={onNavigate}
       />
     ),
     "Manajer Distribusi": (
-      <DashboardManajer permintaan={permintaan} keputusan={keputusan} />
+      <DashboardManajer permintaan={permintaan} keputusan={keputusan} userAktif={userAktif} />
     ),
-    "Tim Logistik": <DashboardLogistik keputusan={keputusan} />,
+    "Tim Logistik": <DashboardLogistik keputusan={keputusan} userAktif={userAktif} />,
   };
 
   return (
-    <Layout
-      title="Switera"
-      roleAwal={roleAktif}
-      menuAwal="dashboard"
-      onMenuChange={onNavigate}
-    >
-      {contentByRole[roleAktif] ?? (
-        <EmptyState pesan="Role aktif belum dikenali. Pilih role lain pada header aplikasi." />
-      )}
-    </Layout>
+    contentByRole[roleAktif] ?? (
+      <EmptyState pesan="Role aktif belum dikenali. Pilih role lain pada header aplikasi." />
+    )
   );
 }
 

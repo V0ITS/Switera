@@ -60,7 +60,7 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
     color: "var(--color-text-primary)",
     verticalAlign: "top",
     fontSize: "var(--text-sm)",
-    transition: "background-color var(--transition-fast)",
+    transition: "background-color 80ms ease",
   });
 
   const checkboxStyle = {
@@ -133,7 +133,13 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
                 onMouseLeave={() => setHoveredRow(null)}
                 style={{ animation: "fadeInUp 300ms var(--ease-smooth) both" }}
               >
-                <td style={{ ...cellStyle, backgroundColor: rowBackground }}>
+                <td
+                  style={{
+                    ...cellStyle,
+                    backgroundColor: rowBackground,
+                    borderLeft: isRowHovered ? "2px solid var(--color-primary)" : "2px solid transparent",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={isRowSelected}

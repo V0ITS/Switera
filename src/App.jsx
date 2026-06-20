@@ -10,7 +10,9 @@ import RiwayatAktivitas from "./pages/RiwayatAktivitas";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Layout from "./components/Layout";
 import store from "./store";
+import useToast from "./components/Toast";
 import { getDefaultMenuByRole, menuByRole } from "./utils/navigation";
 
 const pageRegistry = {
@@ -89,7 +91,7 @@ function App() {
   useEffect(() => {
     if (!snapshot.userAktif) {
       if (route !== "/login" && route !== "/register" && route !== "/") {
-        navigateTo("/login");
+        navigateTo("/");
       }
       return;
     }
@@ -101,33 +103,47 @@ function App() {
   }, [activePage, allowedPages, route, snapshot.roleAktif, snapshot.userAktif]);
 
   useEffect(() => {
-    if (snapshot.userAktif) {
+    if (snapshot.userAktif && route !== "/") {
       const pageFromRoute = pageByPath[route];
       const defaultPage = getDefaultMenuByRole(snapshot.userAktif.role);
       const nextPage = pageFromRoute ?? defaultPage;
       setActivePage(nextPage);
 
-      if (route === "/login" || route === "/register" || route === "/") {
+      if (route === "/login" || route === "/register") {
         navigateTo(pathByPage[defaultPage] ?? "/dashboard");
       }
     }
   }, [route, snapshot.userAktif?.role]);
 
-  if (!snapshot.userAktif) {
+  const { ToastContainer } = useToast();
+
+  let content;
+
+  if (route === "/") {
+    content = <Landing onNavigate={navigateTo} />;
+  } else if (!snapshot.userAktif) {
     if (route === "/register") {
-      return <Register onNavigate={navigateTo} />;
+      content = <Register onNavigate={navigateTo} />;
+    } else if (route === "/login") {
+      content = <Login onNavigate={navigateTo} />;
+    } else {
+      content = <Landing onNavigate={navigateTo} />;
     }
-
-    if (route === "/login") {
-      return <Login onNavigate={navigateTo} />;
-    }
-
-    return <Landing onNavigate={navigateTo} />;
+  } else {
+    const ActivePage = pageRegistry[activePage] ?? Dashboard;
+    content = (
+      <Layout menuAktif={activePage} onMenuChange={navigatePage}>
+        <ActivePage onNavigate={navigatePage} />
+      </Layout>
+    );
   }
 
-  const ActivePage = pageRegistry[activePage] ?? Dashboard;
-
-  return <ActivePage onNavigate={navigatePage} />;
+  return (
+    <>
+      {content}
+      <ToastContainer />
+    </>
+  );
 }
 
 export default App;

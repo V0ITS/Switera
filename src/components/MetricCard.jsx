@@ -62,47 +62,165 @@ function useCountUp(target, duration = 800) {
   return value;
 }
 
-function MetricCard({ label, nilai, ikon, accent = "primary" }) {
+function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, size = "md", trend, valueFontSize }) {
   const colors = accentColors[accent] ?? accentColors.primary;
   const parsed = useMemo(() => parseNilai(nilai), [nilai]);
   const animatedNumber = useCountUp(parsed.isNumeric ? parsed.number : 0, 800);
   const displayValue = parsed.isNumeric
     ? `${formatterAngka.format(Math.round(animatedNumber))}${parsed.suffix}`
     : String(nilai);
+  const isLarge = size === "lg";
+  const iconBoxSize = isLarge ? "44px" : "40px";
+  const iconSize = isLarge ? "22px" : "20px";
+
+  if (!isLarge) {
+    return (
+      <Card
+        hoverable
+        shimmer={shimmer}
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "var(--space-4)",
+          padding: "var(--space-5)",
+        }}
+      >
+        {ikon ? (
+          <div
+            style={{
+              width: iconBoxSize,
+              height: iconBoxSize,
+              flexShrink: 0,
+              borderRadius: "var(--radius-md)",
+              backgroundColor: colors.subtle,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ width: iconSize, height: iconSize, display: "flex", color: colors.solid }}>
+              {ikon}
+            </span>
+          </div>
+        ) : null}
+        <div style={{ minWidth: 0 }}>
+          <p
+            style={{
+              margin: 0,
+              marginBottom: "var(--space-1)",
+              fontSize: "var(--text-xs)",
+              fontWeight: "var(--font-weight-semibold)",
+              color: "var(--color-text-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "var(--tracking-wider)",
+            }}
+          >
+            {label}
+          </p>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "var(--text-2xl)",
+              fontWeight: "var(--font-weight-bold)",
+              fontFamily: "var(--font-mono)",
+              letterSpacing: "var(--tracking-tight)",
+              color: "var(--color-text-primary)",
+            }}
+          >
+            {displayValue}
+          </p>
+          {trend ? (
+            <p
+              style={{
+                margin: 0,
+                marginTop: "var(--space-2)",
+                fontSize: "var(--text-xs)",
+                color: "var(--color-text-muted)",
+              }}
+            >
+              {trend}
+            </p>
+          ) : null}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card
       hoverable
+      shimmer={shimmer}
       style={{
+        padding: "var(--space-5) var(--space-6)",
+        minHeight: "120px",
+        boxSizing: "border-box",
+        borderTop: "1px solid var(--color-border-mid)",
+        borderRight: "1px solid var(--color-border-mid)",
+        borderBottom: "1px solid var(--color-border-mid)",
+        borderLeft: `3px solid ${colors.solid}`,
+        position: "relative",
+        overflow: "hidden",
         display: "flex",
-        alignItems: "flex-start",
-        gap: "var(--space-4)",
-        padding: "var(--space-5)",
+        flexDirection: "column",
+        gap: "var(--space-3)",
       }}
     >
-      {ikon ? (
-        <div
-          style={{
-            width: "40px",
-            height: "40px",
-            flexShrink: 0,
-            borderRadius: "var(--radius-md)",
-            backgroundColor: colors.subtle,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span style={{ width: "20px", height: "20px", display: "flex", color: colors.solid }}>
-            {ikon}
-          </span>
-        </div>
-      ) : null}
-      <div style={{ minWidth: 0 }}>
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: "-20px",
+          right: "-20px",
+          width: "80px",
+          height: "80px",
+          borderRadius: "50%",
+          backgroundColor: colors.solid,
+          opacity: 0.12,
+          filter: "blur(20px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-3)" }}>
+        {ikon ? (
+          <div
+            style={{
+              width: iconBoxSize,
+              height: iconBoxSize,
+              flexShrink: 0,
+              borderRadius: "var(--radius-md)",
+              backgroundColor: colors.subtle,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ width: iconSize, height: iconSize, display: "flex", color: colors.solid }}>
+              {ikon}
+            </span>
+          </div>
+        ) : (
+          <span />
+        )}
         <p
           style={{
             margin: 0,
-            marginBottom: "var(--space-1)",
+            fontSize: valueFontSize ?? "var(--text-2xl)",
+            fontWeight: "var(--font-weight-bold)",
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "-0.02em",
+            color: "var(--color-text-primary)",
+            textAlign: "right",
+          }}
+        >
+          {displayValue}
+        </p>
+      </div>
+
+      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)" }}>
+        <p
+          style={{
+            margin: 0,
             fontSize: "var(--text-xs)",
             fontWeight: "var(--font-weight-semibold)",
             color: "var(--color-text-muted)",
@@ -112,18 +230,21 @@ function MetricCard({ label, nilai, ikon, accent = "primary" }) {
         >
           {label}
         </p>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "var(--text-2xl)",
-            fontWeight: "var(--font-weight-bold)",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "var(--tracking-tight)",
-            color: "var(--color-text-primary)",
-          }}
-        >
-          {displayValue}
-        </p>
+        {trend ? (
+          <span
+            style={{
+              fontSize: "var(--text-2xs)",
+              backgroundColor: colors.subtle,
+              color: colors.solid,
+              padding: "2px 8px",
+              borderRadius: "var(--radius-full)",
+              fontWeight: "var(--font-weight-semibold)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {trend}
+          </span>
+        ) : null}
       </div>
     </Card>
   );

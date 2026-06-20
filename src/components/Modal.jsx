@@ -79,8 +79,15 @@ function Modal({ judul, konten, onTutup }) {
             onMouseLeave={(event) => {
               event.currentTarget.style.backgroundColor = "var(--color-surface-3)";
               event.currentTarget.style.color = "var(--color-text-muted)";
+              event.currentTarget.style.transform = "scale(1)";
             }}
-            onMouseDown={onMouseDown}
+            onMouseDown={(event) => {
+              event.currentTarget.style.transform = "scale(0.97)";
+              onMouseDown(event);
+            }}
+            onMouseUp={(event) => {
+              event.currentTarget.style.transform = "scale(1)";
+            }}
           >
             ×
             {ripples.map((ripple) => (

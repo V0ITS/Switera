@@ -113,3 +113,44 @@ export function SkeletonStatCard({ accent = "var(--color-border)" }) {
     </div>
   );
 }
+
+function Skeleton({ type = "card", rows = 5 }) {
+  if (type === "card") {
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-4)" }}>
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="skeleton" style={{ height: "100px", borderRadius: "var(--radius-lg)" }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "table") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+        <div className="skeleton" style={{ height: "44px", borderRadius: "var(--radius-sm)" }} />
+        {Array.from({ length: rows }).map((_, index) => (
+          <div key={index} className="skeleton" style={{ height: "44px", borderRadius: "var(--radius-sm)" }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "chart") {
+    return <div className="skeleton" style={{ height: "200px", borderRadius: "var(--radius-lg)" }} />;
+  }
+
+  if (type === "text") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+        {["100%", "85%", "70%"].map((width, index) => (
+          <div key={index} className="skeleton" style={{ height: "12px", width, borderRadius: "var(--radius-xs)" }} />
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+export default Skeleton;

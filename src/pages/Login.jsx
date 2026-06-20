@@ -22,8 +22,9 @@ const inputBaseStyle = {
   color: "var(--color-text-primary)",
   fontFamily: "var(--font-body)",
   fontSize: "var(--text-sm)",
-  padding: "10px 40px 10px 14px",
+  padding: "10px 44px 10px 14px",
   outline: "none",
+  WebkitAppearance: "none",
   transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
 };
 
@@ -61,7 +62,7 @@ function IkonOrang() {
   );
 }
 
-function IkonMata() {
+function IkonMata({ crossed }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -71,6 +72,9 @@ function IkonMata() {
         strokeLinejoin="round"
       />
       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+      {crossed ? (
+        <path d="M4 4L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      ) : null}
     </svg>
   );
 }
@@ -93,7 +97,16 @@ function TombolClose({ onClick }) {
       type="button"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={(event) => {
+        setHovered(false);
+        event.currentTarget.style.transform = "scale(1)";
+      }}
+      onMouseDown={(event) => {
+        event.currentTarget.style.transform = "scale(0.97)";
+      }}
+      onMouseUp={(event) => {
+        event.currentTarget.style.transform = "scale(1)";
+      }}
       aria-label="Tutup"
       style={{
         position: "absolute",
@@ -141,7 +154,16 @@ function RolePills({ selectedRole, onSelectRole }) {
             key={role}
             type="button"
             onClick={() => onSelectRole(role)}
-            onMouseDown={(event) => onMouseDown(event, role)}
+            onMouseDown={(event) => {
+              event.currentTarget.style.transform = "scale(0.97)";
+              onMouseDown(event, role);
+            }}
+            onMouseUp={(event) => {
+              event.currentTarget.style.transform = "scale(1)";
+            }}
+            onMouseLeave={(event) => {
+              event.currentTarget.style.transform = "scale(1)";
+            }}
             style={{
               position: "relative",
               overflow: "hidden",
@@ -251,6 +273,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
 
     const { password: _password, ...userAktif } = akun;
     store.setUserAktif(userAktif);
+    onNavigate?.("/dashboard");
   };
 
   const handleDaftarClick = () => {
@@ -273,6 +296,12 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           .auth-input::placeholder {
             color: var(--color-text-disabled);
           }
+
+          input[type="password"]::-ms-reveal,
+          input[type="password"]::-ms-clear,
+          input[type="password"]::-webkit-credentials-auto-fill-button {
+            display: none;
+          }
         `}
       </style>
       <div
@@ -281,9 +310,9 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           inset: 0,
           zIndex: "var(--z-modal)",
           backgroundImage:
-            "linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(8,30,18,0.85) 100%), url('/images/sawit-bg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+            "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%), linear-gradient(90deg, rgba(8,20,14,0.6) 0%, transparent 60%), url('/images/sawit-bg.jpg')",
+          backgroundSize: "cover, cover, cover",
+          backgroundPosition: "center, center, center",
           backgroundColor: "var(--color-bg)",
           display: "flex",
           alignItems: "center",
@@ -293,18 +322,32 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           overflowY: "auto",
         }}
       >
+        <span
+          style={{
+            position: "absolute",
+            bottom: "var(--space-6)",
+            left: "var(--space-8)",
+            fontSize: "var(--text-xs)",
+            color: "rgba(255,255,255,0.25)",
+          }}
+        >
+          © Switera 2026
+        </span>
+
         <form
           onSubmit={handleSubmit}
           style={{
             position: "relative",
             width: "min(420px, 90vw)",
             boxSizing: "border-box",
-            backgroundColor: "rgba(15,15,15,0.85)",
-            backdropFilter: "blur(24px) saturate(180%)",
-            WebkitBackdropFilter: "blur(24px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: "rgba(13,13,13,0.75)",
+            backdropFilter: "blur(20px) saturate(160%)",
+            WebkitBackdropFilter: "blur(20px) saturate(160%)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderTop: "1px solid rgba(255,255,255,0.12)",
             borderRadius: "var(--radius-xl)",
-            boxShadow: "var(--shadow-xl), inset 0 1px 0 rgba(255,255,255,0.05)",
+            boxShadow:
+              "var(--shadow-xl), 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
             padding: "var(--space-10)",
             animation: "authCardIn 300ms var(--ease-bounce) both",
           }}
@@ -402,7 +445,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                   clickable
                   onClick={() => setShowPassword((value) => !value)}
                 >
-                  <IkonMata />
+                  <IkonMata crossed={showPassword} />
                 </FieldIcon>
               </span>
             </label>
@@ -458,7 +501,13 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
 
           <button
             type="submit"
-            onMouseDown={submitRipple.onMouseDown}
+            onMouseDown={(event) => {
+              event.currentTarget.style.transform = "scale(0.97)";
+              submitRipple.onMouseDown(event);
+            }}
+            onMouseUp={(event) => {
+              event.currentTarget.style.transform = "scale(1)";
+            }}
             style={{
               position: "relative",
               overflow: "hidden",
@@ -481,6 +530,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             onMouseLeave={(event) => {
               event.currentTarget.style.backgroundColor = "var(--color-primary)";
               event.currentTarget.style.boxShadow = "none";
+              event.currentTarget.style.transform = "scale(1)";
             }}
           >
             Masuk
@@ -499,7 +549,13 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             <button
               type="button"
               onClick={handleDaftarClick}
-              onMouseDown={linkRipple.onMouseDown}
+              onMouseDown={(event) => {
+                event.currentTarget.style.transform = "scale(0.97)";
+                linkRipple.onMouseDown(event);
+              }}
+              onMouseUp={(event) => {
+                event.currentTarget.style.transform = "scale(1)";
+              }}
               style={{
                 position: "relative",
                 overflow: "hidden",
@@ -518,6 +574,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
               }}
               onMouseLeave={(event) => {
                 event.currentTarget.style.textDecoration = "none";
+                event.currentTarget.style.transform = "scale(1)";
               }}
             >
               Daftar
