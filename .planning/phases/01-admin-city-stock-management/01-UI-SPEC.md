@@ -159,6 +159,8 @@ These are not in the standard template but are necessary contract details given 
 | `kapasitas` | Kapasitas (ton) | `numeric: true`, mono font, sortable |
 | (action column via `aksi` prop) | Aksi | Edit (`aksi-btn-edit`) + Hapus (`aksi-btn-delete`), same as `AksiTabelButtons` pattern in `ManajemenData.jsx:23-57` |
 
+**Accessible labels for row actions (Dimension 2 follow-up):** Both action buttons MUST keep the existing visible-text-label pattern from `ManajemenData.jsx:23-57` — `<span aria-hidden="true">✎</span> Edit` and `<span aria-hidden="true">🗑</span> Hapus`. The icon glyph is decorative (`aria-hidden="true"`); the visible "Edit"/"Hapus" text IS the accessible label — do not collapse these into icon-only buttons.
+
 **New icon required:** `Layout.jsx`'s `IkonMenu` switch (lines 114-204) has no existing case for a "city" concept. Add a new case `"city"` (simple two-stroke building/pin glyph, `strokeWidth="1.5"`, same `iconStyle` sizing as all other cases) and reference it as `{ key: "manajemen-kota", label: "Manajemen Kota", icon: "city" }` in `menuByRole.Admin` (`src/utils/navigation.js:8-13`). Do not reuse the `"database"` icon (already used by "Manajemen Data" — would be visually ambiguous between the two Admin menu items).
 
 **Form validation rendering:** Follow the `validate(form) -> {field: message}` pattern exactly as in `InputData.jsx`/`ManajemenData.jsx` — errors computed on every `handleChange` and re-checked before submit, rendered as a `<p style={errorStyle}>` directly under the offending field (never a toast for field-level validation; toasts are reserved for post-mutation success/failure feedback per D-05).
