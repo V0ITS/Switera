@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import useRipple from "../hooks/useRipple";
 import Login from "./Login";
 import Register from "./Register";
@@ -981,6 +981,10 @@ function Landing({ onNavigate }) {
             .landing-nav-links {
               display: none;
             }
+
+            .landing-cara-kerja-connector {
+              display: none;
+            }
           }
 
           @media (max-width: 480px) {
@@ -1365,14 +1369,13 @@ function Landing({ onNavigate }) {
             </div>
           </Reveal>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: "var(--space-6)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", flexWrap: "wrap" }}>
             {LANGKAH_LIST.map((langkah, index) => (
-              <Reveal
-                key={langkah.nomor}
-                delay={index * 80}
-                style={{ display: "flex", alignItems: "flex-start", flex: 1 }}
-              >
-                <div style={{ flex: 1, maxWidth: "280px", textAlign: "center", margin: "0 auto" }}>
+              <Fragment key={langkah.nomor}>
+                <Reveal
+                  delay={index * 80}
+                  style={{ flex: "0 1 220px", maxWidth: "220px", textAlign: "center" }}
+                >
                   <div
                     style={{
                       width: 48,
@@ -1413,14 +1416,16 @@ function Landing({ onNavigate }) {
                   >
                     {langkah.deskripsi}
                   </p>
-                </div>
+                </Reveal>
 
                 {index < LANGKAH_LIST.length - 1 ? (
                   <div
                     aria-hidden="true"
+                    className="landing-cara-kerja-connector"
                     style={{
-                      flex: 1,
-                      minWidth: "32px",
+                      flex: "1 1 40px",
+                      minWidth: "24px",
+                      maxWidth: "100px",
                       height: 0,
                       marginTop: "24px",
                       borderTop: "1px solid var(--color-border-mid)",
@@ -1428,7 +1433,7 @@ function Landing({ onNavigate }) {
                     }}
                   />
                 ) : null}
-              </Reveal>
+              </Fragment>
             ))}
           </div>
         </div>
