@@ -31,7 +31,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Admin can edit an existing city's name and capacity, and the change is reflected immediately everywhere that city is referenced
   4. Admin can delete a city, and if that city is already referenced by existing requests/decisions, the app takes an explicit, deliberate action (block, warn, or cascade) rather than leaving a silent dangling reference
   5. Admin can view and update the current TBS stock value, and the change is immediately visible to the recommendation engine and other pages that read it
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Reachable Admin-only Manajemen Kota page: route/nav/icon registration, city list table (ADMIN-01), TBS stock summary card (ADMIN-05 read)
+- [ ] 01-02-PLAN.md — Add city with inline validation + duplicate-name inline error (ADMIN-02, ADMIN-06), capacity edit, TBS stock editor (ADMIN-05 write)
+- [ ] 01-03-PLAN.md — Store cascade-rename (D-02) + block-delete (D-01) and delete/rename UI (ADMIN-03 rename, ADMIN-04)
 
 ### Phase 2: Role-Differentiated Reporting
 **Goal**: Laporan shows materially different, role-appropriate data instead of an identical report with a relabeled heading
@@ -88,7 +91,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Admin City & Stock Management | 0/TBD | Not started | - |
+| 1. Admin City & Stock Management | 0/3 | Not started | - |
 | 2. Role-Differentiated Reporting | 0/TBD | Not started | - |
 | 3. Validation & Edge-Case Completion | 0/TBD | Not started | - |
 | 4. Auth & Landing Design-System Unification | 0/TBD | Not started | - |
