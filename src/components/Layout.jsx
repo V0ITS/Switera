@@ -149,6 +149,13 @@ function IkonMenu({ type, color }) {
           <path d="M16 16V13" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       );
+    case "city":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" style={iconStyle}>
+          <path d="M5 20V9L12 4L19 9V20H5Z" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M10 20V14H14V20" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      );
     case "decision":
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true" style={iconStyle}>

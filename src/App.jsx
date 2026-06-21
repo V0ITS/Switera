@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import InputData from "./pages/InputData";
 import ManajemenData from "./pages/ManajemenData";
+import ManajemenKota from "./pages/ManajemenKota";
 import AnalisisRanking from "./pages/AnalisisRanking";
 import KeputusanDistribusi from "./pages/KeputusanDistribusi";
 import StatusDistribusi from "./pages/StatusDistribusi";
@@ -19,6 +20,7 @@ const pageRegistry = {
   dashboard: Dashboard,
   "input-data": InputData,
   "manajemen-data": ManajemenData,
+  "manajemen-kota": ManajemenKota,
   "analisis-ranking": AnalisisRanking,
   "keputusan-distribusi": KeputusanDistribusi,
   "status-distribusi": StatusDistribusi,
@@ -30,6 +32,7 @@ const pathByPage = {
   dashboard: "/dashboard",
   "input-data": "/input-data",
   "manajemen-data": "/manajemen-data",
+  "manajemen-kota": "/manajemen-kota",
   "analisis-ranking": "/analisis-ranking",
   "keputusan-distribusi": "/keputusan-distribusi",
   "status-distribusi": "/status-distribusi",
