@@ -904,6 +904,7 @@ function Landing({ onNavigate }) {
 
   return (
     <div
+      className="landing-page"
       style={{
         fontFamily: "var(--font-body)",
         color: "var(--color-text-primary)",
@@ -979,6 +980,14 @@ function Landing({ onNavigate }) {
           @media (max-width: 720px) {
             .landing-nav-links {
               display: none;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .landing-page section,
+            .landing-page header {
+              padding-left: 20px !important;
+              padding-right: 20px !important;
             }
           }
         `}
@@ -1081,7 +1090,7 @@ function Landing({ onNavigate }) {
       >
         <HeroGlow />
 
-        <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <span
             style={{
               display: "inline-flex",
@@ -1103,9 +1112,11 @@ function Landing({ onNavigate }) {
 
           <h1
             style={{
+              width: "100%",
+              boxSizing: "border-box",
               margin: "0 auto 16px",
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(2.8rem, 6vw, 5rem)",
+              fontSize: "clamp(1.9rem, 8vw, 5rem)",
               fontWeight: "var(--font-weight-bold)",
               letterSpacing: "-0.04em",
               lineHeight: "1.08",
@@ -1124,8 +1135,8 @@ function Landing({ onNavigate }) {
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
                 display: "inline-block",
-                paddingRight: "4px",
-                marginRight: "-4px",
+                paddingRight: "0.18em",
+                marginRight: "-0.18em",
               }}
             >
               Akurat
@@ -1134,6 +1145,8 @@ function Landing({ onNavigate }) {
 
           <p
             style={{
+              width: "100%",
+              boxSizing: "border-box",
               fontSize: "17px",
               color: "rgba(255,255,255,0.45)",
               maxWidth: "480px",
