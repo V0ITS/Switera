@@ -10,11 +10,11 @@ Requirements for this completion/polish milestone. Each maps to roadmap phases.
 ### Admin City & Stock Management
 
 - [x] **ADMIN-01**: Admin can view a list of all cities with their TBS capacity
-- [ ] **ADMIN-02**: Admin can add a new city with a name and capacity, via a form with inline validation
-- [ ] **ADMIN-03**: Admin can edit an existing city's name and capacity
-- [ ] **ADMIN-04**: Admin can delete a city, with an explicit, deliberate behavior (block/warn/cascade) for cities already referenced by existing requests or decisions — not a silent gap
+- [x] **ADMIN-02**: Admin can add a new city with a name and capacity, via a form with inline validation
+- [x] **ADMIN-03**: Admin can edit an existing city's name and capacity
+- [x] **ADMIN-04**: Admin can delete a city, with an explicit, deliberate behavior (block/warn/cascade) for cities already referenced by existing requests or decisions — not a silent gap
 - [x] **ADMIN-05**: Admin can view and update the current TBS stock value
-- [ ] **ADMIN-06**: Adding a duplicate city name shows an inline error instead of failing silently or crashing
+- [x] **ADMIN-06**: Adding a duplicate city name shows an inline error instead of failing silently or crashing
 
 ### Role-Differentiated Reporting
 
@@ -72,11 +72,11 @@ Populated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | ADMIN-01 | Phase 1 | Complete |
-| ADMIN-02 | Phase 1 | Pending |
-| ADMIN-03 | Phase 1 | Pending |
-| ADMIN-04 | Phase 1 | Pending |
+| ADMIN-02 | Phase 1 | Complete |
+| ADMIN-03 | Phase 1 | Complete |
+| ADMIN-04 | Phase 1 | Complete |
 | ADMIN-05 | Phase 1 | Complete |
-| ADMIN-06 | Phase 1 | Pending |
+| ADMIN-06 | Phase 1 | Complete |
 | REPORT-01 | Phase 2 | Pending |
 | REPORT-02 | Phase 2 | Pending |
 | REPORT-03 | Phase 2 | Pending |
