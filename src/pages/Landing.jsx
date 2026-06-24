@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import useRipple from "../hooks/useRipple";
 import Login from "./Login";
 import Register from "./Register";
 import PetaGeografis from "../components/PetaGeografis";
 import IkonDaun from "../components/IkonDaun";
+import Tombol from "../components/Tombol";
 import store from "../store";
 import { aggregatePermintaanRanking } from "../utils/distribusi";
 
@@ -249,17 +249,6 @@ function FiturIcon({ type, size = 20 }) {
   }
 }
 
-function RippleSpans({ ripples, removeRipple }) {
-  return ripples.map((ripple) => (
-    <span
-      key={ripple.id}
-      className="ripple-span"
-      style={{ left: ripple.x, top: ripple.y, width: ripple.size, height: ripple.size }}
-      onAnimationEnd={() => removeRipple(ripple.id)}
-    />
-  ));
-}
-
 function StatIcon({ type }) {
   const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", "aria-hidden": true };
   const stroke = "var(--color-primary)";
@@ -367,29 +356,6 @@ function FaqItem({ pertanyaan, jawaban, isOpen, onToggle }) {
         </p>
       </div>
     </div>
-  );
-}
-
-const SIZE_STYLES = {
-  sm: { padding: "7px 16px", fontSize: "var(--text-xs)" },
-  md: { padding: "11px 24px", fontSize: "var(--text-sm)" },
-};
-
-function LandingButton({ label, onClick, tone = "primer", size = "md", iconRight, style }) {
-  const { ripples, onMouseDown, removeRipple } = useRipple();
-
-  return (
-    <button
-      type="button"
-      className={`landing-btn landing-btn-${tone}`}
-      onClick={onClick}
-      onMouseDown={onMouseDown}
-      style={{ ...SIZE_STYLES[size], ...style }}
-    >
-      {label}
-      {iconRight}
-      <RippleSpans ripples={ripples} removeRipple={removeRipple} />
-    </button>
   );
 }
 
@@ -1049,8 +1015,18 @@ function Landing({ onNavigate }) {
         </nav>
 
         <div style={{ display: "flex", gap: "var(--space-2)", flexShrink: 0, flex: 1, justifyContent: "flex-end" }}>
-          <LandingButton label="Masuk" tone="ghost" size="sm" onClick={openLogin} />
-          <LandingButton label="Daftar" tone="primer" size="sm" onClick={openRegister} />
+          <Tombol
+            variant="sekunder"
+            label="Masuk"
+            onClick={openLogin}
+            style={{ padding: "7px 16px", fontSize: "var(--text-xs)" }}
+          />
+          <Tombol
+            variant="primer"
+            label="Daftar"
+            onClick={openRegister}
+            style={{ padding: "7px 16px", fontSize: "var(--text-xs)" }}
+          />
         </div>
       </header>
 
@@ -1150,20 +1126,21 @@ function Landing({ onNavigate }) {
               animation: "landingFadeIn 600ms 500ms both",
             }}
           >
-            <LandingButton
+            <Tombol
+              variant="primer"
               label="Mulai Sekarang"
-              tone="primer"
-              size="md"
-              style={{ padding: "10px 22px", fontSize: "14px", borderRadius: "8px" }}
               onClick={openRegister}
+              style={{ padding: "10px 22px", fontSize: "14px", borderRadius: "8px" }}
             />
-            <LandingButton
-              label="Lihat Demo"
-              tone="ghost"
-              size="md"
-              style={{ padding: "10px 16px", fontSize: "14px", fontWeight: 400 }}
-              iconRight={<IkonArrowRight size={13} />}
+            <Tombol
+              variant="sekunder"
               onClick={() => scrollToId("fitur")}
+              style={{ padding: "10px 16px", fontSize: "14px", fontWeight: 400 }}
+              label={
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
+                  Lihat Demo <IkonArrowRight size={13} />
+                </span>
+              }
             />
           </div>
 
@@ -1552,12 +1529,11 @@ function Landing({ onNavigate }) {
               Bergabung dan mulai optimalkan distribusi TBS hari ini.
             </p>
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <LandingButton
+              <Tombol
+                variant="primer"
                 label="Daftar Sekarang"
-                tone="primer"
-                size="md"
-                style={{ padding: "12px 28px", fontSize: "14px" }}
                 onClick={openRegister}
+                style={{ padding: "12px 28px", fontSize: "14px" }}
               />
             </div>
           </div>
