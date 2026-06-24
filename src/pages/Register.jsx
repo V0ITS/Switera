@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import store from "../store";
 import useRipple, { RippleSpans } from "../hooks/useRipple";
 import IkonDaun from "../components/IkonDaun";
+import Tombol from "../components/Tombol";
 import {
   ErrorText,
   FieldIcon,
@@ -25,7 +26,6 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const linkRipple = useRipple();
-  const submitRipple = useRipple();
 
   const goToLogin = () => {
     if (onSwitchToLogin) {
@@ -341,16 +341,13 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
             </label>
           </div>
 
-          <button
+          <Tombol
             type="submit"
-            className="auth-submit-btn"
+            label="Daftar Sekarang"
+            variant="primer"
             disabled={Boolean(successMessage)}
-            onMouseDown={submitRipple.onMouseDown}
-            style={{ marginTop: "var(--space-6)" }}
-          >
-            Daftar Sekarang
-            <RippleSpans ripples={submitRipple.ripples} removeRipple={submitRipple.removeRipple} />
-          </button>
+            style={{ width: "100%", marginTop: "var(--space-6)" }}
+          />
 
           {successMessage ? (
             <p
