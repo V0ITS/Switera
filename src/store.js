@@ -275,6 +275,13 @@ export const store = {
   updateKota(namaLama, { nama, kapasitas }) {
     const namaBaru = nama.trim();
 
+    if (
+      namaBaru !== namaLama &&
+      state.daftarKota.some((kota) => kota.nama === namaBaru)
+    ) {
+      throw new Error("Kota dengan nama tersebut sudah ada.");
+    }
+
     state.daftarKota = state.daftarKota.map((kota) =>
       kota.nama === namaLama ? { nama: namaBaru, kapasitas: Number(kapasitas) || 0 } : kota
     );
