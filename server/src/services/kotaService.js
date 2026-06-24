@@ -22,6 +22,26 @@ export async function getKotaReferenceCounts(nama) {
 }
 
 /**
+ * Creates a new city. Mirrors src/store.js's tambahKota exactly: throws the
+ * same Indonesian duplicate-name message when a city with that name already
+ * exists, otherwise creates the row and returns the refreshed city list.
+ */
+export async function tambahKota({ nama, kapasitas }) {
+  const namaTrim = nama.trim();
+
+  const existing = await prisma.kota.findUnique({ where: { nama: namaTrim } });
+  if (existing) {
+    throw new Error("Kota dengan nama tersebut sudah ada.");
+  }
+
+  await prisma.kota.create({
+    data: { nama: namaTrim, kapasitas: Number(kapasitas) || 0 },
+  });
+
+  return getDaftarKota();
+}
+
+/**
  * Renames a city and cascades the new name across every Permintaan,
  * Keputusan, and RiwayatKeputusan row that referenced the old name.
  * All-or-nothing: wrapped in a single transaction so a mid-cascade failure
