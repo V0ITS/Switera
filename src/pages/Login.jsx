@@ -2,6 +2,7 @@ import { useState } from "react";
 import store from "../store";
 import useRipple, { RippleSpans } from "../hooks/useRipple";
 import IkonDaun from "../components/IkonDaun";
+import Tombol from "../components/Tombol";
 import {
   ErrorText,
   FieldIcon,
@@ -22,7 +23,6 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
   const [focusedField, setFocusedField] = useState("");
   const [errors, setErrors] = useState({});
   const linkRipple = useRipple();
-  const submitRipple = useRipple();
 
   const getInputStyle = (field) => ({
     ...inputBaseStyle,
@@ -303,10 +303,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             </a>
           </div>
 
-          <button type="submit" className="auth-submit-btn" onMouseDown={submitRipple.onMouseDown}>
-            Masuk
-            <RippleSpans ripples={submitRipple.ripples} removeRipple={submitRipple.removeRipple} />
-          </button>
+          <Tombol type="submit" label="Masuk" variant="primer" style={{ width: "100%" }} />
 
           <p
             style={{
