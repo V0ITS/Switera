@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-06-24T12:16:46.246Z"
 last_activity: 2026-06-24
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-24)
 
 **Core value:** The app must feel complete and trustworthy end-to-end for every role — every page works, every action persists and reflects instantly, and nothing looks unfinished or inconsistent.
-**Current focus:** Milestone v2.0 (Backend & Multi-User Migration) — defining requirements and roadmap
+**Current focus:** Milestone v2.0 (Backend & Multi-User Migration) — roadmap created, ready to plan Phase 6
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 6 of 10 (Backend Skeleton & Data Model) — not yet planned
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-24 — Milestone v2.0 started
+Status: Roadmap created, ready to plan
+Last activity: 2026-06-24 — ROADMAP.md created for v2.0 (Phases 6-10), 17/17 requirements mapped
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -44,6 +46,8 @@ Last activity: 2026-06-24 — Milestone v2.0 started
 | 1 | 3 | - | - |
 | 2 | 1 | - | - |
 | 3 | 2 | - | - |
+| 4 | 2 | - | - |
+| 5 | 1 | - | - |
 
 **Recent Trend:**
 
@@ -51,18 +55,15 @@ Last activity: 2026-06-24 — Milestone v2.0 started
 - Trend: -
 
 *Updated after each plan completion*
-| Phase 01 P01 | 4min | 2 tasks | 4 files |
-| Phase 02 P01 | 18min | 2 tasks | 1 file |
-| Phase 03 P01 | 16min | 2 tasks | 3 files |
-| Phase 04 P01 | ~10min | 2 tasks | 2 files |
-| Phase 04 P02 | ~25min | 4 tasks | 1 file |
-| Phase 05 P01 | ~45min | 4 tasks | 4 files |
 
 ## Accumulated Context
 
 ### Decisions
 
-Full decision log for v1.0 is in `.planning/PROJECT.md` Key Decisions table, `.planning/RETROSPECTIVE.md`, and `.planning/milestones/v1.0-ROADMAP.md`. Cleared here at milestone close — starts fresh for the next milestone.
+Full decision log for v1.0 is in `.planning/PROJECT.md` Key Decisions table, `.planning/RETROSPECTIVE.md`, and `.planning/milestones/v1.0-ROADMAP.md`.
+
+- Phase 6-10 roadmap: 5-phase structure adopted as-recommended from `.planning/research/SUMMARY.md` (Backend Skeleton → Auth → Domain CRUD → Frontend Integration → Multi-Client Sync), backend-before-frontend sequencing to keep frontend risk at zero until the API is proven via curl/Postman.
+- Stack: Express 5.x + Prisma 6.x (pinned, not 7.x) + PostgreSQL + jsonwebtoken + bcryptjs — see PROJECT.md Key Decisions.
 
 ### Pending Todos
 
@@ -70,12 +71,12 @@ None yet.
 
 ### Blockers/Concerns
 
-Carried forward from v1.0 close (still open, relevant to next milestone):
+Carried forward from v1.0 close (still open, relevant to this milestone):
 
-- Backend migration is the planned next milestone — real backend (Node.js/Express/PostgreSQL recommended), server-side auth (bcrypt/JWT), and genuine multi-user concurrent support are all currently in `PROJECT.md`'s Out of Scope, to be moved to Active when the next milestone is scoped.
-- DESIGN-04/Phase 5's "no visual regression" claims were verified structurally, not pixel-confirmed in a real browser (no `chromium-cli`/Playwright available). Recommend one manual browser pass over Landing/Login/Register/Dashboard/ManajemenKota/KeputusanDistribusi before building further UI on top.
-- v2 candidate: Login.jsx's "Lupa Password?" and "Ingat saya" controls remain non-functional by deliberate decision — revisit once a real backend exists (the former needs server-side infra; the latter needs real session-expiry logic).
-- v2 deferred: TEST-01 (automated tests for `distribusi.js`/`forecast.js`) and SEC-01 (CSV injection review for user-entered city names) — see `.planning/milestones/v1.0-REQUIREMENTS.md` for original context.
+- DESIGN-04/Phase 5's "no visual regression" claims were verified structurally, not pixel-confirmed in a real browser (no `chromium-cli`/Playwright available). Recommend one manual browser pass before Phase 9 (frontend integration) ships, to isolate "looks different because of network changes" from "looks different because of unverified v1.0 regressions."
+- v2 candidate: Login.jsx's "Lupa Password?" control remains non-functional by deliberate decision — now technically unblocked by a real backend existing post-v2.0, but still out of scope for this milestone per REQUIREMENTS.md.
+- v2 deferred: TEST-01 (automated tests for `distribusi.js`/`forecast.js` and new backend services) and SEC-01 (CSV injection review for user-entered city names) — both explicitly listed in REQUIREMENTS.md v2 Requirements.
+- Research flags open decisions to settle during phase planning: refresh-token strategy is deliberately deferred (AUTH-04 ships single-token re-login only, no refresh flow — AUTH-05/06 are v2); concurrency-control mechanism for decision approval (DB unique constraint vs. Prisma interactive transaction) needs to be finalized during Phase 8 planning, not assumed.
 
 ### Quick Tasks Completed
 
@@ -89,14 +90,17 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none — first milestone)* | | | |
+| Quality Infra | TEST-01 (automated tests for distribusi.js/forecast.js + backend services) | Deferred to v2 Requirements | v1.0 close |
+| Quality Infra | SEC-01 (CSV injection review for user-entered city names) | Deferred to v2 Requirements | v1.0 close |
+| Auth | AUTH-05/AUTH-06 (refresh-token flow + rotation with reuse detection) | Deferred to v2 Requirements | v2.0 requirements definition |
+| Sync | SYNC-02 (WebSocket/SSE real-time push) | Deferred to v2 Requirements | v2.0 requirements definition |
 
 ## Session Continuity
 
-Last session: 2026-06-24T20:00:00.000Z
-Stopped at: Completed 05-01-PLAN.md — v1.0 milestone fully complete
+Last session: 2026-06-24T12:16:46.246Z
+Stopped at: ROADMAP.md created for v2.0 — Phases 6-10 defined, 17/17 requirements mapped, REQUIREMENTS.md traceability updated
 Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Run `/gsd-plan-phase 6` to begin detailed planning for Phase 6 (Backend Skeleton & Data Model)

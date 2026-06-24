@@ -78,34 +78,32 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Populated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| API-01 | TBD | Pending |
-| API-02 | TBD | Pending |
-| API-03 | TBD | Pending |
-| LOGIC-01 | TBD | Pending |
-| LOGIC-02 | TBD | Pending |
-| LOGIC-03 | TBD | Pending |
-| FE-01 | TBD | Pending |
-| FE-02 | TBD | Pending |
-| FE-03 | TBD | Pending |
-| SYNC-01 | TBD | Pending |
+| DATA-01 | Phase 6 | Pending |
+| DATA-02 | Phase 6 | Pending |
+| DATA-03 | Phase 6 | Pending |
+| AUTH-01 | Phase 7 | Pending |
+| AUTH-02 | Phase 7 | Pending |
+| AUTH-03 | Phase 7 | Pending |
+| AUTH-04 | Phase 7 | Pending |
+| API-01 | Phase 8 | Pending |
+| API-02 | Phase 8 | Pending |
+| API-03 | Phase 8 | Pending |
+| LOGIC-01 | Phase 8 | Pending |
+| LOGIC-02 | Phase 8 | Pending |
+| LOGIC-03 | Phase 8 | Pending |
+| FE-01 | Phase 9 | Pending |
+| FE-02 | Phase 9 | Pending |
+| FE-03 | Phase 9 | Pending |
+| SYNC-01 | Phase 10 | Pending |
 
 **Coverage:**
 
 - v1 requirements: 17 total
-- Mapped to phases: 0/17 (pending roadmap creation)
-- Unmapped: 17 ⚠️ (expected — roadmap not yet created)
+- Mapped to phases: 17/17 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-24*
-*Last updated: 2026-06-24 after research-informed requirements definition*
+*Last updated: 2026-06-24 after roadmap creation for Milestone v2.0 (Phases 6-10)*
