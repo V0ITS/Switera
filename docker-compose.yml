@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      # Local-dev default only — not for production use.
+      POSTGRES_USER: switera
+      POSTGRES_PASSWORD: switera_dev_password
+      POSTGRES_DB: switera
+    ports:
+      - "5432:5432"
+    volumes:
+      - switera_pgdata:/var/lib/postgresql/data
+
+volumes:
+  switera_pgdata:
