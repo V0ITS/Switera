@@ -55,10 +55,18 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
     const akun = store.cariAkun(username, password, role);
 
     if (!akun) {
-      setErrors({
-        username: "Username tidak ditemukan.",
-        password: "Password salah untuk akun ini.",
-      });
+      const normalizedUsername = username.trim();
+      const akunByUsername = store
+        .getDaftarAkun()
+        .find((item) => item.username === normalizedUsername);
+
+      if (!akunByUsername) {
+        setErrors({ username: "Username tidak ditemukan." });
+      } else if (akunByUsername.password !== password) {
+        setErrors({ password: "Password salah untuk akun ini." });
+      } else {
+        setErrors({ role: "Role tidak sesuai untuk akun ini." });
+      }
       return;
     }
 
