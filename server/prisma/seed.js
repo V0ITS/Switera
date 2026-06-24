@@ -51,6 +51,10 @@ const kotaSeed = [
   { nama: "Rokan Hilir", kapasitas: 140 },
 ];
 
+// Legacy stokTbsSeed value from src/store.js line 40, left unmodeled in
+// Phase 6 — now seeded into the Stok singleton row (Phase 8).
+const stokTbsSeed = 150;
+
 const prisma = new PrismaClient();
 
 // cost factor 10: standard bcryptjs default, sufficient for school-project scale
@@ -65,6 +69,15 @@ async function seedKota() {
     });
   }
   console.log(`Seeded Kota: ${kotaSeed.length} rows`);
+}
+
+async function seedStok() {
+  await prisma.stok.upsert({
+    where: { id: "singleton" },
+    update: { stokTbs: stokTbsSeed },
+    create: { id: "singleton", stokTbs: stokTbsSeed },
+  });
+  console.log(`Seeded Stok: singleton row (stokTbs=${stokTbsSeed})`);
 }
 
 async function seedAkun() {
@@ -179,6 +192,7 @@ async function seedActivityLog() {
 async function main() {
   // Kota first — required before Permintaan/Keputusan/RiwayatKeputusan due to FK constraints.
   await seedKota();
+  await seedStok();
   await seedAkun();
   await seedPermintaan();
   await seedKeputusanAndRiwayat();

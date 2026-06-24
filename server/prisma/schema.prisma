@@ -86,3 +86,11 @@ model Notifikasi {
   dibaca Boolean  @default(false)
   waktu  DateTime @default(now())
 }
+
+// Singleton settings row holding the current TBS stock value. Fixed id
+// ("singleton") enforces there is ever only one row — the canonical home
+// for the value src/store.js keeps in state.stokTbs (getStokTbs/setStokTbs).
+model Stok {
+  id      String @id @default("singleton")
+  stokTbs Int
+}
