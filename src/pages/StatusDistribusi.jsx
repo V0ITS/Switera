@@ -26,6 +26,9 @@ function StatusDistribusi({ onNavigate }) {
   const [armada, setArmada] = useState("");
   const [eta, setEta] = useState("");
   const [isSelectFocused, setIsSelectFocused] = useState(false);
+  const [modalErrors, setModalErrors] = useState({});
+
+  const errorStyle = { margin: "6px 0 0", color: "var(--color-danger)", fontSize: "0.85rem", lineHeight: 1.5 };
 
   useEffect(() => {
     const unsubscribe = store.subscribe((nextSnapshot) => {
@@ -64,14 +67,37 @@ function StatusDistribusi({ onNavigate }) {
   }));
 
   const openStatusModal = (item) => {
+    setModalErrors({});
     setSelectedKeputusan(item);
     setSelectedStatus(item.status);
     setArmada(item.armada ?? "");
     setEta(item.eta ?? "");
   };
 
+  const validateModalForm = () => {
+    const nextErrors = {};
+
+    if (selectedStatus === "dalam-pengiriman") {
+      if (!armada.trim()) {
+        nextErrors.armada = "Armada / Sopir wajib diisi saat status Dalam Pengiriman.";
+      }
+      if (!eta) {
+        nextErrors.eta = "Estimasi Tiba (ETA) wajib dipilih saat status Dalam Pengiriman.";
+      }
+    }
+
+    return nextErrors;
+  };
+
   const saveStatus = () => {
     if (!selectedKeputusan) {
+      return;
+    }
+
+    const nextErrors = validateModalForm();
+    setModalErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
@@ -82,6 +108,7 @@ function StatusDistribusi({ onNavigate }) {
     }
 
     store.updateKeputusan(selectedKeputusan.id, updates);
+    setModalErrors({});
     setSelectedKeputusan(null);
   };
 
@@ -183,7 +210,10 @@ function StatusDistribusi({ onNavigate }) {
               <select
                 aria-label="Pilih status terbaru"
                 value={selectedStatus}
-                onChange={(event) => setSelectedStatus(event.target.value)}
+                onChange={(event) => {
+                  setSelectedStatus(event.target.value);
+                  setModalErrors({});
+                }}
                 onFocus={() => setIsSelectFocused(true)}
                 onBlur={() => setIsSelectFocused(false)}
                 style={{
@@ -216,7 +246,10 @@ function StatusDistribusi({ onNavigate }) {
                     <input
                       type="text"
                       value={armada}
-                      onChange={(event) => setArmada(event.target.value)}
+                      onChange={(event) => {
+                        setArmada(event.target.value);
+                        setModalErrors({ ...modalErrors, armada: undefined });
+                      }}
                       placeholder="Contoh: Truk B-1234-XY / Andi"
                       style={{
                         width: "100%",
@@ -231,6 +264,7 @@ function StatusDistribusi({ onNavigate }) {
                         boxSizing: "border-box",
                       }}
                     />
+                    {modalErrors.armada ? <p style={errorStyle}>{modalErrors.armada}</p> : null}
                   </label>
                   <label style={{ display: "block" }}>
                     <span style={{ display: "block", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)", marginBottom: "4px" }}>
@@ -239,7 +273,10 @@ function StatusDistribusi({ onNavigate }) {
                     <input
                       type="date"
                       value={eta}
-                      onChange={(event) => setEta(event.target.value)}
+                      onChange={(event) => {
+                        setEta(event.target.value);
+                        setModalErrors({ ...modalErrors, eta: undefined });
+                      }}
                       style={{
                         width: "100%",
                         border: "1px solid var(--color-border)",
@@ -253,6 +290,7 @@ function StatusDistribusi({ onNavigate }) {
                         boxSizing: "border-box",
                       }}
                     />
+                    {modalErrors.eta ? <p style={errorStyle}>{modalErrors.eta}</p> : null}
                   </label>
                 </div>
               ) : null}
