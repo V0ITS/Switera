@@ -51,6 +51,18 @@ function KeputusanDistribusi({ onNavigate }) {
       return;
     }
 
+    const existingDecision = (snapshot.keputusan ?? []).find(
+      (item) => item.kota_tujuan === targetKota.kota && item.status !== "selesai"
+    );
+
+    if (existingDecision) {
+      showToast({
+        type: "warning",
+        message: `Kota ${targetKota.kota} sudah memiliki keputusan distribusi aktif.`,
+      });
+      return;
+    }
+
     store.addKeputusan({
       kota_tujuan: targetKota.kota,
       volume_tbs: targetKota.alokasi,
