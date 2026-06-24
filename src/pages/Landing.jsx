@@ -4,6 +4,7 @@ import Register from "./Register";
 import PetaGeografis from "../components/PetaGeografis";
 import IkonDaun from "../components/IkonDaun";
 import Tombol from "../components/Tombol";
+import Card from "../components/Card";
 import store from "../store";
 import { aggregatePermintaanRanking } from "../utils/distribusi";
 
@@ -552,9 +553,8 @@ function MockupDashboard() {
 
 function VisualCardShell({ children, icon }) {
   return (
-    <div
+    <Card
       style={{
-        backgroundColor: "var(--color-surface)",
         border: "1px solid var(--color-border-mid)",
         borderRadius: "14px",
         padding: "28px",
@@ -585,7 +585,7 @@ function VisualCardShell({ children, icon }) {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         {children}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -1412,16 +1412,17 @@ function Landing({ onNavigate }) {
           </Reveal>
 
           <Reveal delay={100}>
-            <div
+            <Card
               style={{
                 border: "1px solid var(--color-border-mid)",
                 borderRadius: "14px",
                 overflow: "hidden",
                 boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+                padding: 0,
               }}
             >
               <PetaGeografis ranking={rankingDemo} daftarKota={daftarKotaDemo} />
-            </div>
+            </Card>
           </Reveal>
         </div>
       </section>
