@@ -51,13 +51,20 @@ const normalizePermintaanEntry = (entry) => ({
 });
 const normalizePermintaanList = (items) => items.map(normalizePermintaanEntry);
 const getNextId = (items, prefix) => {
-  const nextNumber =
+  const existingIds = new Set(items.map((item) => String(item.id)));
+  let nextNumber =
     items.reduce((maxValue, item) => {
       const numericId = Number(String(item.id).replace(/\D/g, ""));
       return Number.isNaN(numericId) ? maxValue : Math.max(maxValue, numericId);
     }, 0) + 1;
 
-  return `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  let candidate = `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  while (existingIds.has(candidate)) {
+    nextNumber += 1;
+    candidate = `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  }
+
+  return candidate;
 };
 
 const STORAGE_KEY = "switera_state_v1";
