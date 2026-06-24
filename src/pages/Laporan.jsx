@@ -357,6 +357,9 @@ function Laporan({ onNavigate }) {
   const statusCounts = useMemo(() => {
     const counts = { menunggu: 0, "dalam-pengiriman": 0, selesai: 0 };
     filteredKeputusan.forEach((item) => {
+      // keputusan never contains "dibatalkan" — removeKeputusan() strips
+      // cancelled entries out of state.keputusan (see store.js removeKeputusan).
+      // Any other unrecognized status is intentionally excluded from the count.
       if (counts[item.status] !== undefined) {
         counts[item.status] += 1;
       }
