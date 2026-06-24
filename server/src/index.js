@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { pathToFileURL } from "url";
 import authRouter from "./routes/authRoutes.js";
+import protectedRouter from "./routes/protectedRoutes.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -19,6 +20,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/protected", protectedRouter);
 
 // Cross-platform "run directly vs imported" check: pathToFileURL normalizes
 // Windows backslash paths to the same file:// URL format import.meta.url
