@@ -20,7 +20,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
   const [showPassword, setShowPassword] = useState(false);
   const [ingatSaya, setIngatSaya] = useState(false);
   const [focusedField, setFocusedField] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const linkRipple = useRipple();
   const submitRipple = useRipple();
 
@@ -33,15 +33,32 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!username.trim() || !password.trim() || !role) {
-      setError("Harap isi semua field.");
+    const nextErrors = {};
+
+    if (!username.trim()) {
+      nextErrors.username = "Username wajib diisi.";
+    }
+
+    if (!password.trim()) {
+      nextErrors.password = "Password wajib diisi.";
+    }
+
+    if (!role) {
+      nextErrors.role = "Pilih role terlebih dahulu.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
       return;
     }
 
     const akun = store.cariAkun(username, password, role);
 
     if (!akun) {
-      setError("Username, password, atau role tidak sesuai.");
+      setErrors({
+        username: "Username tidak ditemukan.",
+        password: "Password salah untuk akun ini.",
+      });
       return;
     }
 
@@ -172,7 +189,14 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             </p>
           </div>
 
-          <RolePills selectedRole={role} onSelectRole={setRole} />
+          <RolePills
+            selectedRole={role}
+            onSelectRole={(nextRole) => {
+              setRole(nextRole);
+              setErrors((previous) => ({ ...previous, role: undefined }));
+            }}
+          />
+          <ErrorText>{errors.role}</ErrorText>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
             <label style={{ display: "block" }}>
@@ -187,7 +211,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                   onBlur={() => setFocusedField("")}
                   onChange={(event) => {
                     setUsername(event.target.value);
-                    setError("");
+                    setErrors((previous) => ({ ...previous, username: undefined }));
                   }}
                   style={getInputStyle("username")}
                   autoComplete="username"
@@ -196,6 +220,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                   <IkonOrang />
                 </FieldIcon>
               </span>
+              <ErrorText>{errors.username}</ErrorText>
             </label>
 
             <label style={{ display: "block" }}>
@@ -210,7 +235,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                   onBlur={() => setFocusedField("")}
                   onChange={(event) => {
                     setPassword(event.target.value);
-                    setError("");
+                    setErrors((previous) => ({ ...previous, password: undefined }));
                   }}
                   style={getInputStyle("password")}
                   autoComplete="current-password"
@@ -222,9 +247,8 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                   <IkonMata crossed={showPassword} />
                 </FieldIcon>
               </span>
+              <ErrorText>{errors.password}</ErrorText>
             </label>
-
-            <ErrorText>{error}</ErrorText>
           </div>
 
           <div
