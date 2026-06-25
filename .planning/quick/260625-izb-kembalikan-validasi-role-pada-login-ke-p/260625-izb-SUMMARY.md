@@ -48,7 +48,7 @@ status: complete
 ## Performance
 
 - **Duration:** ~12 min
-- **Tasks:** 3/3 (auto) selesai dan ter-commit; Task 4 (checkpoint:human-verify) menunggu verifikasi live dari orchestrator
+- **Tasks:** 4/4 selesai — 3 task auto ter-commit, Task 4 (checkpoint:human-verify) diverifikasi live dan approved
 - **Files modified:** 4
 
 ## Accomplishments
@@ -96,16 +96,18 @@ None.
 - Task 3: grep konfirmasi `store.login` menerima 3 parameter, body apiFetch berisi `role`, dan `Login.jsx` memanggil dengan 3 argumen.
 - Sanity ping tambahan: `POST /auth/login` dengan body kosong terhadap backend live (port 4000) mengembalikan 400 sesuai ekspektasi guard username/password yang sudah ada.
 
-**Task 4 (checkpoint:human-verify, gate=blocking) — PENDING.** Plan ini berhenti sebelum Task 4 sesuai protokol checkpoint. Orchestrator/user perlu menjalankan 4 kasus live berikut terhadap backend (http://localhost:4000) yang sudah berjalan, lalu cek UI di http://localhost:5173:
+**Task 4 (checkpoint:human-verify, gate=blocking) — APPROVED.** Keenam kasus live (4 via curl ke backend + 2 via Playwright ke UI) dijalankan terhadap backend (http://localhost:4000) dan frontend (http://localhost:5173) yang sudah berjalan, dengan hasil:
 
-1. Role benar -> 200: `{"username":"admin","password":"admin123","role":"Admin"}` harus 200 + `user.role === "Admin"`.
-2. Role salah -> 401 generik: `{"username":"admin","password":"admin123","role":"Tim Logistik"}` harus 401, `error: "Username atau password salah."`.
-3. Password salah -> 401 dengan teks IDENTIK kasus 2: `{"username":"admin","password":"wrongpass","role":"Admin"}` harus 401, teks error harus sama persis dengan kasus 2 (bukti anti-enumeration).
-4. Role hilang -> 400: `{"username":"admin","password":"admin123"}` harus 400, `error: "Role wajib diisi."`.
+1. Role benar -> 200: `{"username":"admin","password":"admin123","role":"Admin"}` -> 200, `token` + `user.role === "Admin"`. **CONFIRMED.**
+2. Role salah -> 401 generik: `{"username":"admin","password":"admin123","role":"Tim Logistik"}` -> 401, `error: "Username atau password salah."`. **CONFIRMED.**
+3. Password salah -> 401 dengan teks IDENTIK kasus 2: `{"username":"admin","password":"wrongpass","role":"Admin"}` -> 401, `error: "Username atau password salah."` (teks identik dengan kasus 2, anti-enumeration terjaga). **CONFIRMED.**
+4. Role hilang -> 400: `{"username":"admin","password":"admin123"}` -> 400, `error: "Role wajib diisi."`. **CONFIRMED.**
+5. UI (Playwright): role pill "Tim Logistik" + admin/admin123 -> tetap di /login, error "Username atau password salah" muncul di field password. **CONFIRMED.**
+6. UI (Playwright): role pill "Admin" + admin/admin123 -> berhasil masuk ke /dashboard. **CONFIRMED.**
 
-Plus cek UI: login admin/admin123 dengan role pill "Tim Logistik" harus gagal (pesan di field password); dengan pill "Admin" harus berhasil ke dashboard.
+Anti-enumeration terbukti utuh: teks error kasus 2 dan kasus 3 identik persis.
 
-**Status plan ini akan dianggap COMPLETE hanya setelah orchestrator mengonfirmasi keempat kasus di atas approved** (lihat resume-signal di PLAN.md Task 4).
+**Plan ini COMPLETE.** Checkpoint Task 4 di-approve setelah verifikasi live di atas dikonfirmasi sesuai ekspektasi (lihat resume-signal di PLAN.md Task 4).
 
 ## User Setup Required
 
@@ -113,12 +115,12 @@ None - tidak ada konfigurasi layanan eksternal yang diperlukan. Backend dan fron
 
 ## Next Phase Readiness
 
-- Tidak ada blocker baru. Setelah checkpoint Task 4 di-approve oleh orchestrator, quick task ini selesai sepenuhnya.
+- Tidak ada blocker. Quick task ini selesai sepenuhnya — checkpoint Task 4 sudah di-approve dengan keenam kasus live verification CONFIRMED.
 - Tidak ada perubahan pada `registerAkun`, middleware RBAC (`requireAuth`/`requireRole`), atau halaman selain `Login.jsx` — perubahan terisolasi murni pada jalur login.
 
 ---
 *Quick task: 260625-izb*
-*Completed: 2026-06-25 (Tasks 1-3); Task 4 checkpoint pending human verification*
+*Completed: 2026-06-25 — semua 4 task selesai (3 auto + 1 checkpoint approved)*
 
 ## Self-Check: PASSED
 
