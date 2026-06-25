@@ -316,6 +316,15 @@ function Laporan({ onNavigate }) {
     return unsubscribe;
   }, []);
 
+  // Role-differentiated reports + CSV export read keputusan/riwayatKeputusan/
+  // permintaan from the cache below — load all three on mount so the page
+  // renders fresh server data with no manual refresh.
+  useEffect(() => {
+    store.loadKeputusan();
+    store.loadRiwayatKeputusan();
+    store.loadPermintaan();
+  }, []);
+
   const roleAktif = roleOptions.includes(snapshot.roleAktif)
     ? snapshot.roleAktif
     : "Manajer Distribusi";

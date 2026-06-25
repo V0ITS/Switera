@@ -47,6 +47,12 @@ function RiwayatAktivitas({ onNavigate }) {
     return unsubscribe;
   }, []);
 
+  // Admin-only page; store.loadActivityLog() quietly returns [] for a
+  // non-Admin session (see store.js's 403-swallow behavior, T-09-L-RBAC).
+  useEffect(() => {
+    store.loadActivityLog();
+  }, []);
+
   const activityLog = useMemo(
     () =>
       [...(snapshot.activityLog ?? [])].sort(

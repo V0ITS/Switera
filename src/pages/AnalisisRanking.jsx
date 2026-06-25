@@ -167,6 +167,18 @@ function AnalisisRanking({ onNavigate }) {
     return unsubscribe;
   }, []);
 
+  // Load server data so the existing client-side ranking computation
+  // (aggregatePermintaanRanking, below) runs against fresh server data.
+  // Deliberately NOT switching to GET /rekomendasi-distribusi here — see
+  // store.js's loadRekomendasi/loadKpi comment: keeping this page's exact
+  // client-side computation preserves pixel-identical displayed numbers
+  // (FE-03), which is required for this no-visual-change phase.
+  useEffect(() => {
+    store.loadPermintaan();
+    store.loadKota();
+    store.loadStok();
+  }, []);
+
   const ranking = useMemo(
     () => aggregatePermintaanRanking(snapshot.permintaan ?? []),
     [snapshot.permintaan]
