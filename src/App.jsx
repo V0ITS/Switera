@@ -90,17 +90,29 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // Single global bootstrap (FE-01/09-05): on the userAktif transition —
-  // either a fresh login OR a session restored from localStorage on
-  // app-init — pull every domain collection from the server so the whole
-  // app renders with no manual refresh. Per-page mount loaders added in
-  // 09-02..09-04 remain as a harmless, idempotent belt-and-suspenders
-  // refresh. Depending on userAktif?.username (not the whole object) keeps
-  // this from re-firing on every snapshot update.
+  // Single global bootstrap (FE-01/09-05) + SYNC-01 polling lifecycle: on
+  // the userAktif transition — either a fresh login OR a session restored
+  // from localStorage on app-init — pull every domain collection from the
+  // server immediately (store.hydrate()) so the whole app renders with no
+  // manual refresh, THEN start the SYNC-01 poll interval (store.startPolling())
+  // so every collection keeps refreshing automatically afterward. Per-page
+  // mount loaders added in 09-02..09-04 remain as a harmless, idempotent
+  // belt-and-suspenders refresh. Depending on userAktif?.username (not the
+  // whole object) keeps this from re-firing on every snapshot update. The
+  // effect's cleanup calls store.stopPolling() — React runs it whenever
+  // username changes OR becomes undefined, which is exactly logout and a
+  // 401 (both clear userAktif), so polling stops the moment there is no
+  // valid session, with no separate logout-button handler or 401 callback
+  // edit needed.
   useEffect(() => {
     if (snapshot.userAktif?.username) {
       store.hydrate();
+      store.startPolling();
     }
+
+    return () => {
+      store.stopPolling();
+    };
   }, [snapshot.userAktif?.username]);
 
   useEffect(() => {
