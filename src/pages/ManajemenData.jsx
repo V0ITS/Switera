@@ -76,6 +76,11 @@ function ManajemenData({ onNavigate }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    store.loadPermintaan();
+    store.loadKota();
+  }, []);
+
   const daftarKota = useMemo(() => snapshot.daftarKota ?? [], [snapshot.daftarKota]);
 
   const sortedPermintaan = useMemo(
@@ -108,7 +113,7 @@ function ManajemenData({ onNavigate }) {
     );
   }, [keyword, sortedPermintaan]);
 
-  const validateEditForm = (nextForm) => {
+  const validateEditForm = async (nextForm) => {
     const nextErrors = {};
 
     if (!nextForm.kota) {
@@ -128,11 +133,11 @@ function ManajemenData({ onNavigate }) {
     if (
       nextForm.kota &&
       nextForm.tanggalPermintaan &&
-      store.hasPermintaanDuplikat({
+      (await store.hasPermintaanDuplikat({
         kota: nextForm.kota,
         tanggalPermintaan: nextForm.tanggalPermintaan,
         excludeId: nextForm.id,
-      })
+      }))
     ) {
       nextErrors.tanggalPermintaan =
         "Data untuk kota ini pada tanggal tersebut sudah ada.";
@@ -154,56 +159,71 @@ function ManajemenData({ onNavigate }) {
     setIsEditOpen(true);
   };
 
-  const handleEditChange = (field, value) => {
+  const handleEditChange = async (field, value) => {
     const nextForm = {
       ...editForm,
       [field]: value,
     };
 
     setEditForm(nextForm);
-    setEditErrors(validateEditForm(nextForm));
+    setEditErrors(await validateEditForm(nextForm));
   };
 
-  const saveEdit = () => {
-    const nextErrors = validateEditForm(editForm);
+  const saveEdit = async () => {
+    const nextErrors = await validateEditForm(editForm);
     setEditErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
-    store.updatePermintaan(editForm.id, {
-      kota: editForm.kota,
-      tanggal_permintaan: editForm.tanggalPermintaan,
-      tanggal_input: editForm.tanggalInput,
-      jumlah_permintaan: Number(editForm.jumlahPermintaan),
-      keterangan: editForm.keterangan.trim(),
-    });
+    try {
+      await store.updatePermintaan(editForm.id, {
+        kota: editForm.kota,
+        tanggal_permintaan: editForm.tanggalPermintaan,
+        tanggal_input: editForm.tanggalInput,
+        jumlah_permintaan: Number(editForm.jumlahPermintaan),
+        keterangan: editForm.keterangan.trim(),
+      });
 
-    setIsEditOpen(false);
-    setEditForm(initialEditForm);
-    showToast({ type: "success", message: "Data permintaan berhasil diperbarui." });
+      setIsEditOpen(false);
+      setEditForm(initialEditForm);
+      showToast({ type: "success", message: "Data permintaan berhasil diperbarui." });
+    } catch (error) {
+      if (error.fields?.jumlah_permintaan) {
+        setEditErrors({ jumlahPermintaan: error.fields.jumlah_permintaan });
+      } else if (error.fields?.tanggal_permintaan) {
+        setEditErrors({ tanggalPermintaan: error.fields.tanggal_permintaan });
+      } else if (error.fields?.kota) {
+        setEditErrors({ kota: error.fields.kota });
+      }
+    }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) {
       return;
     }
 
     const itemDihapus = deleteTarget;
-    store.removePermintaan(itemDihapus.id);
-    setDeleteTarget(null);
-    showToast({
-      type: "success",
-      message: "Data permintaan berhasil dihapus.",
-      action: {
-        label: "Urungkan",
-        onClick: () => {
-          store.addPermintaan(itemDihapus);
-          showToast({ type: "info", message: "Penghapusan data dibatalkan." });
+
+    try {
+      await store.removePermintaan(itemDihapus.id);
+      setDeleteTarget(null);
+      showToast({
+        type: "success",
+        message: "Data permintaan berhasil dihapus.",
+        action: {
+          label: "Urungkan",
+          onClick: async () => {
+            await store.addPermintaan(itemDihapus);
+            showToast({ type: "info", message: "Penghapusan data dibatalkan." });
+          },
         },
-      },
-    });
+      });
+    } catch {
+      setDeleteTarget(null);
+    }
   };
 
   const startInlineEdit = (item) => {
@@ -211,7 +231,7 @@ function ManajemenData({ onNavigate }) {
     setInlineValue(String(item.jumlah_permintaan));
   };
 
-  const commitInlineEdit = (item) => {
+  const commitInlineEdit = async (item) => {
     const nextValue = Number(inlineValue);
 
     if (!inlineValue || nextValue <= 0) {
@@ -220,8 +240,13 @@ function ManajemenData({ onNavigate }) {
     }
 
     if (nextValue !== item.jumlah_permintaan) {
-      store.updatePermintaan(item.id, { jumlah_permintaan: nextValue });
-      showToast({ type: "success", message: "Jumlah permintaan berhasil diperbarui." });
+      try {
+        await store.updatePermintaan(item.id, { jumlah_permintaan: nextValue });
+        showToast({ type: "success", message: "Jumlah permintaan berhasil diperbarui." });
+      } catch {
+        // runMutation already surfaces a Toast for the failure; nothing
+        // further to do here besides closing the inline editor below.
+      }
     }
 
     setInlineEditingId(null);
