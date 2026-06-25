@@ -241,6 +241,13 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
     return unsubscribe;
   }, []);
 
+  // Layout is always mounted for every authenticated page — self-load
+  // notifications on mount so the badge/dropdown reflect server state even
+  // before/independent of App.jsx's global hydrate() bootstrap (09-05).
+  useEffect(() => {
+    store.loadNotifikasi();
+  }, []);
+
   useEffect(() => {
     if (!isNotifOpen) {
       return undefined;
@@ -300,6 +307,10 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
   };
 
   const confirmReset = () => {
+    // store.reset() is now an async re-hydrate (09-05) — fire-and-forget,
+    // the modal closes immediately and the cache refreshes via notify()
+    // once the server responds, matching the existing UX (no spinner/await
+    // was shown in v1.0 either).
     store.reset();
     setIsResetOpen(false);
   };

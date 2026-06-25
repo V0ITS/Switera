@@ -90,6 +90,19 @@ function App() {
     return unsubscribe;
   }, []);
 
+  // Single global bootstrap (FE-01/09-05): on the userAktif transition —
+  // either a fresh login OR a session restored from localStorage on
+  // app-init — pull every domain collection from the server so the whole
+  // app renders with no manual refresh. Per-page mount loaders added in
+  // 09-02..09-04 remain as a harmless, idempotent belt-and-suspenders
+  // refresh. Depending on userAktif?.username (not the whole object) keeps
+  // this from re-firing on every snapshot update.
+  useEffect(() => {
+    if (snapshot.userAktif?.username) {
+      store.hydrate();
+    }
+  }, [snapshot.userAktif?.username]);
+
   useEffect(() => {
     const isMarketingOrAuth = route === "/" || !snapshot.userAktif;
     document.documentElement.dataset.theme = isMarketingOrAuth ? "dark" : snapshot.tema;
