@@ -1,6 +1,6 @@
 import useRipple from "../hooks/useRipple";
 
-function Tombol({ label, variant = "primer", onClick, type = "button", disabled = false, style }) {
+function Tombol({ label, variant = "primer", onClick, type = "button", disabled = false, isLoading = false, style }) {
   const { ripples, onMouseDown, removeRipple } = useRipple();
 
   return (
@@ -8,10 +8,11 @@ function Tombol({ label, variant = "primer", onClick, type = "button", disabled 
       type={type}
       className={`tombol tombol-${variant}`}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       style={style}
       onMouseDown={onMouseDown}
     >
+      {isLoading ? <span className="spinner" aria-hidden="true" /> : null}
       {label}
       {ripples.map((ripple) => (
         <span

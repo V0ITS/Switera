@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const ROW_EXIT_MS = 200;
 
 const PAGE_SIZE = 10;
 
@@ -68,6 +70,35 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [page, setPage] = useState(0);
   const [density, setDensity] = useState("comfortable");
+  const [exitingRows, setExitingRows] = useState([]);
+  const prevDataRef = useRef(data);
+
+  // Row delete animation (fadeOut + collapse): React unmounts a removed row
+  // immediately with no exit frame, so a removed row is held in local state
+  // for ROW_EXIT_MS with the .row-exit class before being dropped for real.
+  // Only handled for the common single-page case here — once pagination is
+  // active, a removed row's original page position can't be reconstructed
+  // reliably, so it simply disappears (still correct, just not animated).
+  useEffect(() => {
+    if (data.length <= PAGE_SIZE) {
+      const currentIds = new Set(data.map((row, index) => row.id ?? index));
+      const removed = prevDataRef.current.filter(
+        (row, index) => !currentIds.has(row.id ?? index)
+      );
+      if (removed.length > 0) {
+        setExitingRows((current) => [...current, ...removed]);
+        const timeoutId = window.setTimeout(() => {
+          setExitingRows((current) =>
+            current.filter((row) => !removed.includes(row))
+          );
+        }, ROW_EXIT_MS);
+        prevDataRef.current = data;
+        return () => window.clearTimeout(timeoutId);
+      }
+    }
+    prevDataRef.current = data;
+    return undefined;
+  }, [data]);
 
   useEffect(() => {
     setPage(0);
@@ -272,6 +303,21 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
                       {aksi(baris, index)}
                     </td>
                   ) : null}
+                </tr>
+              );
+            })}
+            {exitingRows.map((baris, index) => {
+              const rowId = `exiting-${baris.id ?? index}`;
+              const cellStyle = getCellStyle(true);
+
+              return (
+                <tr key={rowId} className="row-exit" aria-hidden="true">
+                  {normalizedColumns.map((column) => (
+                    <td key={`${rowId}-${column.key}`} style={cellStyle}>
+                      {baris[column.key] ?? "-"}
+                    </td>
+                  ))}
+                  {aksi ? <td style={cellStyle} /> : null}
                 </tr>
               );
             })}

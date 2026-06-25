@@ -23,7 +23,7 @@ export const inputBaseStyle = {
   padding: "10px 44px 10px 14px",
   outline: "none",
   WebkitAppearance: "none",
-  transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
+  transition: "border-color var(--transition-input), box-shadow var(--transition-input)",
 };
 
 export function IkonOrang() {
@@ -141,6 +141,7 @@ export function ErrorText({ children }) {
         gap: "4px",
         color: "var(--color-danger)",
         fontSize: "var(--text-xs)",
+        animation: "fadeInDown 150ms var(--ease-out) both",
       }}
     >
       <IkonAlertCircle />

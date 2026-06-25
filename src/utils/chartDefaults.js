@@ -43,3 +43,11 @@ export const chartDatasetDefaults = {
   borderWidth: 2,
   tension: 0.4,
 };
+
+export const chartAnimationDefaults = {
+  duration: 800,
+  easing: "easeOutQuart",
+  delay(context) {
+    return context.type === "data" ? context.dataIndex * 80 : 0;
+  },
+};
