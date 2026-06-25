@@ -467,6 +467,12 @@ export const store = {
     });
   },
 
+  // SYNCHRONOUS cache reads (Phase 9 hydrated-cache pattern) — unchanged
+  // signatures so KeputusanDistribusi/StatusDistribusi/Dashboard's
+  // snapshot.keputusan / snapshot.riwayatKeputusan reads, and Dashboard's
+  // sync store.getKeputusan() handler call, keep working with zero page
+  // change. Populated by loadKeputusan()/loadRiwayatKeputusan() below and by
+  // each mutator's server response.
   getKeputusan() {
     return clone(state.keputusan);
   },
@@ -475,83 +481,101 @@ export const store = {
     return clone(state.riwayatKeputusan);
   },
 
-  addKeputusan(entry) {
-    const keputusanBaru = {
-      ...clone(entry),
-      id: entry.id ?? getNextId(state.riwayatKeputusan, "KPT"),
-      [`waktu_${entry.status ?? "menunggu"}`]: new Date().toISOString(),
-    };
-
-    state.keputusan = [...state.keputusan, keputusanBaru];
-    state.riwayatKeputusan = [...state.riwayatKeputusan, keputusanBaru];
-    pushNotifikasi({
-      judul: "Keputusan distribusi baru",
-      pesan: `Keputusan distribusi baru tersedia untuk kota ${keputusanBaru.kota_tujuan}.`,
-      tipe: "info",
-    });
-    recordActivity(`Menyimpan keputusan distribusi kota ${keputusanBaru.kota_tujuan}`);
+  // Bootstrap loaders (called on KeputusanDistribusi/StatusDistribusi/
+  // Dashboard mount; 09-05 will also call these from store.hydrate()).
+  async loadKeputusan() {
+    const resp = await apiFetch("/keputusan");
+    state.keputusan = resp;
     notify();
-    return clone(keputusanBaru);
+    return clone(state.keputusan);
   },
 
-  updateKeputusan(id, updates) {
-    const normalizedUpdates = clone(updates);
-    const existing = state.keputusan.find((item) => item.id === id);
-    const statusBerubah =
-      Object.prototype.hasOwnProperty.call(normalizedUpdates, "status") &&
-      existing &&
-      existing.status !== normalizedUpdates.status;
+  async loadRiwayatKeputusan() {
+    const resp = await apiFetch("/riwayat-keputusan");
+    state.riwayatKeputusan = resp;
+    notify();
+    return clone(state.riwayatKeputusan);
+  },
 
-    if (statusBerubah) {
-      normalizedUpdates[`waktu_${normalizedUpdates.status}`] = new Date().toISOString();
-    }
-
-    state.keputusan = state.keputusan.map((item) =>
-      item.id === id ? { ...item, ...normalizedUpdates } : item
-    );
-    state.riwayatKeputusan = state.riwayatKeputusan.map((item) =>
-      item.id === id ? { ...item, ...normalizedUpdates } : item
-    );
-
-    if (statusBerubah) {
-      const labelStatus =
-        statusLabelMap[normalizedUpdates.status] ?? normalizedUpdates.status;
-
-      pushNotifikasi({
-        judul: "Status distribusi diperbarui",
-        pesan: `Status distribusi ke ${existing.kota_tujuan} telah diperbarui menjadi ${labelStatus}.`,
-        tipe: "success",
+  // Server owns the notification + activity-log side effects for this
+  // mutation (keputusanService.addKeputusan, LOGIC-03) — do NOT duplicate
+  // pushNotifikasi/recordActivity here. POST /keputusan returns the single
+  // created row (not a full list, unlike kota's POST/PUT/DELETE) — mirrors
+  // permintaan's addPermintaan response shape (09-03), confirmed against
+  // keputusanService.js's toApi(created) return.
+  async addKeputusan(entry) {
+    return runMutation(async () => {
+      const resp = await apiFetch("/keputusan", {
+        method: "POST",
+        body: {
+          kota_tujuan: entry.kota_tujuan,
+          volume_tbs: Number(entry.volume_tbs),
+          tanggal_keputusan: entry.tanggal_keputusan,
+          diputuskan_oleh: entry.diputuskan_oleh,
+          status: entry.status,
+        },
       });
-      recordActivity(
-        `Memperbarui status distribusi kota ${existing.kota_tujuan} menjadi ${labelStatus}`
+      state.keputusan = [...state.keputusan, resp];
+      state.riwayatKeputusan = [...state.riwayatKeputusan, resp];
+      notify();
+      return clone(resp);
+    });
+  },
+
+  // CRITICAL (LOGIC-02): the cache is ONLY written from the server's
+  // confirmed response below — never optimistically before the await
+  // resolves. On a 409 optimistic-lock conflict, apiFetch throws BEFORE
+  // this function reaches the `state.keputusan = ...` line, so the losing
+  // concurrent request's cache is left untouched and runMutation's catch
+  // Toasts the server's Indonesian conflict message + re-throws for the
+  // page to keep its modal open. A false success can never reach the UI.
+  async updateKeputusan(id, updates) {
+    return runMutation(async () => {
+      const resp = await apiFetch(`/keputusan/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        body: updates,
+      });
+      state.keputusan = state.keputusan.map((item) => (item.id === id ? resp : item));
+      state.riwayatKeputusan = state.riwayatKeputusan.map((item) =>
+        item.id === id ? resp : item
       );
-    }
-
-    notify();
-    return clone(state.keputusan);
+      notify();
+      return clone(resp);
+    });
   },
 
-  removeKeputusan(id) {
-    const item = state.keputusan.find((entry) => entry.id === id);
-    const waktuDibatalkan = new Date().toISOString();
-
-    state.riwayatKeputusan = state.riwayatKeputusan.map((entry) =>
-      entry.id === id ? { ...entry, status: "dibatalkan", waktu_dibatalkan: waktuDibatalkan } : entry
-    );
-    state.keputusan = state.keputusan.filter((entry) => entry.id !== id);
-    recordActivity(`Membatalkan keputusan distribusi kota ${item?.kota_tujuan ?? id}`);
-    notify();
-    return clone(state.keputusan);
+  // DELETE /keputusan/:id returns the single cancelled row (confirmed
+  // against keputusanService.removeKeputusan's toApi(existing) return —
+  // NOT a full list, unlike kota's DELETE). The server marks the matching
+  // RiwayatKeputusan row "dibatalkan" server-side; refresh riwayat from the
+  // server rather than guessing the shape client-side (T-09-D-STALE).
+  async removeKeputusan(id) {
+    return runMutation(async () => {
+      await apiFetch(`/keputusan/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      state.keputusan = state.keputusan.filter((item) => item.id !== id);
+      await store.loadRiwayatKeputusan();
+      notify();
+      return clone(state.keputusan);
+    });
   },
 
-  restoreKeputusan(item) {
-    state.keputusan = [...state.keputusan, clone(item)];
-    state.riwayatKeputusan = state.riwayatKeputusan.map((entry) =>
-      entry.id === item.id ? clone(item) : entry
-    );
-    recordActivity(`Mengembalikan keputusan distribusi kota ${item.kota_tujuan}`);
-    notify();
-    return clone(state.keputusan);
+  // POST /keputusan/:id/restore returns the single recreated row (confirmed
+  // against keputusanService.restoreKeputusan's toApi(created) return —
+  // NOT a full list). Body MUST include item.id matching the path, or the
+  // route 400s. Refresh riwayat from the server afterward (T-09-D-STALE).
+  async restoreKeputusan(item) {
+    return runMutation(async () => {
+      const resp = await apiFetch(`/keputusan/${encodeURIComponent(item.id)}/restore`, {
+        method: "POST",
+        body: item,
+      });
+      state.keputusan = [...state.keputusan, resp];
+      await store.loadRiwayatKeputusan();
+      notify();
+      return clone(resp);
+    });
   },
 
   getNotifikasi() {
