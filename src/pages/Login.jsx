@@ -38,7 +38,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
         : "none",
   });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const nextErrors = {};
@@ -60,27 +60,16 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
       return;
     }
 
-    const akun = store.cariAkun(username, password, role);
-
-    if (!akun) {
-      const normalizedUsername = username.trim();
-      const akunByUsername = store
-        .getDaftarAkun()
-        .find((item) => item.username === normalizedUsername);
-
-      if (!akunByUsername) {
-        setErrors({ username: "Username tidak ditemukan." });
-      } else if (akunByUsername.password !== password) {
-        setErrors({ password: "Password salah untuk akun ini." });
-      } else {
-        setErrors({ role: "Role tidak sesuai untuk akun ini." });
-      }
-      return;
+    try {
+      await store.login(username, password);
+      onNavigate?.("/dashboard");
+    } catch {
+      // The server returns one generic 401 for unknown-user/wrong-password/
+      // wrong-role (T-07-ENUM anti-enumeration design) — surfaced on the
+      // password field. Client-side credential inspection is gone by
+      // design; store.login already fired the error Toast.
+      setErrors({ password: "Username atau password salah." });
     }
-
-    const { password: _password, ...userAktif } = akun;
-    store.setUserAktif(userAktif);
-    onNavigate?.("/dashboard");
   };
 
   const handleDaftarClick = () => {

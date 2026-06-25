@@ -57,7 +57,6 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
   const validate = () => {
     const nextErrors = {};
     const normalizedUsername = username.trim();
-    const daftarAkun = store.getDaftarAkun();
 
     if (!nama.trim()) {
       nextErrors.nama = "Nama lengkap wajib diisi.";
@@ -87,17 +86,10 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
       nextErrors.konfirmasiPassword = "Konfirmasi password harus sama dengan password.";
     }
 
-    if (
-      normalizedUsername &&
-      daftarAkun.some((akun) => akun.username === normalizedUsername)
-    ) {
-      nextErrors.username = "Username sudah digunakan.";
-    }
-
     return nextErrors;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const nextErrors = validate();
@@ -107,15 +99,20 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
       return;
     }
 
-    store.tambahAkun({
-      id: store.getNextAkunId(),
-      nama: nama.trim(),
-      username: username.trim(),
-      password,
-      role,
-    });
+    try {
+      await store.register({
+        nama: nama.trim(),
+        username: username.trim(),
+        password,
+        role,
+      });
 
-    setSuccessMessage("Akun berhasil dibuat. Silakan masuk.");
+      setSuccessMessage("Akun berhasil dibuat. Silakan masuk.");
+    } catch (error) {
+      if (error.message.includes("sudah digunakan")) {
+        setErrors({ username: error.message });
+      }
+    }
   };
 
   return (
