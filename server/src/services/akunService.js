@@ -10,17 +10,19 @@ const stripPassword = (akun) => {
 };
 
 /**
- * Verifies a username/password pair against the live Akun table using
- * bcrypt.compare. Returns the account (without the password field) on a
- * correct match, or null if the username doesn't exist or the password is
- * wrong. Never throws on a mismatch — null is the normal "no match" result.
+ * Verifies a username/password/role triple against the live Akun table
+ * using bcrypt.compare. Returns the account (without the password field) on
+ * a correct match, or null if the username doesn't exist, the password is
+ * wrong, or the selected role doesn't match the account's actual role.
+ * Never throws on a mismatch — null is the normal "no match" result.
  *
- * Note: unlike the v1 client (src/store.js's cariAkun), this does NOT take a
- * role argument — login is verified by username+password only, and the
- * account's stored role is what's returned, so a client cannot self-assign
- * a higher role at login (see T-07-ROLESPOOF).
+ * Role mismatch is folded into the SAME null path as wrong-password/
+ * unknown-username (not a distinct error), so the route layer maps it to
+ * the identical generic 401 message — this is what keeps anti-enumeration
+ * intact (T-07-ENUM) while still rejecting a selected role that doesn't
+ * match the account's real role (v1.0 parity).
  */
-export async function verifyLogin(username, password) {
+export async function verifyLogin(username, password, role) {
   const normalizedUsername = String(username).trim();
 
   const akun = await prisma.akun.findUnique({
@@ -33,6 +35,10 @@ export async function verifyLogin(username, password) {
 
   const cocok = await bcrypt.compare(password, akun.password);
   if (!cocok) {
+    return null;
+  }
+
+  if (akun.role !== role) {
     return null;
   }
 
