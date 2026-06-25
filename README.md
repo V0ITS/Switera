@@ -1,8 +1,6 @@
 # Switera
 
-Switera adalah aplikasi web (SPA) untuk mengelola distribusi stok TBS (Tandan Buah Segar / kelapa sawit) ke berbagai kota — mulai dari pencatatan permintaan, keputusan distribusi berbasis ranking, pelacakan status pengiriman, pelaporan, hingga riwayat aktivitas. Dibangun sebagai tugas mata kuliah Pengembangan Sistem Informasi, dengan standar kualitas setara produk produksi: fitur lengkap, validasi yang benar, UI konsisten, dan kode yang rapi.
-
-> **Catatan:** Aplikasi ini **client-only** — tidak ada backend/database sungguhan. Semua data disimpan di `localStorage` browser melalui store terpusat (`src/store.js`). Backend nyata direncanakan dibangun pada milestone berikutnya.
+Switera adalah aplikasi web (SPA) untuk mengelola distribusi stok TBS (Tandan Buah Segar / kelapa sawit) ke berbagai kota, mulai dari pencatatan permintaan, keputusan distribusi berbasis ranking, pelacakan status pengiriman, pelaporan, hingga riwayat aktivitas. Dibangun sebagai tugas mata kuliah Pengembangan Sistem Informasi, dengan standar kualitas setara produk produksi: fitur lengkap, validasi yang benar, UI konsisten, dan kode yang rapi.
 
 ## Fitur Utama
 
