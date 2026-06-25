@@ -24,6 +24,14 @@ function KeputusanDistribusi({ onNavigate }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    store.loadKeputusan();
+    store.loadRiwayatKeputusan();
+    store.loadKota();
+    store.loadPermintaan();
+    store.loadStok();
+  }, []);
+
   const rekomendasiList = useMemo(
     () => computeRekomendasiDistribusi(snapshot.permintaan ?? [], snapshot.daftarKota ?? [], snapshot.stokTbs ?? 0),
     [snapshot.permintaan, snapshot.daftarKota, snapshot.stokTbs]
@@ -46,7 +54,7 @@ function KeputusanDistribusi({ onNavigate }) {
     return sorted[0];
   }, [snapshot.keputusan]);
 
-  const saveKeputusan = (targetKota, alasan) => {
+  const saveKeputusan = async (targetKota, alasan) => {
     if (!targetKota) {
       return;
     }
@@ -63,39 +71,53 @@ function KeputusanDistribusi({ onNavigate }) {
       return;
     }
 
-    store.addKeputusan({
-      kota_tujuan: targetKota.kota,
-      volume_tbs: targetKota.alokasi,
-      tanggal_keputusan: getLocalDateKey(),
-      diputuskan_oleh: "Manajer Distribusi",
-      status: "menunggu",
-      alasan,
-    });
+    try {
+      await store.addKeputusan({
+        kota_tujuan: targetKota.kota,
+        volume_tbs: targetKota.alokasi,
+        tanggal_keputusan: getLocalDateKey(),
+        diputuskan_oleh: "Manajer Distribusi",
+        status: "menunggu",
+        alasan,
+      });
 
-    showToast({ type: "success", message: `Keputusan distribusi untuk ${targetKota.kota} berhasil disimpan.` });
-    setIsCustomSelection(false);
-    setSelectedKota("");
+      showToast({ type: "success", message: `Keputusan distribusi untuk ${targetKota.kota} berhasil disimpan.` });
+      setIsCustomSelection(false);
+      setSelectedKota("");
+    } catch {
+      // runMutation already Toasted the server's error message.
+    }
   };
 
-  const confirmCancelLast = () => {
+  const confirmCancelLast = async () => {
     if (!keputusanAktifTerakhir) {
       return;
     }
 
     const keputusanDibatalkan = keputusanAktifTerakhir;
-    store.removeKeputusan(keputusanDibatalkan.id);
-    setIsCancelOpen(false);
-    showToast({
-      type: "success",
-      message: "Keputusan aktif terakhir berhasil dibatalkan.",
-      action: {
-        label: "Urungkan",
-        onClick: () => {
-          store.restoreKeputusan(keputusanDibatalkan);
-          showToast({ type: "info", message: "Keputusan distribusi dikembalikan." });
+
+    try {
+      await store.removeKeputusan(keputusanDibatalkan.id);
+      setIsCancelOpen(false);
+      showToast({
+        type: "success",
+        message: "Keputusan aktif terakhir berhasil dibatalkan.",
+        action: {
+          label: "Urungkan",
+          onClick: async () => {
+            try {
+              await store.restoreKeputusan(keputusanDibatalkan);
+              showToast({ type: "info", message: "Keputusan distribusi dikembalikan." });
+            } catch {
+              // runMutation already Toasted the server's error message.
+            }
+          },
         },
-      },
-    });
+      });
+    } catch {
+      // runMutation already Toasted the server's error message; keep the
+      // confirm modal open so the user can retry.
+    }
   };
 
   const fieldStyle = {
