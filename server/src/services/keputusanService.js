@@ -168,6 +168,23 @@ export async function addKeputusan(entry) {
  * the binding LOGIC-02 mechanism (optimistic locking via conditional
  * updateMany), not a unique constraint or a $transaction with row
  * locking — see 08-04-PLAN.md objective for the full rationale.
+ *
+ * SUBTLE CASE (fixed after live-HTTP testing surfaced it under real
+ * concurrent load): when two concurrent requests target the SAME
+ * destination status (e.g. both PUT { status: "dalam-pengiriman" } while
+ * the row is "menunggu"), a naive `WHERE status: existing.status` guard is
+ * insufficient. If request A commits first (menunggu -> dalam-pengiriman)
+ * and request B's own read then observes the row AFTER A's commit, B's
+ * `existing.status` is ALREADY "dalam-pengiriman" — the value B itself
+ * intends to write. B's updateMany becomes a true no-op
+ * (`WHERE status='dalam-pengiriman' SET status='dalam-pengiriman'`) that
+ * still matches and reports count=1, silently treating a lost race as a
+ * second success. The fix: a write only counts as a legitimate winning
+ * transition when the read-time status actually differs from the target
+ * status (statusBerubah). If it does not differ, the request is either a
+ * true no-op update (no status key supplied) — allowed — or it is a
+ * status-change request arriving after the transition already happened —
+ * rejected as a 409 conflict, exactly as if it had lost the updateMany race.
  */
 export async function updateKeputusan(id, updates) {
   // Step 1: read the current row ONCE.
@@ -176,11 +193,25 @@ export async function updateKeputusan(id, updates) {
     throw Object.assign(new Error("Keputusan tidak ditemukan."), { statusCode: 404 });
   }
 
+  const statusRequested = Object.prototype.hasOwnProperty.call(updates, "status");
+
   // Step 2: determine whether this update changes status (mirrors
   // src/store.js's exact condition).
-  const statusBerubah =
-    Object.prototype.hasOwnProperty.call(updates, "status") &&
-    existing.status !== updates.status;
+  const statusBerubah = statusRequested && existing.status !== updates.status;
+
+  // A status-change request whose target status already matches the
+  // row's current status is NOT a legitimate transition to apply — it is
+  // either a redundant no-op the caller should not treat as a fresh
+  // success, or (the concurrent case above) a loser of the race that read
+  // the post-commit state. Reject it as a conflict rather than silently
+  // reporting success, so the route layer's 409 mapping is the one
+  // observable outcome for "someone already made this exact change."
+  if (statusRequested && !statusBerubah) {
+    throw Object.assign(
+      new Error("Status keputusan sudah diperbarui oleh proses lain. Muat ulang data dan coba lagi."),
+      { statusCode: 409 }
+    );
+  }
 
   // Step 3: build the partial update payload, adding the matching waktu_*
   // timestamp only when the status is actually transitioning.
