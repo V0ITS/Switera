@@ -300,6 +300,15 @@ export const store = {
     return clone(state.permintaan);
   },
 
+  // Bootstrap loader (called on InputData/ManajemenData mount; 09-05 will
+  // also call this from store.hydrate()).
+  async loadPermintaan() {
+    const resp = await apiFetch("/permintaan");
+    state.permintaan = normalizePermintaanList(resp);
+    notify();
+    return clone(state.permintaan);
+  },
+
   // SYNCHRONOUS cache reads (Phase 9 hydrated-cache pattern) — unchanged
   // signatures so ManajemenKota's snapshot.daftarKota / snapshot.stokTbs
   // reads keep working with zero page change. Populated by loadKota() /
@@ -403,77 +412,59 @@ export const store = {
     return updateValue("tema", state.tema === "dark" ? "light" : "dark");
   },
 
-  hasPermintaanDuplikat({ kota, tanggalPermintaan, excludeId }) {
-    return state.permintaan.some(
-      (item) =>
-        item.kota === kota &&
-        item.tanggal_permintaan === tanggalPermintaan &&
-        item.id !== excludeId
-    );
-  },
-
-  addPermintaan(entry) {
-    const riwayatSebelumnya = state.permintaan.filter((item) => item.kota === entry.kota);
-
-    const hasil = updateCollection("permintaan", (items) => [
-      ...items,
-      {
-        ...clone(entry),
-        id: entry.id ?? getNextId(items, "PMT"),
-      },
-    ]);
-
-    pushNotifikasi({
-      judul: "Data permintaan baru",
-      pesan: `Data permintaan ${entry.jumlah_permintaan} ton untuk kota ${entry.kota} berhasil ditambahkan.`,
-      tipe: "info",
-    });
-
-    if (riwayatSebelumnya.length > 0) {
-      const rataRataSebelumnya =
-        riwayatSebelumnya.reduce((total, item) => total + (Number(item.jumlah_permintaan) || 0), 0) /
-        riwayatSebelumnya.length;
-      const nilaiBaru = Number(entry.jumlah_permintaan) || 0;
-      const batasAnomali = rataRataSebelumnya * 1.5;
-
-      if (rataRataSebelumnya > 0 && nilaiBaru > batasAnomali) {
-        pushNotifikasi({
-          judul: "Anomali permintaan terdeteksi",
-          pesan: `Permintaan kota ${entry.kota} (${nilaiBaru} ton) melebihi rata-rata historisnya (${Math.round(rataRataSebelumnya)} ton) lebih dari 50%.`,
-          tipe: "warning",
-        });
-      }
+  async hasPermintaanDuplikat({ kota, tanggalPermintaan, excludeId }) {
+    let qs = `?kota=${encodeURIComponent(kota)}&tanggal_permintaan=${encodeURIComponent(tanggalPermintaan)}`;
+    if (excludeId) {
+      qs += `&excludeId=${encodeURIComponent(excludeId)}`;
     }
-
-    recordActivity(`Menambahkan data permintaan kota ${entry.kota}`);
-    notify();
-
-    return hasil;
+    const resp = await apiFetch(`/permintaan/duplikat${qs}`);
+    return resp.duplikat;
   },
 
-  updatePermintaan(id, updates) {
-    const hasil = updateCollection("permintaan", (items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, ...clone(updates) } : item
-      )
-    );
-
-    recordActivity(`Mengubah data permintaan kota ${updates.kota ?? id}`);
-    notify();
-
-    return hasil;
+  // Server owns the notification + anomaly-notification + activity-log side
+  // effects for this mutation (permintaanService.addPermintaan, LOGIC-03) —
+  // do NOT duplicate pushNotifikasi/recordActivity here.
+  async addPermintaan(entry) {
+    return runMutation(async () => {
+      const resp = await apiFetch("/permintaan", {
+        method: "POST",
+        body: {
+          kota: entry.kota,
+          tanggal_permintaan: entry.tanggal_permintaan ?? entry.tanggal_input,
+          tanggal_input: entry.tanggal_input ?? entry.tanggal_permintaan,
+          jumlah_permintaan: Number(entry.jumlah_permintaan),
+          keterangan: entry.keterangan,
+        },
+      });
+      state.permintaan = normalizePermintaanList([...state.permintaan, resp]);
+      notify();
+      return clone(resp);
+    });
   },
 
-  removePermintaan(id) {
-    const item = state.permintaan.find((entry) => entry.id === id);
-    const hasil = updateCollection("permintaan", (items) =>
-      items.filter((entry) => entry.id !== id)
-    );
+  async updatePermintaan(id, updates) {
+    return runMutation(async () => {
+      const resp = await apiFetch(`/permintaan/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        body: updates,
+      });
+      state.permintaan = normalizePermintaanList(
+        state.permintaan.map((item) => (item.id === id ? resp : item))
+      );
+      notify();
+      return clone(resp);
+    });
+  },
 
-    recordActivity(`Menghapus data permintaan kota ${item?.kota ?? id}`);
-    notify();
-
-    return hasil;
+  async removePermintaan(id) {
+    return runMutation(async () => {
+      await apiFetch(`/permintaan/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      state.permintaan = state.permintaan.filter((entry) => entry.id !== id);
+      notify();
+      return clone(state.permintaan);
+    });
   },
 
   getKeputusan() {
