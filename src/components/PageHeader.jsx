@@ -10,6 +10,7 @@ function PageHeader({ judul, deskripsi, aksi }) {
         paddingBottom: "var(--space-6)",
         borderBottom: "1px solid var(--color-border)",
         marginBottom: "var(--space-6)",
+        animation: "fadeInDown 300ms var(--ease-out) both",
       }}
     >
       <div style={{ minWidth: 0 }}>
@@ -20,10 +21,7 @@ function PageHeader({ judul, deskripsi, aksi }) {
             fontSize: "var(--text-2xl)",
             fontWeight: "var(--font-weight-bold)",
             letterSpacing: "var(--tracking-tight)",
-            background: "linear-gradient(90deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
+            color: "var(--color-text-primary)",
           }}
         >
           {judul}
@@ -31,15 +29,8 @@ function PageHeader({ judul, deskripsi, aksi }) {
         {deskripsi ? (
           <p
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "var(--space-2)",
               margin: "var(--space-2) 0 0",
-              backgroundColor: "var(--color-surface-2)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-full)",
-              padding: "3px 10px",
-              fontSize: "var(--text-xs)",
+              fontSize: "var(--text-sm)",
               color: "var(--color-text-muted)",
             }}
           >

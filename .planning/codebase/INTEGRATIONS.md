@@ -1,78 +1,160 @@
 # External Integrations
 
-**Analysis Date:** 2026-06-21
+**Analysis Date:** 2026-07-01
 
-## APIs & External Services
+## Frontend ↔ Backend REST API
 
-**None detected.** This is a fully client-side, offline-capable single-page application. No `fetch()`, `axios`, or any HTTP client calls to external services were found anywhere in `src/`.
+The frontend communicates with the backend exclusively through `src/api/apiClient.js` (`apiFetch`). Every page and store mutator uses this single path — Authorization header, error normalization, and 401 handling are applied once here.
 
-**Fonts (static asset only):**
-- Google Fonts - Inter and JetBrains Mono webfonts loaded via `<link>` tags in `index.html`
-  - SDK/Client: none (plain `<link rel="stylesheet">` and `<link rel="preconnect">`)
-  - Auth: none required
+**Base URL:** `http://localhost:4000` (default) or `VITE_API_BASE_URL` env override.
 
-**Mapping:**
-- Leaflet ^1.9.4 - client-side rendering library for the geographic distribution map in `src/components/PetaGeografis.jsx`
-  - This is a rendering library, not a hosted API integration — no tile-server API key or remote service call was found in the component. If a tile provider (e.g. OpenStreetMap tiles) is added, it would introduce a runtime network dependency not currently present.
+**Auth mechanism:** JWT Bearer token. Token is stored in `localStorage` under key `switera_token`. Every authenticated request includes `Authorization: Bearer <token>`. A 401 response clears the token and fires an unauthorized handler registered by `src/store.js`.
 
-## Data Storage
+### API Endpoints
 
-**Databases:**
-- None. There is no database, ORM, or query client anywhere in the codebase.
+| Method | Path | Auth | Role | Description |
+|--------|------|------|------|-------------|
+| POST | `/auth/login` | No | Any | Username/password/role login → returns JWT + user object |
+| POST | `/auth/register` | No | Any | Register new account |
+| GET | `/health` | No | Any | Health check → `{ status: "ok" }` |
+| GET | `/kota` | Yes | Any | List all cities |
+| POST | `/kota` | Yes | Admin | Create city |
+| PUT | `/kota/:nama` | Yes | Admin | Update city |
+| DELETE | `/kota/:nama` | Yes | Admin | Delete city |
+| GET | `/stok-tbs` | Yes | Any | Get current TBS stock singleton |
+| PUT | `/stok-tbs` | Yes | Admin, Manajer Distribusi | Update TBS stock |
+| GET | `/permintaan` | Yes | Any | List all requests |
+| POST | `/permintaan` | Yes | Tim Logistik, Admin | Create request |
+| PUT | `/permintaan/:id` | Yes | Tim Logistik, Admin | Update request |
+| DELETE | `/permintaan/:id` | Yes | Admin | Delete request |
+| GET | `/keputusan` | Yes | Any | List active distribution decisions |
+| POST | `/keputusan` | Yes | Manajer Distribusi, Admin | Create decision |
+| PUT | `/keputusan/:id/status` | Yes | Manajer Distribusi, Tim Logistik, Admin | Advance decision status |
+| DELETE | `/keputusan/:id` | Yes | Admin | Delete decision |
+| GET | `/riwayat-keputusan` | Yes | Any | List completed decision history |
+| GET | `/rekomendasi-distribusi` | Yes | Any | Ranking-based distribution recommendations |
+| GET | `/kpi` | Yes | Any | KPI metrics for dashboard |
+| GET | `/notifikasi` | Yes | Any | List notifications for current session |
+| PUT | `/notifikasi/:id/baca` | Yes | Any | Mark notification as read |
+| GET | `/activity-log` | Yes | Any | List activity log entries |
 
-**File Storage:**
-- Local filesystem only, limited to static seed data bundled at build time:
-  - `src/data/permintaan.json` - distribution request records
-  - `src/data/keputusan.json` - distribution decision records
-  - `src/data/notifikasi.json` - notification seed data
-  - `src/data/activityLog.json` - activity log seed data
+### Router Files
 
-**Caching / Persistence:**
-- Browser `window.localStorage` is the sole persistence layer, implemented in `src/store.js`:
-  - State is read from `localStorage` on load (`src/store.js:71`)
-  - State is written to `localStorage` on every mutation (`src/store.js:115`)
-  - Falls back silently to in-memory only state if `localStorage` is unavailable (e.g. private browsing / quota exceeded) (`src/store.js:117`)
+| Router | File |
+|--------|------|
+| Auth | `server/src/routes/authRoutes.js` |
+| Kota | `server/src/routes/kotaRoutes.js` |
+| Stok TBS | `server/src/routes/stokRoutes.js` |
+| Permintaan | `server/src/routes/permintaanRoutes.js` |
+| Keputusan | `server/src/routes/keputusanRoutes.js` |
+| Distribusi (rekomendasi + KPI) | `server/src/routes/distribusiRoutes.js` |
+| Notifikasi | `server/src/routes/notifikasiRoutes.js` |
+| Activity Log | `server/src/routes/activityLogRoutes.js` |
 
-## Authentication & Identity
+### Frontend Data Flow
 
-**Auth Provider:**
-- None — fully custom, client-side only authentication implemented in `src/store.js`.
-- A hardcoded list of user accounts (`akunSeed`) is defined directly in source with plaintext usernames/passwords (e.g. `manajer`/`manajer123`, `logistik`/`logistik123`, `admin`/`admin123`) and static roles (`Manajer Distribusi`, `Tim Logistik`, `Admin`).
-- Login (`src/pages/Login.jsx`) and Register (`src/pages/Register.jsx`) pages exist but operate purely against this in-memory/localStorage-backed account list — there is no server-side verification, password hashing, token issuance, or session-expiry mechanism.
-- This is a security-relevant gap if the app is ever exposed beyond a local demo/prototype context — see this noted explicitly for the `concerns` focus pass.
+1. `src/App.jsx` calls `store.hydrate()` on login/session-restore
+2. `store.hydrate()` (`src/store.js`) `Promise.all`s every domain loader — each calls `apiFetch`
+3. Synchronous getters (`store.getDaftarKota()`, etc.) return deep clones of the in-memory cache
+4. Mutators are `async`, call `apiFetch`, then write the server's authoritative response into the cache and call `notify()` to re-render subscribers
+5. `store.startPolling()` / `stopPolling()` polls the backend every 4 seconds (`pollTick`) to sync multi-user changes — no WebSocket/SSE
+
+## Database
+
+**Provider:** PostgreSQL 16 (local Docker: `docker-compose.yml`; connection via `DATABASE_URL`)
+
+**ORM:** Prisma 6.19.2 — schema at `server/prisma/schema.prisma`, migrations in `server/prisma/migrations/`
+
+### Models
+
+| Model | Primary Key | Description |
+|-------|-------------|-------------|
+| `Akun` | `id: String` | User accounts; passwords bcrypt-hashed; `role` is one of `Admin`, `Manajer Distribusi`, `Tim Logistik` |
+| `Kota` | `nama: String` | Cities; `kapasitas: Int`; parent of `Permintaan`, `Keputusan`, `RiwayatKeputusan` |
+| `Permintaan` | `id: String` | Distribution requests; FK to `Kota.nama` |
+| `Keputusan` | `id: String` | Active distribution decisions; FK to `Kota.nama`; has lifecycle timestamps |
+| `RiwayatKeputusan` | `id: String` | Completed/archived decisions; same shape as `Keputusan` |
+| `ActivityLog` | `id: String` | Audit trail; `aktor`, `role`, `aksi`, `waktu` |
+| `Notifikasi` | `id: String` | UI notifications; `dibaca: Boolean` |
+| `Stok` | `id: String` ("singleton") | Singleton row for current TBS stock value |
+
+**Seeder:** `server/prisma/seed.js` — populates initial accounts, cities, and stock from `src/data/*.json` seed files.
+
+## Authentication & Authorization
+
+**Auth mechanism:**
+- `POST /auth/login` checks bcrypt hash server-side (`bcryptjs` via `server/src/services/akunService.js`)
+- On success: `server/src/auth/jwt.js` issues a signed JWT (payload: `{ id, username, role }`)
+- Frontend stores token in `localStorage` (`switera_token` key) via `src/api/apiClient.js`
+- All authenticated requests send `Authorization: Bearer <token>`
+
+**RBAC middleware:**
+- `server/src/middleware/requireAuth.js` — verifies JWT, attaches `req.user`; returns 401 if missing/invalid
+- `server/src/middleware/requireRole(...roles)` — checks `req.user.role`; returns 403 if role not in allowed list
+- Applied per-route in each router file
+
+**Security note (from `server/.env`):** JWT is stored in `localStorage` (XSS-exposure tradeoff accepted for school demo; refresh-token rotation deferred — documented in `.planning/STATE.md` as threat T-09-JWT / AUTH-05/06).
+
+## Third-Party Libraries (client-side)
+
+**Leaflet ^1.9.4:**
+- Library: client-side interactive map rendering
+- Used in: `src/components/PetaGeografis.jsx`
+- External dependency: OpenStreetMap tile server (loaded at runtime if tile layer is configured)
+- No API key required for OSM tiles
+
+**Chart.js ^4.5.1 + react-chartjs-2 ^5.3.0:**
+- Purpose: bar/line/pie charts in dashboard and analytics pages
+- Used in: `src/pages/Dashboard.jsx`, `src/pages/Laporan.jsx`, `src/pages/AnalisisRanking.jsx`
+- Configured centrally: `src/utils/chartDefaults.js`
+- No external service — renders entirely in-browser
+
+**Google Fonts:**
+- Inter and JetBrains Mono loaded via `<link>` tags in `index.html`
+- No API key; plain CDN stylesheet request at page load
+
+## Docker (Local Development Database)
+
+**File:** `docker-compose.yml` (repo root)
+
+```
+Service: db
+Image: postgres:16
+Port: 5432:5432
+Credentials: POSTGRES_USER=switera / POSTGRES_PASSWORD=switera_dev_password / POSTGRES_DB=switera
+Volume: switera_pgdata (named, persists between restarts)
+```
+
+These credentials are dev-only defaults. The backend reads `DATABASE_URL` from `server/.env` — set this to match the Docker defaults: `postgresql://switera:switera_dev_password@localhost:5432/switera`.
+
+## Environment Variables Summary
+
+| Var | Location | Required | Default | Notes |
+|-----|----------|----------|---------|-------|
+| `DATABASE_URL` | `server/.env` | Yes | — | PostgreSQL connection string |
+| `JWT_SECRET` | `server/.env` | Yes | — | JWT signing secret |
+| `PORT` | `server/.env` | No | `4000` | Express listen port |
+| `CORS_ORIGIN` | `server/.env` | No | `http://localhost:5173` | Allowed CORS origin |
+| `VITE_API_BASE_URL` | frontend env | No | `http://localhost:4000` | Backend base URL override |
 
 ## Monitoring & Observability
 
-**Error Tracking:**
-- None. No Sentry, LogRocket, or similar service integrated.
+**Error Tracking:** None (no Sentry, LogRocket, etc.)
 
-**Logs:**
-- No structured logging. Application activity is tracked only via the in-app `activityLog` data (`src/data/activityLog.json`, mutated through `src/store.js`), which is a UI feature, not an operational/observability log.
+**Logs:** Default `console.log`/`console.error` only — no Winston/Pino or structured logging on the backend.
+
+**Activity Log:** `ActivityLog` model in PostgreSQL is a first-class UI feature (not an ops tool); written inside backend service calls alongside domain mutations; surfaced in `src/pages/RiwayatAktivitas.jsx` and the header notification dropdown.
 
 ## CI/CD & Deployment
 
-**Hosting:**
-- Not configured. No hosting-provider config (Vercel, Netlify, Firebase, etc.) found in the repository.
+**Hosting:** Not configured — no Vercel, Netlify, Firebase, or similar config files.
 
-**CI Pipeline:**
-- None. No `.github/workflows/`, no other CI config files detected.
+**CI Pipeline:** None — no `.github/workflows/` or other CI config.
 
-## Environment Configuration
+**Webhooks — Incoming:** None.
 
-**Required env vars:**
-- None. No `.env` files exist and no `process.env`/`import.meta.env` usage was found in source.
-
-**Secrets location:**
-- None applicable — no secrets are used. Note: demo account passwords are stored in plaintext directly in source (`src/store.js`), which is itself a concern if this code path is ever used outside of a local prototype.
-
-## Webhooks & Callbacks
-
-**Incoming:**
-- None — there is no backend/server component to receive webhooks.
-
-**Outgoing:**
-- None — no outbound webhook calls detected.
+**Webhooks — Outgoing:** None.
 
 ---
 
-*Integration audit: 2026-06-21*
+*Integration audit: 2026-07-01*

@@ -397,7 +397,7 @@ function Reveal({ children, delay = 0, style, className }) {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
 
     observer.observe(node);
@@ -411,7 +411,7 @@ function Reveal({ children, delay = 0, style, className }) {
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: `opacity 600ms ease ${delay}ms, transform 600ms ease ${delay}ms`,
+        transition: `opacity 600ms var(--ease-out) ${delay}ms, transform 600ms var(--ease-out) ${delay}ms`,
         ...style,
       }}
     >
@@ -427,7 +427,7 @@ function HeroGlow({ flip = false }) {
       style={{
         position: "absolute",
         inset: 0,
-        backgroundImage: `radial-gradient(ellipse 70% 40% at 50% ${flip ? "100%" : "0%"}, rgba(45,106,79,0.1) 0%, transparent 70%)`,
+        backgroundImage: `radial-gradient(ellipse 70% 40% at 50% ${flip ? "100%" : "0%"}, rgba(45,106,79,0.05) 0%, transparent 70%)`,
         pointerEvents: "none",
       }}
     />
@@ -577,7 +577,7 @@ function VisualCardShell({ children, icon }) {
         border: "1px solid var(--color-border-mid)",
         borderRadius: "14px",
         padding: "28px",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+        boxShadow: "var(--shadow-xl)",
         aspectRatio: "4 / 3",
         position: "relative",
         overflow: "hidden",
@@ -611,7 +611,7 @@ function VisualCardShell({ children, icon }) {
 function FiturVisual({ type }) {
   if (type === "ranking") {
     const rows = [
-      { rank: "🏆 #1", city: "Pekanbaru", pct: 90, ton: "287 ton", highlight: true },
+      { rank: "#1", city: "Pekanbaru", pct: 90, ton: "287 ton", highlight: true },
       { rank: "#2", city: "Medan", pct: 70, ton: "220 ton" },
       { rank: "#3", city: "Palembang", pct: 55, ton: "178 ton" },
     ];
@@ -666,7 +666,7 @@ function FiturVisual({ type }) {
               width: "fit-content",
             }}
           >
-            🤖 Rekomendasi Sistem
+            Rekomendasi Sistem
           </span>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: "var(--font-weight-bold)", fontSize: "2rem", letterSpacing: "-0.03em", color: "#fff" }}>
             Pekanbaru
@@ -873,19 +873,9 @@ function Landing({ onNavigate }) {
     >
       <style>
         {`
-          @keyframes landingFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-
           @keyframes landingFadeInUp {
             from { opacity: 0; transform: translateY(var(--from-y, 20px)); }
             to { opacity: 1; transform: translateY(0); }
-          }
-
-          @keyframes landingPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
           }
 
           .landing-hero-mockup {
@@ -1077,10 +1067,10 @@ function Landing({ onNavigate }) {
               fontSize: "11px",
               color: "var(--color-primary)",
               marginBottom: "20px",
-              animation: "landingFadeIn 600ms 100ms both",
+              animation: "fadeIn 600ms 100ms var(--ease-out) both",
             }}
           >
-            <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--color-primary)", animation: "landingPulse 2s infinite" }} />
+            <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--color-primary)", animation: "pulse 2s infinite" }} />
             Platform Distribusi TBS Kelapa Sawit
           </span>
 
@@ -1104,13 +1094,8 @@ function Landing({ onNavigate }) {
             <span
               style={{
                 fontStyle: "italic",
-                background: "linear-gradient(135deg, #fff 0%, rgba(45,106,79,0.85) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
+                color: "var(--color-primary-hover)",
                 display: "inline-block",
-                paddingRight: "0.18em",
-                marginRight: "-0.18em",
               }}
             >
               Akurat
@@ -1142,7 +1127,7 @@ function Landing({ onNavigate }) {
               justifyContent: "center",
               alignItems: "center",
               marginBottom: "48px",
-              animation: "landingFadeIn 600ms 500ms both",
+              animation: "fadeIn 600ms 500ms var(--ease-out) both",
             }}
           >
             <Tombol

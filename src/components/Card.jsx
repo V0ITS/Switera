@@ -24,7 +24,6 @@ function Card({ children, style, hoverable = false, accent, shimmer = false, cla
         borderTop: accent ? `2px solid ${accentColors[accent] ?? accentColors.primary}` : undefined,
         borderRadius: "var(--radius-lg)",
         padding: "var(--space-6)",
-        animation: "fadeInUp 300ms var(--ease-smooth) both",
         ...style,
       }}
     >

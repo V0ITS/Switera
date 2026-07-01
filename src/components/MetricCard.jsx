@@ -167,22 +167,6 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
         ...style,
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          bottom: "-20px",
-          right: "-20px",
-          width: "80px",
-          height: "80px",
-          borderRadius: "50%",
-          backgroundColor: colors.solid,
-          opacity: 0.12,
-          filter: "blur(20px)",
-          pointerEvents: "none",
-        }}
-      />
-
       <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-3)" }}>
         {ikon ? (
           <div

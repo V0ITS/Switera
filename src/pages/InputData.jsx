@@ -278,7 +278,7 @@ function InputData({ onNavigate }) {
             border: "1px solid var(--color-border-mid)",
             borderRadius: "var(--radius-xl)",
             padding: "var(--space-8)",
-            boxShadow: "var(--shadow-md), 0 0 0 1px rgba(255,255,255,0.03)",
+            boxShadow: "var(--shadow-md)",
           }}
         >
           <form onSubmit={handleSubmit}>
@@ -304,10 +304,10 @@ function InputData({ onNavigate }) {
                     style={getFieldStyle("kota")}
                     {...getFieldHandlers("kota")}
                   >
-                    <option value="">⚑ Pilih kota</option>
+                    <option value="">Pilih kota</option>
                     {daftarKota.map((kota) => (
                       <option key={kota.nama} value={kota.nama}>
-                        ⚑ {kota.nama}
+                        {kota.nama}
                       </option>
                     ))}
                   </select>
@@ -383,11 +383,11 @@ function InputData({ onNavigate }) {
             >
               <Tombol
                 type="submit"
-                disabled={isSaving}
+                isLoading={isSaving}
                 style={{ padding: "10px 28px" }}
                 label={
                   <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                    {isSaving ? <span className="spinner" /> : <IkonCheck />}
+                    {!isSaving ? <IkonCheck /> : null}
                     {isSaving ? "Menyimpan..." : "Simpan Data"}
                   </span>
                 }
@@ -396,7 +396,7 @@ function InputData({ onNavigate }) {
           </form>
         </Card>
 
-        <Card style={{ marginTop: "var(--space-6)" }}>
+        <Card style={{ marginTop: "var(--space-6)", animationDelay: "60ms" }}>
           <p
             style={{
               margin: "0 0 0.75rem",

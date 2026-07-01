@@ -9,8 +9,12 @@ function notify() {
 }
 
 function dismissToast(id) {
-  toasts = toasts.filter((toast) => toast.id !== id);
+  toasts = toasts.map((toast) => (toast.id === id ? { ...toast, exiting: true } : toast));
   notify();
+  window.setTimeout(() => {
+    toasts = toasts.filter((toast) => toast.id !== id);
+    notify();
+  }, 200);
 }
 
 function showToast({ type = "info", message, subMessage, duration = 3000, action }) {
@@ -66,7 +70,13 @@ function ToastItem({ toast }) {
         backgroundColor: "var(--color-surface-2)",
         borderLeft: `3px solid ${config.borderColor}`,
         overflow: "hidden",
-        animation: "slideInRight 300ms var(--ease-bounce) both",
+        ...(toast.exiting
+          ? {
+              opacity: 0,
+              transform: "translateX(100%)",
+              transition: "opacity 200ms var(--ease-smooth), transform 200ms var(--ease-smooth)",
+            }
+          : { animation: "slideInRight 250ms var(--ease-out) both" }),
       }}
     >
       <span style={{ color: config.iconColor, fontSize: "var(--text-md)", flexShrink: 0 }}>

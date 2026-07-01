@@ -89,13 +89,7 @@ const state = {
   riwayatKeputusan: [],
   notifikasi: [],
   activityLog: [],
-  // Optional read-only caches for the server-side ranking/KPI engine
-  // (distribusiService.js, Phase 8 LOGIC-01). AnalisisRanking/Laporan/
-  // Dashboard keep computing ranking client-side from the hydrated
-  // permintaan/kota/stok cache via src/utils/distribusi.js (09-05 decision:
-  // switching them onto these endpoints risks altering displayed numbers,
-  // out of scope for a no-visual-change phase) — these fields exist for
-  // optional future use only.
+  daftarAkun: [],
   rekomendasi: [],
   kpi: null,
 };
@@ -349,6 +343,9 @@ export const store = {
       store.loadRiwayatKeputusan(),
       store.loadNotifikasi(),
       store.loadActivityLog(),
+      store.loadAkun(),
+      store.loadRekomendasi(),
+      store.loadKpi(),
     ]);
     notify();
   },
@@ -554,22 +551,73 @@ export const store = {
     return clone(state.riwayatKeputusan);
   },
 
-  // Optional read-only loaders for the server-side ranking/KPI engine
-  // (distribusiService.js, Phase 8 LOGIC-01) — exposed for future use, NOT
-  // wired into AnalisisRanking/Laporan/Dashboard in this plan (see the
-  // `rekomendasi`/`kpi` cache-field comment above for the rationale).
+  async loadAkun() {
+    try {
+      const resp = await apiFetch("/akun");
+      state.daftarAkun = resp;
+      notify();
+      return clone(state.daftarAkun);
+    } catch (error) {
+      if (error.status === 403 || /tidak memiliki izin/i.test(error.message ?? "")) {
+        state.daftarAkun = [];
+        notify();
+        return clone(state.daftarAkun);
+      }
+      throw error;
+    }
+  },
+
+  async updateAkunData(id, updates) {
+    return runMutation(async () => {
+      const resp = await apiFetch(`/akun/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        body: updates,
+      });
+      state.daftarAkun = state.daftarAkun.map((item) => (item.id === id ? resp : item));
+      notify();
+      return clone(resp);
+    });
+  },
+
+  async hapusAkunById(id) {
+    return runMutation(async () => {
+      await apiFetch(`/akun/${encodeURIComponent(id)}`, { method: "DELETE" });
+      state.daftarAkun = state.daftarAkun.filter((item) => item.id !== id);
+      notify();
+      return clone(state.daftarAkun);
+    });
+  },
+
   async loadRekomendasi() {
-    const resp = await apiFetch("/rekomendasi-distribusi");
-    state.rekomendasi = resp;
-    notify();
-    return clone(state.rekomendasi);
+    try {
+      const resp = await apiFetch("/rekomendasi-distribusi");
+      state.rekomendasi = resp;
+      notify();
+      return clone(state.rekomendasi);
+    } catch (error) {
+      if (error.status === 403 || /tidak memiliki izin/i.test(error.message ?? "")) {
+        state.rekomendasi = [];
+        notify();
+        return clone(state.rekomendasi);
+      }
+      throw error;
+    }
   },
 
   async loadKpi() {
-    const resp = await apiFetch("/kpi");
-    state.kpi = resp;
-    notify();
-    return clone(state.kpi);
+    try {
+      const resp = await apiFetch("/kpi");
+      state.kpi = resp;
+      notify();
+      return clone(state.kpi);
+    } catch (error) {
+      if (error.status === 403 || /tidak memiliki izin/i.test(error.message ?? "")) {
+        state.kpi = null;
+        notify();
+        return null;
+      }
+      throw error;
+    }
   },
 
   // Server owns the notification + activity-log side effects for this

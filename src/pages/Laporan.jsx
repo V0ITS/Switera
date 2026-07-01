@@ -10,6 +10,7 @@ import { SkeletonChart } from "../components/Skeleton";
 import store from "../store";
 import {
   CHART_PALETTE,
+  chartAnimationDefaults,
   chartGridDefaults,
   chartLegendDefaults,
   chartTickDefaults,
@@ -129,6 +130,7 @@ function GrafikTrenPermintaan({ datasets, labels }) {
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: chartAnimationDefaults,
             plugins: {
               legend: {
                 position: "bottom",
@@ -180,7 +182,7 @@ function GrafikTrenPermintaan({ datasets, labels }) {
   }, [datasets, labels]);
 
   return (
-    <Card style={{ minHeight: "420px" }}>
+    <Card style={{ minHeight: "420px", animationDelay: "60ms" }}>
       <SectionHeader>Tren Permintaan per Kota</SectionHeader>
 
       {chartError ? (
@@ -251,6 +253,7 @@ function GrafikStatusPengiriman({ counts }) {
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: chartAnimationDefaults,
             plugins: {
               legend: {
                 position: "bottom",
@@ -282,7 +285,7 @@ function GrafikStatusPengiriman({ counts }) {
   }, [counts, total]);
 
   return (
-    <Card style={{ minHeight: "420px" }}>
+    <Card style={{ minHeight: "420px", animationDelay: "60ms" }}>
       <SectionHeader>Status Pengiriman</SectionHeader>
 
       {chartError ? (

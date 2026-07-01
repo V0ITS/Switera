@@ -1,6 +1,6 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-06-21
+**Analysis Date:** 2026-07-01
 
 ## Naming Patterns
 
@@ -12,96 +12,227 @@
 - Stylesheets: lowercase — `src/index.css`, `src/tokens.css`, `src/styles/animations.css`
 
 **Functions:**
-- Components are declared as named `function` declarations (not arrow functions assigned to const), then `export default` at the bottom — see `src/components/Tombol.jsx:3`, `src/App.jsx:57`
-- Helper/utility functions are `const` arrow functions — `src/utils/format.js:16` (`formatDate`), `src/store.js:46` (`clone`)
-- Store mutator methods use Indonesian verb prefixes consistent with domain language: `tambah*` (add), `hapus*` (delete), `update*`, `get*`, `set*` — see `src/store.js:206-512` (`tambahAkun`, `hapusKota`, `updateKota`, `getDaftarAkun`)
+- Components: named `function` declarations (NOT arrow functions assigned to const)
+- Helpers/utilities: `const` arrow functions — `src/utils/format.js:16` (`formatDate`), `src/store.js:18` (`clone`)
+- Event handlers: camelCase prefixed with `handle` — `handleChange`, `handleSubmit` in `src/pages/InputData.jsx:88,98`
+- Store mutators follow Indonesian verb prefixes: `tambah*` (add), `hapus*` (delete), `update*`, `get*`, `load*`, `set*`
 
 **Variables:**
-- camelCase throughout, predominantly **Bahasa Indonesia** domain terms mixed with English programming terms — e.g. `daftarKota` (city list), `userAktif` (active user), `riwayatKeputusan` (decision history) in `src/store.js:95-107`
-- Boolean state flags prefixed with `is`: `isSaving`, `isLegacyDaftarKota` — `src/pages/InputData.jsx:38`, `src/store.js:80`
-- Event handler variables prefixed with `handle`: `handleChange`, `handleSubmit` — `src/pages/InputData.jsx:83,93`
+- camelCase throughout
+- Boolean state flags prefixed with `is`: `isSaving`, `isLoading` — `src/pages/InputData.jsx:38`
+- Domain collections prefixed with `daftar`: `daftarKota`, `daftarAkun`, `daftarPermintaan`
+- Predominantly **Bahasa Indonesia** domain terms: `kota` (city), `tanggalPermintaan` (request date), `jumlahPermintaan` (request qty), `userAktif` (active user), `roleAktif`, `riwayatKeputusan` (decision history)
 
-**Types:**
-- No TypeScript; this is a plain JavaScript/JSX codebase (`.js` / `.jsx` only, no `.ts`/`.tsx` files, no `tsconfig.json`)
-- Object shapes are implicit/documented only via usage in JSON seed files (`src/data/*.json`) and store seed constants (`src/store.js:7-39`)
+**Types/Shapes:**
+- No TypeScript; shapes documented only by usage in JSON seed files and store seed constants
+- Object shapes are flat and snake_case where they mirror DB columns (`tanggal_permintaan`, `tanggal_input`), camelCase everywhere else in frontend code
 
-## Code Style
+## Component Structure
 
-**Formatting:**
-- No Prettier config file present (no `.prettierrc*`). Code is consistently formatted with double quotes for strings, 2-space indentation, and trailing commas in multi-line object/array literals — observable throughout `src/store.js` and `src/pages/InputData.jsx`
-- Semicolons are used consistently at statement ends
+Components follow a strict pattern — **always function declaration, export default at the bottom:**
 
-**Linting:**
-- No ESLint config present (no `.eslintrc*`, `eslint.config.*`). No lint script in `package.json`. Conventions are maintained by convention/discipline only, not tooling enforcement
-- No `package.json` `"scripts"` exist for `lint`, `test`, `format` — only `dev` and `build` (`package.json:6-9`)
+```jsx
+// src/components/Tombol.jsx
+function Tombol({ label, variant = "primer", onClick, type = "button", disabled = false, isLoading = false, style }) {
+  // hooks first
+  const { ripples, onMouseDown, removeRipple } = useRipple();
+
+  return (
+    <button ...>
+      {/* JSX */}
+    </button>
+  );
+}
+
+export default Tombol;  // always at bottom, never inline
+```
+
+Small private helper components (icons, sub-renders) are defined as named function declarations above the main component in the same file — e.g. `IkonCheck` in `src/pages/InputData.jsx:9-16`.
+
+**Page component pattern:**
+```jsx
+function InputData({ onNavigate }) {
+  // 1. useState declarations
+  const [snapshot, setSnapshot] = useState(store.getState());
+  const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 2. useEffect — subscribe to store
+  useEffect(() => {
+    const unsubscribe = store.subscribe((next) => setSnapshot(next));
+    return unsubscribe;
+  }, []);
+
+  // 3. useEffect — load data on mount
+  useEffect(() => { store.loadPermintaan(); store.loadKota(); }, []);
+
+  // 4. useMemo for derived data
+  const daftarKota = useMemo(() => snapshot.daftarKota ?? [], [snapshot.daftarKota]);
+
+  // 5. local helpers / validation
+  const validate = async (nextForm) => { ... };
+
+  // 6. event handlers (handleChange, handleSubmit, etc.)
+  const handleChange = async (field, value) => { ... };
+  const handleSubmit = async (event) => { ... };
+
+  // 7. return JSX
+  return ( ... );
+}
+
+export default InputData;
+```
 
 ## Import Organization
 
-**Order (observed, not enforced by tooling):**
-1. External packages (React, third-party libs) — e.g. `import { useEffect, useMemo, useState } from "react";`
-2. Local components — `import Card from "../components/Card";`
-3. Local utils/store — `import store from "../store";`, `import { parseCsvToObjects } from "../utils/csv";`
+No enforced ordering. In practice, imports in pages follow this informal order:
+1. React hooks (`import { useEffect, useMemo, useState } from "react"`)
+2. Shared components (`import Card from "../components/Card"`)
+3. Store (`import store from "../store"`)
+4. Utilities (`import { parseCsvToObjects } from "../utils/csv"`)
 
-Example from `src/pages/InputData.jsx:1-7`:
-```js
-import { useEffect, useMemo, useState } from "react";
-import Card from "../components/Card";
-import PageHeader from "../components/PageHeader";
-import Tombol from "../components/Tombol";
-import { showToast } from "../components/Toast";
-import store from "../store";
-import { parseCsvToObjects } from "../utils/csv";
-```
+No path aliases — all imports use relative paths (`../components/...`, `./pages/...`). No barrel `index.js` files.
 
-**Path Aliases:**
-- None configured. All imports use relative paths (`../components/...`, `./pages/...`). `vite.config.js` defines no `resolve.alias`.
+## Code Style
+
+- **Indentation:** 2 spaces
+- **Quotes:** Double quotes for strings — `"primer"`, `"button"`, `"Menunggu"`
+- **Semicolons:** Present at every statement end
+- **Trailing commas:** Used in multi-line object/array literals
+- **No linting tooling:** No `.eslintrc`, no `.prettierrc`, no `lint` script in `package.json` — consistency maintained by discipline only
 
 ## Error Handling
 
-**Patterns:**
-- `try/catch` is used narrowly around `localStorage` access and `matchMedia`, with empty/comment-only catch blocks treating failures as non-fatal — `src/store.js:70-76` (`loadPersisted`), `src/store.js:87-92` (`getSystemPreferredTema`), `src/store.js:114-118` (`persistState`, includes explanatory comment `// localStorage unavailable (private mode/quota) — continue without persistence`)
-- Domain validation errors are thrown with `throw new Error("...")` using Indonesian user-facing messages, caught by calling UI code — `src/store.js:249` (`tambahKota`)
-- Promise rejections from browser APIs (View Transitions API) are swallowed with `.catch(() => {})` — `src/App.jsx:49-51`
-- Form-level validation returns an error object (`{ field: message }`) rather than throwing — `src/pages/InputData.jsx:51-81` (`validate`)
-- No централized error boundary or global error handler exists; errors are handled locally at the point of risk
+**Frontend — form validation:**
+Returns an error object `{ field: message }` — never throws:
 
-## Logging
+```jsx
+// src/pages/InputData.jsx:56-86
+const validate = async (nextForm) => {
+  const nextErrors = {};
+  if (!nextForm.kota) nextErrors.kota = "Nama kota wajib dipilih.";
+  if (!nextForm.tanggalPermintaan) nextErrors.tanggalPermintaan = "Tanggal permintaan wajib diisi.";
+  return nextErrors;
+};
+```
 
-**Framework:** None (no logging library). No `console.log` calls found in reviewed source files outside of error suppression comments.
+**Frontend — async store calls (standard pattern):**
+```jsx
+setIsSaving(true);
+try {
+  await store.addPermintaan({ ... });
+  showToast({ type: "success", message: "..." });
+  setForm(initialForm);
+} catch (err) {
+  showToast({ type: "error", message: err.message ?? "Terjadi kesalahan." });
+} finally {
+  setIsSaving(false);
+}
+```
 
-**Patterns:**
-- Application "logging" is modeled as a domain feature, not a dev tool: `pushActivity` / `recordActivity` write structured activity log entries into app state for display in the UI (`src/store.js:157-174`), not to the console or any external service.
+**Frontend — localStorage access:**
+`try/catch` with empty catch — failure degrades silently:
+```js
+// src/store.js:48-59
+try {
+  const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  return raw ? JSON.parse(raw) : null;
+} catch {
+  return null;
+}
+```
+
+**Backend — service-layer errors:**
+Services throw `Error` with Indonesian messages. Preferred pattern for new code:
+```js
+Object.assign(new Error("Data tidak ditemukan."), { statusCode: 404 })
+```
+Legacy pattern (pre-`statusCode`): `throw new Error("sudah ada")`, `throw new Error("tidak ditemukan")` — caught by `errorHandler.js` via string matching.
+
+**Backend — `errorHandler.js` (`server/src/middleware/errorHandler.js`):**
+- `err.statusCode` present → use it directly
+- Message contains `"sudah ada"` or `"sudah digunakan"` → 409
+- Message contains `"tidak bisa dihapus"` → 409
+- Message contains `"tidak ditemukan"` → 404
+- Anything else → 500 with generic `"Terjadi kesalahan pada server."` (never leaks stack traces)
+
+**Backend — request validation (`server/src/middleware/validate.js`):**
+`validate(schema)` wraps Zod schemas. On failure: 400 `{ error: "Validasi gagal.", fields: { <field>: <message> } }`. `req.body` is replaced with schema's parsed output — handlers must spread the validated DTO, never raw `req.body`, into Prisma.
+
+## CSS / Styling Conventions
+
+**Design tokens from `src/tokens.css`:**
+All values are CSS custom properties on `:root`. Always use tokens — never hardcode literals.
+
+Key token namespaces:
+- Colors: `--color-bg`, `--color-surface`, `--color-surface-2`, `--color-surface-3`, `--color-primary`, `--color-accent`, `--color-danger`, `--color-success`, `--color-text-primary`, `--color-text-secondary`, `--color-text-muted`
+- Typography: `--text-xs` through `--text-4xl`, `--font-weight-normal/medium/semibold/bold`, `--font-display`, `--font-mono`
+- Radius: `--radius-xs` through `--radius-2xl`, `--radius-full`
+- Shadows: `--shadow-xs` through `--shadow-xl` — tuned for dark theme (opacity ~0.22–0.45). Do NOT write ad-hoc `boxShadow` literals; compose from these tokens.
+- Easing: `--ease-out` (standard entrance), `--ease-bounce` (reserved, intentionally unused by default)
+
+**Animation system (`src/styles/animations.css`):**
+Single source of truth for shared keyframes. Use utility classes or reference named keyframes inline — do NOT define new per-component keyframe blocks:
+
+```jsx
+// Utility class approach
+<div className="anim-fadeInUp">...</div>
+
+// Inline animation referencing shared keyframe
+style={{ animation: "fadeInUp16 500ms var(--ease-out) both" }}
+```
+
+Available shared keyframes: `fadeIn`, `fadeInUp16`, `fadeInDown`, `slideInRight`, `slideInLeft`, `scaleIn`, `shimmerSlide`, `pulse`, `spin`, `countUp`, `borderGlow`, `dotBounce`, `rowEnter`, `rowExit`.
+
+`prefers-reduced-motion` is handled once globally in `animations.css` — no per-component media queries needed.
+
+**Note:** `src/tokens.css` defines a few component-scoped keyframes (`fadeInUp` at 8px, `pageEnter`, `shimmer`) that are intentionally distinct from the similarly-named ones in `animations.css` — not duplicates to merge.
+
+## Domain Language Reference
+
+Indonesian terms used throughout the codebase:
+
+| Term | Meaning |
+|------|---------|
+| `kota` | city |
+| `permintaan` | request / demand |
+| `keputusan` | distribution decision |
+| `distribusi` | distribution |
+| `tonase` / `jumlah` | tonnage / quantity |
+| `daftar*` | list/collection — e.g. `daftarKota` |
+| `userAktif` | currently logged-in user |
+| `roleAktif` | active role |
+| `tema` | UI theme (dark/light) |
+| `riwayat*` | history — e.g. `riwayatKeputusan` |
+| `stok` | stock |
+| `laporan` | report |
+| `akun` | account/user |
+| `tambah*` | add — store mutator prefix |
+| `hapus*` | delete — store mutator prefix |
+| `update*` | update — store mutator prefix |
+| `load*` | fetch from backend into cache |
+
+## Module Exports
+
+- **Components:** `export default ComponentName` only — no named exports from component files (except `Toast.jsx` which exports both `default useToast` and named `{ showToast, ToastContainer }`)
+- **Utility modules:** named exports only, no default — `src/utils/format.js`, `src/utils/csv.js`
+- **Singleton modules (store):** both default and named export of the same object — `src/store.js` (`export default store;` + `export const store = {...}`)
 
 ## Comments
 
-**When to Comment:**
-- Sparse. Comments are used only to explain non-obvious defensive code, e.g. `// localStorage unavailable (private mode/quota) — continue without persistence` (`src/store.js:117`)
-- No file-header or module-level doc comments observed
+Sparse. Used only to explain non-obvious defensive decisions — never describe WHAT the code does:
 
-**JSDoc/TSDoc:**
-- Not used anywhere in the codebase
+```js
+// switera_session_v2 replaces the old switera_state_v1 domain blob: the
+// server is now the source of truth for all DOMAIN collections (Phase 9
+// hydrated in-memory cache decision). Only the session (active user) and
+// the tema UI preference — never a backend concern — are persisted here.
+// src/store.js:42-46
+```
 
-## Function Design
-
-**Size:** Functions are kept small and single-purpose; larger page components (e.g. `src/pages/InputData.jsx`) decompose logic into local helper functions (`validate`, `handleChange`, `handleSubmit`) inside the component body rather than extracting to separate files when the logic is component-specific.
-
-**Parameters:** Object-destructured parameters are preferred for functions with multiple related inputs — `tambahKota({ nama, kapasitas })` (`src/store.js:247`), `showToast({ type = "info", message, subMessage, duration = 3000, action })` (`src/components/Toast.jsx:16`). Default values are assigned directly in the destructuring signature.
-
-**Return Values:** Store getters consistently return deep clones of internal state via the `clone()` helper (`src/store.js:46`) to prevent external mutation of internal state — e.g. `getState()`, `getPermintaan()`, `getDaftarKota()` all wrap return values in `clone(...)`.
-
-## Module Design
-
-**Exports:** Mixed default + named exports per file depending on purpose:
-- Components: `export default ComponentName` only — `src/components/Tombol.jsx:28`
-- Utility modules: named exports for each function, no default — `src/utils/csv.js` (`parseCsv`, `parseCsvToObjects`, `downloadCsv`), `src/utils/format.js` (`formatDate`, `formatTonase`, etc.)
-- Singleton modules (store, toast): both a default export and named export of the same object — `src/store.js:514` (`export default store;` plus `export const store = {...}`), `src/components/Toast.jsx:167-168` (`export default useToast; export { showToast, ToastContainer };`)
-
-**Barrel Files:** Not used. No `index.js` re-export files found in `src/components/` or `src/utils/`.
-
-**State Management:** No external state library (no Redux/Zustand/Context API usage). Global state is a hand-rolled singleton pub/sub store (`src/store.js`) using a `Set` of listener callbacks (`listeners`), a `subscribe()` method, and `notify()` to broadcast cloned snapshots. Persisted to `window.localStorage` under key `switera_state_v1`. Components subscribe via `useEffect` + `useState` in each page/component that needs live data — pattern repeated in `src/App.jsx:82-88` and `src/pages/InputData.jsx:41-47`.
-
-**Domain Language:** The codebase consistently mixes Indonesian domain terminology (kota=city, permintaan=request, keputusan=decision, stok=stock, akun=account) with English programming idioms. New code should follow this same mixed convention rather than translating domain terms to English.
+No JSDoc/TSDoc anywhere. No file-header comments. Backend middleware files use JSDoc-style block comments at the top to explain the middleware contract — `server/src/middleware/errorHandler.js:1-18`, `server/src/middleware/validate.js:1-15`.
 
 ---
 
-*Convention analysis: 2026-06-21*
+*Convention analysis: 2026-07-01*

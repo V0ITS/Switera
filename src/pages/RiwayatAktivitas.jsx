@@ -112,7 +112,7 @@ function RiwayatAktivitas({ onNavigate }) {
     borderColor:
       focusedField === field ? "var(--color-primary)" : "var(--color-border)",
     boxShadow:
-      focusedField === field ? "0 0 0 3px var(--color-primary-subtle)" : "none",
+      focusedField === field ? "0 0 0 3px var(--color-primary-glow)" : "none",
   });
 
   const labelStyle = {
@@ -145,7 +145,7 @@ function RiwayatAktivitas({ onNavigate }) {
           gap: "1.5rem",
         }}
       >
-        <Card>
+        <Card style={{ animationDelay: "40ms" }}>
           <div
             style={{
               display: "grid",

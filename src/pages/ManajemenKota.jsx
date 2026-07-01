@@ -13,6 +13,28 @@ import store from "../store";
 
 const initialForm = { nama: "", kapasitas: "" };
 
+function IkonEditKecil() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 20L4.6 16.4L15.5 5.5C16 5 16.7 5 17.2 5.5L18.5 6.8C19 7.3 19 8 18.5 8.5L7.6 19.4L4 20Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IkonHapusKecil() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M5 7H19M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M7 7L7.7 19C7.8 19.6 8.3 20 8.9 20H15.1C15.7 20 16.2 19.6 16.3 19L17 7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const labelStyle = {
   display: "block",
 };
@@ -67,7 +89,7 @@ function AksiTabelButtons({ onEdit, onDelete }) {
         onClick={onEdit}
         onMouseDown={editRipple.onMouseDown}
       >
-        <span aria-hidden="true">✎</span>
+        <IkonEditKecil />
         Edit
         <RippleSpans ripples={editRipple.ripples} removeRipple={editRipple.removeRipple} />
       </button>
@@ -77,7 +99,7 @@ function AksiTabelButtons({ onEdit, onDelete }) {
         onClick={onDelete}
         onMouseDown={deleteRipple.onMouseDown}
       >
-        <span aria-hidden="true">🗑</span>
+        <IkonHapusKecil />
         Hapus
         <RippleSpans ripples={deleteRipple.ripples} removeRipple={deleteRipple.removeRipple} />
       </button>
@@ -187,12 +209,16 @@ function ManajemenKota({ onNavigate }) {
   };
 
   const requestDelete = async (kota) => {
-    const { permintaanCount, keputusanCount } = await store.getKotaReferenceCounts(kota.nama);
+    try {
+      const { permintaanCount, keputusanCount } = await store.getKotaReferenceCounts(kota.nama);
 
-    if (permintaanCount > 0 || keputusanCount > 0) {
-      setBlockedTarget({ ...kota, permintaanCount, keputusanCount });
-    } else {
-      setDeleteTarget(kota);
+      if (permintaanCount > 0 || keputusanCount > 0) {
+        setBlockedTarget({ ...kota, permintaanCount, keputusanCount });
+      } else {
+        setDeleteTarget(kota);
+      }
+    } catch (error) {
+      showToast({ type: "error", message: error.message ?? "Gagal memeriksa referensi kota." });
     }
   };
 
@@ -201,9 +227,13 @@ function ManajemenKota({ onNavigate }) {
       return;
     }
 
-    await store.hapusKota(deleteTarget.nama);
-    setDeleteTarget(null);
-    showToast({ type: "success", message: "Kota berhasil dihapus." });
+    try {
+      await store.hapusKota(deleteTarget.nama);
+      setDeleteTarget(null);
+      showToast({ type: "success", message: "Kota berhasil dihapus." });
+    } catch {
+      // runMutation already surfaced a Toast for the failure.
+    }
   };
 
   const openStockModal = () => {
@@ -220,9 +250,13 @@ function ManajemenKota({ onNavigate }) {
       return;
     }
 
-    await store.setStokTbs(numericValue);
-    setIsStockModalOpen(false);
-    showToast({ type: "success", message: "Stok TBS berhasil diperbarui." });
+    try {
+      await store.setStokTbs(numericValue);
+      setIsStockModalOpen(false);
+      showToast({ type: "success", message: "Stok TBS berhasil diperbarui." });
+    } catch {
+      // runMutation already surfaced a Toast for the failure; modal stays open.
+    }
   };
 
   return (
@@ -248,7 +282,7 @@ function ManajemenKota({ onNavigate }) {
           <Tombol label="Edit" variant="sekunder" onClick={openStockModal} />
         </MetricCard>
 
-        <Card>
+        <Card style={{ animationDelay: "60ms" }}>
           <SectionHeader>
             Daftar Kota — Menampilkan {daftarKota.length} kota
           </SectionHeader>
@@ -286,7 +320,7 @@ function ManajemenKota({ onNavigate }) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "var(--space-4)",
               }}
             >
               <label style={labelStyle}>
@@ -343,7 +377,7 @@ function ManajemenKota({ onNavigate }) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "var(--space-4)",
               }}
             >
               <label style={labelStyle}>
@@ -392,7 +426,7 @@ function ManajemenKota({ onNavigate }) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "var(--space-4)",
               }}
             >
               <p style={{ margin: 0, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
@@ -431,7 +465,7 @@ function ManajemenKota({ onNavigate }) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "var(--space-4)",
               }}
             >
               <p style={{ margin: 0, color: "var(--color-text-secondary)", lineHeight: 1.6 }}>

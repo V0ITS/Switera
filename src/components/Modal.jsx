@@ -44,19 +44,6 @@ function Modal({ judul, konten, onTutup }) {
 
   return (
     <>
-      <style>
-        {`
-          @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-
-          @keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        `}
-      </style>
       <div
         role="dialog"
         aria-modal="true"
@@ -72,7 +59,7 @@ function Modal({ judul, konten, onTutup }) {
           justifyContent: "center",
           padding: "1.5rem",
           zIndex: "var(--z-modal)",
-          animation: "modalFadeIn 200ms var(--ease-smooth)",
+          animation: "fadeIn 150ms var(--ease-out)",
         }}
       >
         <div
@@ -90,7 +77,7 @@ function Modal({ judul, konten, onTutup }) {
             borderRadius: "var(--radius-xl)",
             boxShadow: "var(--shadow-xl)",
             padding: "var(--space-8)",
-            animation: "modalSlideUp 250ms var(--ease-bounce)",
+            animation: "scaleIn 200ms var(--ease-out)",
           }}
         >
           <button

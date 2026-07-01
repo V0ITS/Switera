@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard";
 import InputData from "./pages/InputData";
 import ManajemenData from "./pages/ManajemenData";
 import ManajemenKota from "./pages/ManajemenKota";
+import ManajemenAkun from "./pages/ManajemenAkun";
 import AnalisisRanking from "./pages/AnalisisRanking";
 import KeputusanDistribusi from "./pages/KeputusanDistribusi";
 import StatusDistribusi from "./pages/StatusDistribusi";
@@ -21,6 +22,7 @@ const pageRegistry = {
   "input-data": InputData,
   "manajemen-data": ManajemenData,
   "manajemen-kota": ManajemenKota,
+  "manajemen-akun": ManajemenAkun,
   "analisis-ranking": AnalisisRanking,
   "keputusan-distribusi": KeputusanDistribusi,
   "status-distribusi": StatusDistribusi,
@@ -33,6 +35,7 @@ const pathByPage = {
   "input-data": "/input-data",
   "manajemen-data": "/manajemen-data",
   "manajemen-kota": "/manajemen-kota",
+  "manajemen-akun": "/manajemen-akun",
   "analisis-ranking": "/analisis-ranking",
   "keputusan-distribusi": "/keputusan-distribusi",
   "status-distribusi": "/status-distribusi",

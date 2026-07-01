@@ -84,11 +84,6 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
     <>
       <style>
         {`
-          @keyframes authCardIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-          }
-
           .auth-input::placeholder {
             color: var(--color-text-disabled);
           }
@@ -113,7 +108,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "24px",
+          padding: "var(--space-6)",
           boxSizing: "border-box",
           overflowY: "auto",
         }}
@@ -137,15 +132,14 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             width: "min(420px, 90vw)",
             boxSizing: "border-box",
             backgroundColor: "rgba(13,13,13,0.75)",
-            backdropFilter: "blur(20px) saturate(160%)",
-            WebkitBackdropFilter: "blur(20px) saturate(160%)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
             border: "1px solid rgba(255,255,255,0.07)",
             borderTop: "1px solid rgba(255,255,255,0.12)",
             borderRadius: "var(--radius-xl)",
-            boxShadow:
-              "var(--shadow-xl), 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+            boxShadow: "var(--shadow-xl)",
             padding: "var(--space-10)",
-            animation: "authCardIn 300ms var(--ease-bounce) both",
+            animation: "scaleIn 200ms var(--ease-out) both",
           }}
         >
           {onClose ? <TombolClose onClick={onClose} /> : null}
@@ -155,7 +149,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "var(--space-2)",
                 marginBottom: "var(--space-5)",
               }}
             >

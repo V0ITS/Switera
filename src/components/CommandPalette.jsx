@@ -114,7 +114,7 @@ function CommandPalette({ isOpen, onClose, menuItems, onNavigate }) {
         justifyContent: "center",
         alignItems: "flex-start",
         paddingTop: "12vh",
-        animation: "fadeInUp 150ms var(--ease-smooth)",
+        animation: "fadeIn 150ms var(--ease-out)",
       }}
     >
       <div
@@ -128,6 +128,7 @@ function CommandPalette({ isOpen, onClose, menuItems, onNavigate }) {
           borderRadius: "var(--radius-lg)",
           boxShadow: "var(--shadow-lg)",
           overflow: "hidden",
+          animation: "scaleIn 200ms var(--ease-out)",
         }}
       >
         <div

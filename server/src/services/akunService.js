@@ -102,3 +102,45 @@ export async function registerAkun({ nama, username, role }, password) {
 
   return stripPassword(akun);
 }
+
+export async function getDaftarAkun() {
+  const daftar = await prisma.akun.findMany({ orderBy: { id: "asc" } });
+  return daftar.map(stripPassword);
+}
+
+export async function updateAkun(id, { nama, role }) {
+  const existing = await prisma.akun.findUnique({ where: { id } });
+  if (!existing) {
+    const err = new Error("Akun tidak ditemukan.");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const akun = await prisma.akun.update({
+    where: { id },
+    data: {
+      nama: nama?.trim() ?? existing.nama,
+      role: role ?? existing.role,
+    },
+  });
+
+  return stripPassword(akun);
+}
+
+export async function hapusAkun(id, requesterId) {
+  if (id === requesterId) {
+    const err = new Error("Tidak dapat menghapus akun sendiri.");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const existing = await prisma.akun.findUnique({ where: { id } });
+  if (!existing) {
+    const err = new Error("Akun tidak ditemukan.");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await prisma.akun.delete({ where: { id } });
+  return stripPassword(existing);
+}

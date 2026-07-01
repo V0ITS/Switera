@@ -20,6 +20,37 @@ const initialEditForm = {
   keterangan: "",
 };
 
+function IkonSearch({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M20 20L16.5 16.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IkonEditKecil() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 20L4.6 16.4L15.5 5.5C16 5 16.7 5 17.2 5.5L18.5 6.8C19 7.3 19 8 18.5 8.5L7.6 19.4L4 20Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IkonHapusKecil() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M5 7H19M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7M7 7L7.7 19C7.8 19.6 8.3 20 8.9 20H15.1C15.7 20 16.2 19.6 16.3 19L17 7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function AksiTabelButtons({ onEdit, onDelete }) {
   const editRipple = useRipple();
   const deleteRipple = useRipple();
@@ -38,7 +69,7 @@ function AksiTabelButtons({ onEdit, onDelete }) {
         onClick={onEdit}
         onMouseDown={editRipple.onMouseDown}
       >
-        <span aria-hidden="true">✎</span>
+        <IkonEditKecil />
         Edit
         <RippleSpans ripples={editRipple.ripples} removeRipple={editRipple.removeRipple} />
       </button>
@@ -48,7 +79,7 @@ function AksiTabelButtons({ onEdit, onDelete }) {
         onClick={onDelete}
         onMouseDown={deleteRipple.onMouseDown}
       >
-        <span aria-hidden="true">🗑</span>
+        <IkonHapusKecil />
         Hapus
         <RippleSpans ripples={deleteRipple.ripples} removeRipple={deleteRipple.removeRipple} />
       </button>
@@ -283,7 +314,7 @@ function ManajemenData({ onNavigate }) {
             color: "var(--color-text-primary)",
             fontFamily: "var(--font-mono)",
             fontSize: "var(--text-sm)",
-            padding: "3px 6px",
+            padding: "var(--space-1) var(--space-2)",
             outline: "none",
           }}
         />
@@ -311,7 +342,7 @@ function ManajemenData({ onNavigate }) {
     outline: "none",
     boxSizing: "border-box",
     transition:
-      "border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)",
+      "border-color var(--transition-input), box-shadow var(--transition-input), background-color var(--transition-input)",
   };
 
   const getFieldStyle = (field) => {
@@ -377,11 +408,12 @@ function ManajemenData({ onNavigate }) {
                 left: "14px",
                 top: "50%",
                 transform: "translateY(-50%)",
+                display: "inline-flex",
                 color: "var(--color-text-muted)",
                 pointerEvents: "none",
               }}
             >
-              ⌕
+              <IkonSearch />
             </span>
             <input
               type="search"
@@ -404,7 +436,7 @@ function ManajemenData({ onNavigate }) {
           gap: "1.5rem",
         }}
       >
-        <Card>
+        <Card style={{ animationDelay: "40ms" }}>
           <SectionHeader>
             Daftar Permintaan — Menampilkan {tableRows.length} dari {sortedPermintaan.length} data
           </SectionHeader>

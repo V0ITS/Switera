@@ -15,6 +15,7 @@ import { formatWaktuRelatif } from "../utils/waktu";
 import { formatterAngka, formatDate, formatDateSingkat, formatTonase } from "../utils/format";
 import {
   CHART_PALETTE,
+  chartAnimationDefaults,
   chartGridDefaults,
   chartTickDefaults,
   chartTooltipDefaults,
@@ -171,14 +172,12 @@ function HeroStrip({ nama, role }) {
   return (
     <Card
       style={{
-        background: "linear-gradient(135deg, rgba(45,106,79,0.15) 0%, rgba(45,106,79,0.06) 50%, rgba(45,106,79,0.02) 100%)",
-        border: "1px solid rgba(45,106,79,0.2)",
+        backgroundColor: "var(--color-surface-2)",
+        border: "1px solid var(--color-border-mid)",
         borderRadius: "var(--radius-xl)",
         padding: "var(--space-5) var(--space-6)",
         minHeight: "80px",
         boxSizing: "border-box",
-        position: "relative",
-        overflow: "hidden",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -186,20 +185,7 @@ function HeroStrip({ nama, role }) {
         gap: "var(--space-3)",
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          right: "-40px",
-          top: "-40px",
-          width: "160px",
-          height: "160px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(45,106,79,0.2), transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-      <div style={{ position: "relative" }}>
+      <div>
         <p
           style={{
             margin: 0,
@@ -339,6 +325,7 @@ function GrafikPermintaan({ rankingKota }) {
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: chartAnimationDefaults,
             plugins: {
               legend: { display: false },
               tooltip: {
@@ -433,8 +420,8 @@ function GrafikMiniPerKota({ rankingKota }) {
         const Chart = module.default;
         const ctx = canvasRef.current.getContext("2d");
         const gradient = ctx.createLinearGradient(0, 0, canvasRef.current.width, 0);
-        gradient.addColorStop(0, "#2d6a4f");
-        gradient.addColorStop(1, "#40916c");
+        gradient.addColorStop(0, CHART_PALETTE[0]);
+        gradient.addColorStop(1, CHART_PALETTE[1]);
 
         chartInstance = new Chart(ctx, {
           type: "bar",
@@ -453,6 +440,7 @@ function GrafikMiniPerKota({ rankingKota }) {
             indexAxis: "y",
             responsive: true,
             maintainAspectRatio: false,
+            animation: chartAnimationDefaults,
             plugins: {
               legend: { display: false },
               tooltip: {
@@ -742,7 +730,7 @@ function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
   );
 }
 
-function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTbs }) {
+function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTbs, serverKpi, serverRekomendasi }) {
   const [feedback, setFeedback] = useState("");
   const todayKey = getLocalDateKey();
   const rankingKota = useMemo(
@@ -750,8 +738,11 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
     [permintaan]
   );
   const rekomendasiList = useMemo(
-    () => computeRekomendasiDistribusi(permintaan, daftarKota, stokTbs),
-    [permintaan, daftarKota, stokTbs]
+    () =>
+      serverRekomendasi?.length > 0
+        ? serverRekomendasi
+        : computeRekomendasiDistribusi(permintaan, daftarKota, stokTbs),
+    [serverRekomendasi, permintaan, daftarKota, stokTbs]
   );
   const latestDecisionByKota = useMemo(
     () => getLatestKeputusanByKota(keputusan),
@@ -762,8 +753,8 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
     return new Map(forecasts.map((item) => [item.kota, item]));
   }, [permintaan]);
   const kpi = useMemo(
-    () => computeKpiMetrics(keputusan, permintaan, daftarKota),
-    [keputusan, permintaan, daftarKota]
+    () => serverKpi ?? computeKpiMetrics(keputusan, permintaan, daftarKota),
+    [serverKpi, keputusan, permintaan, daftarKota]
   );
   const totalTbsTerdistribusi = keputusan
     .filter((item) => item.status !== "menunggu")
@@ -799,7 +790,7 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
           ...getRankBadgeStyle(index + 1),
         }}
       >
-        {index === 0 ? "🏆" : index + 1}
+        {index + 1}
       </span>
     ),
     namaKota: item.kota,
@@ -1017,35 +1008,20 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
             <Card
               style={{
-                background: "linear-gradient(145deg, #1a2e23 0%, #0f1f17 100%)",
-                border: "1px solid rgba(45,106,79,0.3)",
+                backgroundColor: "var(--color-surface-2)",
+                border: "1px solid var(--color-border-mid)",
                 borderRadius: "var(--radius-xl)",
                 padding: "var(--space-6)",
-                position: "relative",
-                overflow: "hidden",
               }}
             >
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  bottom: "-60px",
-                  right: "-60px",
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(45,106,79,0.2), transparent)",
-                  pointerEvents: "none",
-                }}
-              />
-              <div style={{ position: "relative" }}>
+              <div>
                 {rekomendasiKota ? (
                   <>
                     <span
                       style={{
                         display: "inline-block",
-                        backgroundColor: "rgba(45,106,79,0.2)",
-                        border: "1px solid rgba(45,106,79,0.3)",
+                        backgroundColor: "var(--color-primary-subtle)",
+                        border: "1px solid var(--color-primary)",
                         color: "var(--color-primary)",
                         fontSize: "var(--text-2xs)",
                         fontWeight: "var(--font-weight-semibold)",
@@ -1060,7 +1036,7 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                       style={{
                         margin: 0,
                         fontSize: "var(--text-xs)",
-                        color: "rgba(255,255,255,0.5)",
+                        color: "var(--color-text-muted)",
                         textTransform: "uppercase",
                         letterSpacing: "var(--tracking-wider)",
                       }}
@@ -1072,12 +1048,12 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                         margin: "var(--space-2) 0",
                         fontSize: "var(--text-2xl)",
                         fontWeight: "var(--font-weight-bold)",
-                        color: "#fff",
+                        color: "var(--color-text-primary)",
                       }}
                     >
                       {rekomendasiKota.kota}
                     </p>
-                    <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "rgba(255,255,255,0.6)" }}>
+                    <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                       Permintaan{" "}
                       <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-primary)", fontWeight: "var(--font-weight-semibold)" }}>
                         {formatTonase(rekomendasiKota.totalPermintaan)}
@@ -1087,7 +1063,7 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                         {formatTonase(rekomendasiKota.kapasitas)}
                       </span>
                     </p>
-                    <p style={{ margin: "4px 0 0", fontSize: "var(--text-sm)", color: "rgba(255,255,255,0.6)" }}>
+                    <p style={{ margin: "4px 0 0", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
                       Alokasi disarankan{" "}
                       <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent)", fontWeight: "var(--font-weight-semibold)" }}>
                         {formatTonase(rekomendasiKota.alokasi)}
@@ -1100,14 +1076,14 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                           : "Dibatasi oleh ketersediaan stok TBS."}
                       </p>
                     ) : null}
-                    <div style={{ height: "1px", backgroundColor: "rgba(255,255,255,0.08)", margin: "var(--space-4) 0" }} />
+                    <div style={{ height: "1px", backgroundColor: "var(--color-border)", margin: "var(--space-4) 0" }} />
                     <Tombol
                       label="Tetapkan Tujuan"
                       onClick={handleTetapkanDistribusi}
                       style={{ width: "100%", padding: "10px" }}
                     />
                     {feedback ? (
-                      <p style={{ margin: "var(--space-3) 0 0", fontSize: "var(--text-xs)", color: "rgba(255,255,255,0.6)" }}>
+                      <p style={{ margin: "var(--space-3) 0 0", fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
                         {feedback}
                       </p>
                     ) : null}
@@ -1560,9 +1536,11 @@ function Dashboard({ onNavigate }) {
     store.loadKota();
     store.loadPermintaan();
     store.loadStok();
+    store.loadKpi();
+    store.loadRekomendasi();
   }, []);
 
-  const { roleAktif, permintaan, keputusan, userAktif, daftarKota, stokTbs } = snapshot;
+  const { roleAktif, permintaan, keputusan, userAktif, daftarKota, stokTbs, kpi, rekomendasi } = snapshot;
 
   const contentByRole = {
     Admin: (
@@ -1580,6 +1558,8 @@ function Dashboard({ onNavigate }) {
         userAktif={userAktif}
         daftarKota={daftarKota}
         stokTbs={stokTbs}
+        serverKpi={kpi}
+        serverRekomendasi={rekomendasi}
       />
     ),
     "Tim Logistik": <DashboardLogistik keputusan={keputusan} userAktif={userAktif} />,

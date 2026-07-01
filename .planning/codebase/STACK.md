@@ -1,75 +1,119 @@
 # Technology Stack
 
-**Analysis Date:** 2026-06-21
+**Analysis Date:** 2026-07-01
 
 ## Languages
 
 **Primary:**
-- JavaScript (JSX) - React components and application logic, `src/**/*.jsx`
-- CSS - Styling and design tokens, `src/index.css`, `src/tokens.css`, `src/styles/animations.css`
+- JavaScript (JSX) — React UI components and app logic, `src/**/*.jsx`, `src/**/*.js`
+- JavaScript (ESM) — Express backend, `server/src/**/*.js`
 
 **Secondary:**
-- HTML - Single page shell, `index.html`
-- JSON - Static seed data, `src/data/*.json`
+- CSS — Design tokens and animations, `src/tokens.css`, `src/index.css`, `src/styles/animations.css`
+- HTML — Single-page shell, `index.html`
+- JSON — Static seed data + Prisma seeder, `src/data/*.json`, `server/prisma/seed.js`
 
-No TypeScript is used anywhere in the codebase — all files are `.js`/`.jsx` without type annotations.
+No TypeScript — all files are `.js`/`.jsx` only, no type annotations, no `tsconfig.json`.
 
 ## Runtime
 
 **Environment:**
-- Node.js (version not pinned — no `.nvmrc` or `engines` field in `package.json`)
-- Browser runtime: modern evergreen browsers (ES modules used directly via Vite)
+- Node.js (version unpinned — no `.nvmrc`, no `engines` field in either `package.json`)
+- Browser: modern evergreen (ES modules served directly via Vite, no ES5 transpile)
 
 **Package Manager:**
-- npm (lockfile present: `package-lock.json`)
-- `package.json` declares `"type": "module"` (ESM project)
+- npm — two separate lockfiles: `package-lock.json` (root/frontend), `server/package-lock.json`
+- Both packages declare `"type": "module"` (ESM throughout)
 
 ## Frameworks
 
-**Core:**
-- React 18.3.1 - UI framework, function components + hooks throughout `src/pages/` and `src/components/`
-- React DOM 18.3.1 - DOM rendering, mounted in `src/main.jsx`
+**Frontend (root `package.json`):**
+- React 18.3.1 — UI framework, function components + hooks, `src/pages/`, `src/components/`
+- React DOM 18.3.1 — DOM renderer, mounted in `src/main.jsx`
 
-**Testing:**
-- None detected. No test runner, test config, or `*.test.*`/`*.spec.*` files found in the repo.
+**Backend (`server/package.json`):**
+- Express 5.0.0 — HTTP API server, `server/src/index.js`
 
 **Build/Dev:**
-- Vite 7.0.0 - Dev server and bundler, configured in `vite.config.js`
-- @vitejs/plugin-react 4.7.0 - React Fast Refresh / JSX transform plugin for Vite
+- Vite 7.0.0 — dev server + bundler, `vite.config.js`
+- @vitejs/plugin-react 4.7.0 — React Fast Refresh / JSX transform
+
+**Testing:**
+- Not detected. No test runner, test config, or `*.test.*`/`*.spec.*` files exist.
 
 ## Key Dependencies
 
-**Critical:**
-- `react` ^18.3.1 - Application UI runtime
-- `react-dom` ^18.3.1 - DOM renderer
-- `leaflet` ^1.9.4 - Interactive map rendering, used in `src/components/PetaGeografis.jsx` (geographic distribution map)
-- `chart.js` ^4.5.1 + `react-chartjs-2` ^5.3.0 - Charting library used for dashboard analytics in `src/pages/Dashboard.jsx`, `src/pages/Laporan.jsx`, `src/pages/AnalisisRanking.jsx`, and configured centrally in `src/utils/chartDefaults.js`
+### Frontend
 
-**Infrastructure:**
-- None — no ORM, no HTTP client library (no axios/fetch wrapper), no state-management library beyond a hand-rolled store (`src/store.js`)
+| Package | Version | Purpose | Used In |
+|---------|---------|---------|---------|
+| `react` | ^18.3.1 | UI runtime | `src/` |
+| `react-dom` | ^18.3.1 | DOM renderer | `src/main.jsx` |
+| `chart.js` | ^4.5.1 | Chart rendering | `src/pages/Dashboard.jsx`, `src/pages/Laporan.jsx`, `src/pages/AnalisisRanking.jsx` |
+| `react-chartjs-2` | ^5.3.0 | React wrapper for Chart.js | Same pages as above |
+| `leaflet` | ^1.9.4 | Interactive map | `src/components/PetaGeografis.jsx` |
+
+### Backend
+
+| Package | Version | Purpose | Used In |
+|---------|---------|---------|---------|
+| `express` | ^5.0.0 | HTTP API server | `server/src/index.js` |
+| `@prisma/client` | 6.19.2 (pinned) | Prisma ORM client | `server/src/services/*` |
+| `prisma` | 6.19.2 (pinned, devDep) | Migrations, generate, studio | CLI only |
+| `bcryptjs` | ^2.4.3 | Password hashing | `server/src/services/akunService.js` |
+| `jsonwebtoken` | ^9.0.2 | JWT sign/verify | `server/src/auth/jwt.js` |
+| `zod` | ^3.23.8 | Request body validation | `server/src/middleware/` |
+| `cors` | ^2.8.5 | CORS — locked to `http://localhost:5173` by default | `server/src/index.js` |
+| `dotenv` | ^16.4.5 | Loads `server/.env` at startup | `server/src/index.js` (via `import "dotenv/config"`) |
 
 ## Configuration
 
-**Environment:**
-- No `.env` files present in the repository.
-- No environment variables are read anywhere in the source (`process.env` / `import.meta.env` not used in app code).
-- All application "data" is static JSON seeded at module load time (`src/data/permintaan.json`, `keputusan.json`, `notifikasi.json`, `activityLog.json`) and persisted client-side via `window.localStorage` in `src/store.js`.
+**Backend environment (`server/.env`, gitignored):**
+- `DATABASE_URL` — required; Prisma PostgreSQL connection string
+- `JWT_SECRET` — required; used by `server/src/auth/jwt.js`
+- `PORT` — optional; default `4000`
+- `CORS_ORIGIN` — optional; default `http://localhost:5173`
 
-**Build:**
-- `vite.config.js` - defines Vite + React plugin, dev server bound to `0.0.0.0:5173`
-- No `tsconfig.json`, no `.eslintrc`/`.prettierrc`, no `jsconfig.json` detected — no linting/formatting tooling configured.
-- `index.html` is the Vite entry HTML, loading Google Fonts (Inter, JetBrains Mono) via `<link>` tags and mounting `src/main.jsx` as the module entry point.
+**Frontend environment:**
+- `VITE_API_BASE_URL` — optional; overrides backend base URL; defaults to `http://localhost:4000` (fallback in `src/api/apiClient.js:9`)
+- No `.env` file exists for the frontend
+
+**Config files:**
+- `vite.config.js` — Vite plugin + dev server (host `0.0.0.0`, port `5173`)
+- `server/prisma/schema.prisma` — Prisma schema, datasource, all models
+- `docker-compose.yml` — Local PostgreSQL 16 container for development
+- No `.eslintrc`, no `.prettierrc`, no `jsconfig.json`
+
+## npm Scripts
+
+### Frontend (root)
+```bash
+npm run dev    # vite — dev server on :5173
+npm run build  # vite build — static bundle → dist/
+```
+
+### Backend (`server/`)
+```bash
+npm run dev             # node --watch src/index.js
+npm run start           # node src/index.js
+npm run prisma:migrate  # prisma migrate dev
+npm run prisma:generate # prisma generate
+npm run prisma:studio   # prisma studio (local GUI)
+npm run db:seed         # node prisma/seed.js
+```
 
 ## Platform Requirements
 
-**Development:**
-- Node.js + npm installed
-- Run `npm install` then `npm run dev` (Vite dev server on port 5173, accessible on all interfaces)
+**Development startup order:**
+1. `docker compose up -d` — start local PostgreSQL 16 on port 5432
+2. `cd server && npm install && npm run prisma:migrate && npm run db:seed && npm run dev` — backend on :4000
+3. `cd .. && npm install && npm run dev` — frontend on :5173
 
 **Production:**
-- `npm run build` produces a static `dist/` bundle (Vite default), suitable for static hosting (no server-side runtime required)
-- No deployment configuration (no Dockerfile, no CI/CD config, no hosting-provider config files) detected in the repository
+- Frontend: static `dist/` bundle from `npm run build`, served by any static host
+- Backend: Node.js process (no bundle — must run `node src/index.js`)
+- No CI/CD, no hosting-provider config detected
 
 ---
 
-*Stack analysis: 2026-06-21*
+*Stack analysis: 2026-07-01*

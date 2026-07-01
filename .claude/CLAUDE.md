@@ -4,14 +4,14 @@
 
 **Switera**
 
-Switera is a client-only React SPA for managing the distribution of TBS (kelapa sawit / palm fruit) stock across cities — covering requests, ranking-based distribution decisions, status tracking, reporting, and activity history, with three distinct roles (Admin, Manajer Distribusi, Tim Logistik). It's a school project meant to demo at production quality: complete features, proper validation, consistent UI, and clean code, while deliberately staying client-only (no real backend) for this milestone.
+Switera is a React SPA + Express/PostgreSQL backend for managing the distribution of TBS (kelapa sawit / palm fruit) stock across cities — covering requests, ranking-based distribution decisions, status tracking, reporting, and activity history, with three distinct roles (Admin, Manajer Distribusi, Tim Logistik) enforced by real server-side RBAC. It's a school project meant to demo at production quality: complete features, proper validation, consistent UI, and clean code. As of milestone v2.0 (Backend & Multi-User Migration, complete — see `.planning/STATE.md`), the app is multi-user with a real backend; it is no longer client-only.
 
 **Core Value:** The app must feel complete and trustworthy end-to-end for every role — every page works, every action persists and reflects instantly, and nothing looks unfinished or inconsistent.
 
 ### Constraints
 
-- **Tech stack**: React 18 + Vite 7, no new frameworks/libraries beyond what's already in `package.json` unless a requirement clearly needs one — keeps the app simple and consistent with its current footprint
-- **Persistence**: `window.localStorage` via the existing `src/store.js` singleton — no real backend this milestone
+- **Tech stack**: React 18 + Vite 7 (frontend), Express 5 + Prisma 6 + PostgreSQL (backend in `server/`) — no new frameworks/libraries beyond what's already in `package.json`/`server/package.json` unless a requirement clearly needs one
+- **Persistence**: PostgreSQL via Prisma is the source of truth. `src/store.js` is now a hydrated in-memory cache + REST API client (`src/api/apiClient.js`), not a database substitute — mutators are async and call the backend; only `{userAktif, tema}` is persisted to `window.localStorage` (session/theme only, not domain data)
 - **Design system**: Reuse existing shared components (`src/components/*`) and tokens (`src/tokens.css`) rather than introducing new styling approaches — required to fix the design-consistency gap, not optional
 - **Scope**: Completion and polish of existing functionality only — no new pages, roles, or business domains
 
@@ -45,27 +45,37 @@ Switera is a client-only React SPA for managing the distribution of TBS (kelapa 
 
 ## Key Dependencies
 
+Frontend (root `package.json`):
 - `react` ^18.3.1 - Application UI runtime
 - `react-dom` ^18.3.1 - DOM renderer
 - `leaflet` ^1.9.4 - Interactive map rendering, used in `src/components/PetaGeografis.jsx` (geographic distribution map)
 - `chart.js` ^4.5.1 + `react-chartjs-2` ^5.3.0 - Charting library used for dashboard analytics in `src/pages/Dashboard.jsx`, `src/pages/Laporan.jsx`, `src/pages/AnalisisRanking.jsx`, and configured centrally in `src/utils/chartDefaults.js`
-- None — no ORM, no HTTP client library (no axios/fetch wrapper), no state-management library beyond a hand-rolled store (`src/store.js`)
+- No state-management library beyond the hand-rolled hydrated-cache store (`src/store.js`) and its REST client (`src/api/apiClient.js`)
+
+Backend (`server/package.json`):
+- `express` ^5.0.0 - HTTP API server (`server/src/index.js`)
+- `@prisma/client` + `prisma` 6.19.2 (pinned exact) - ORM/migrations against PostgreSQL, schema in `server/prisma/schema.prisma`
+- `jsonwebtoken` + `bcryptjs` - auth token issuing/verification and password hashing (`server/src/auth/jwt.js`)
+- `zod` - request validation
+- `cors` - locked to the Vite dev origin by default, overridable via `CORS_ORIGIN`
 
 ## Configuration
 
-- No `.env` files present in the repository.
-- No environment variables are read anywhere in the source (`process.env` / `import.meta.env` not used in app code).
-- All application "data" is static JSON seeded at module load time (`src/data/permintaan.json`, `keputusan.json`, `notifikasi.json`, `activityLog.json`) and persisted client-side via `window.localStorage` in `src/store.js`.
+- Backend reads env vars via `dotenv` from `server/.env` (gitignored, not committed — no `.env.example` is checked in either; see README for the variable list): `DATABASE_URL` (required, Prisma/Postgres connection string), `JWT_SECRET` (required), `PORT` (optional, default 4000), `CORS_ORIGIN` (optional, default `http://localhost:5173`).
+- The frontend reads no env vars; it talks to the backend over plain `fetch` via `src/api/apiClient.js` (base URL hardcoded to the local backend).
+- `src/data/*.json` seed files are now only used by Prisma's `server/prisma/seed.js` (DB seeding) and by `src/pages/Landing.jsx`'s pre-login static demo widgets — authenticated pages no longer read them directly.
+- `docker-compose.yml` at repo root runs a local PostgreSQL 16 container for development.
 - `vite.config.js` - defines Vite + React plugin, dev server bound to `0.0.0.0:5173`
-- No `tsconfig.json`, no `.eslintrc`/`.prettierrc`, no `jsconfig.json` detected — no linting/formatting tooling configured.
+- No `tsconfig.json`, no `.eslintrc`/`.prettierrc`, no `jsconfig.json` detected — no linting/formatting tooling configured (frontend or backend).
 - `index.html` is the Vite entry HTML, loading Google Fonts (Inter, JetBrains Mono) via `<link>` tags and mounting `src/main.jsx` as the module entry point.
 
 ## Platform Requirements
 
-- Node.js + npm installed
-- Run `npm install` then `npm run dev` (Vite dev server on port 5173, accessible on all interfaces)
-- `npm run build` produces a static `dist/` bundle (Vite default), suitable for static hosting (no server-side runtime required)
-- No deployment configuration (no Dockerfile, no CI/CD config, no hosting-provider config files) detected in the repository
+- Node.js + npm installed, plus Docker (for the local PostgreSQL container) or an equivalent reachable PostgreSQL instance
+- Backend: from `server/`, `npm install`, configure `server/.env`, `npm run prisma:migrate`, `npm run db:seed`, then `npm run dev` (runs on port 4000)
+- Frontend: from repo root, `npm install` then `npm run dev` (Vite dev server on port 5173, accessible on all interfaces) — requires the backend to be running for any authenticated page
+- `npm run build` (root) produces a static `dist/` bundle (Vite default) for the frontend only; the backend (`server/`) needs a running Node process, it is not part of the static bundle
+- No CI/CD config or hosting-provider config files detected in the repository
 
 <!-- GSD:stack-end -->
 
@@ -99,6 +109,14 @@ Switera is a client-only React SPA for managing the distribution of TBS (kelapa 
 ## Import Organization
 
 - None configured. All imports use relative paths (`../components/...`, `./pages/...`). `vite.config.js` defines no `resolve.alias`.
+
+## Animation System
+
+- `src/styles/animations.css` is the single source of truth for shared keyframes (`fadeIn`, `fadeInUp16`, `fadeInDown`, `slideInRight`/`slideInLeft`, `scaleIn`, `shimmerSlide`, `pulse`, `rowEnter`/`rowExit`, etc.) and utility classes (`.anim-*`, `.row-enter`/`.row-exit`, `.skeleton`, `.reveal`/`.reveal.visible`); `src/tokens.css` separately defines a few component-scoped keyframes used inline (`fadeInUp` at 8px translate, `pageEnter`, `shimmer`, `spin`) — these are intentionally distinct from animations.css's similarly-named ones, not duplicates to merge
+- Prefer composing `animation: "<name> <duration> <easing> both"` inline referencing the shared keyframes over defining new local `<style>` keyframe blocks per component/page
+- `--ease-out` is the standard entrance easing; `--ease-bounce` exists in `tokens.css` but is intentionally unused by default (kept for any future deliberate playful-motion case) — do not reach for it for standard UI entrances
+- `prefers-reduced-motion` is handled once, globally, in `animations.css` — no per-component media query needed
+- Shadows (`--shadow-xs` … `--shadow-xl` in `tokens.css`) are tuned for the dark theme's restrained-but-visible range (opacity ~0.22–0.45); avoid heavier ad-hoc `boxShadow` literals in page/component code — compose from these tokens instead
 
 ## Error Handling
 
@@ -134,48 +152,55 @@ Switera is a client-only React SPA for managing the distribution of TBS (kelapa 
 
 ## Pattern Overview
 
-- No server, no API, no database — everything runs in the browser
-- A single in-memory + `localStorage`-backed store (`src/store.js`) plays the role of backend/database/auth provider
-- Manual URL routing via `window.history.pushState` instead of React Router
-- Role-based menu/page gating is UI-only (cosmetic), not a real authorization layer
+- Two-process architecture: React/Vite frontend (root) + Express/Prisma/PostgreSQL backend (`server/`), talking over a REST API
+- `src/store.js` is a hydrated in-memory cache + REST API client (mutators are `async`, call `src/api/apiClient.js`, then update the cache from the server's response and `notify()`) — it is no longer the data layer itself
+- The backend (`server/src/services/*`) is the real source of truth and the real authorization layer: JWT auth (`server/src/auth/jwt.js`), `requireAuth`/`requireRole` middleware enforce RBAC per-route, Zod validates request bodies, Prisma talks to PostgreSQL
+- Manual URL routing via `window.history.pushState` instead of React Router (frontend-only, unchanged)
+- Frontend role-based menu/page gating (`App.jsx`, `navigation.js`) is still UI-only/cosmetic — the *real* authorization boundary is now server-side middleware, not the frontend
 - One large page component per route, each importing the shared `store` directly
+- Client polls the backend every 4s (`store.startPolling`/`stopPolling`/`pollTick`, started/stopped from `App.jsx`'s auth-state effect) so multiple logged-in users converge on the same data within a few seconds — no WebSocket/SSE push (deferred, see `.planning/STATE.md` Deferred Items)
 
 ## Layers
 
 - Purpose: Render a full route's UI and own its local interaction state
-- Contains: `src/pages/*.jsx` (e.g. `Dashboard.jsx` 1534 lines, `Landing.jsx` 1619 lines, `KeputusanDistribusi.jsx`, `AnalisisRanking.jsx`, `StatusDistribusi.jsx`)
+- Contains: `src/pages/*.jsx` (e.g. `Dashboard.jsx`, `Landing.jsx`, `KeputusanDistribusi.jsx`, `AnalisisRanking.jsx`, `StatusDistribusi.jsx`)
 - Depends on: `store` (direct import), shared components, `src/utils/*`
 - Used by: `pageRegistry` in `src/App.jsx`
 - Purpose: Reusable UI primitives and chrome
 - Contains: `src/components/*.jsx` (`Layout.jsx` app shell, `Card.jsx`, `Modal.jsx`, `Tabel.jsx`, `Toast.jsx`, `Tombol.jsx`, `PetaGeografis.jsx` map, etc.)
-- Depends on: `store` (some components, e.g. `Layout.jsx`, read store directly for notifications/user), design tokens in `src/tokens.css`
+- Depends on: `store` (some components, e.g. `Layout.jsx`, read store directly for notifications/user), design tokens in `src/tokens.css`, shared animations in `src/styles/animations.css`
 - Used by: Page layer
-- Purpose: Single source of truth for all application data; substitutes for a real backend/database
-- Contains: `src/store.js` — a pub/sub singleton with getters/mutators (`addPermintaan`, `addKeputusan`, `cariAkun`, etc.)
-- Depends on: `window.localStorage`, seed data in `src/data/*.json`
+- Purpose: Hydrated in-memory cache + REST client; frontend's only data-access path
+- Contains: `src/store.js` (pub/sub singleton, async mutators, `hydrate()`/`startPolling()`), `src/api/apiClient.js` (fetch wrapper, JWT attach, 401 handling)
+- Depends on: The backend REST API (see below); persists only `{userAktif, tema}` to `window.localStorage` (`switera_session_v2` key)
 - Used by: Every page and several components, via `import store from "../store"`
 - Purpose: Pure-ish business logic and formatting helpers, decoupled from React
 - Contains: `src/utils/distribusi.js` (ranking/recommendation calculations), `src/utils/forecast.js` (per-city forecasting), `src/utils/csv.js`, `src/utils/format.js`, `src/utils/waktu.js`, `src/utils/navigation.js` (role→menu maps), `src/utils/chartDefaults.js`
 - Depends on: Plain JS, no React/store imports (these are the most testable units in the codebase)
 - Used by: Pages, for computing KPIs/rankings/charts
+- Purpose: REST API, business mutations, persistence, auth/RBAC — the actual backend
+- Contains: `server/src/routes/*` (per-domain Express routers), `server/src/services/*` (business logic + Prisma access), `server/src/middleware/*` (`requireAuth`, `requireRole`, `validate`, `errorHandler`), `server/src/auth/jwt.js`, `server/prisma/schema.prisma` + migrations
+- Depends on: PostgreSQL via Prisma, `jsonwebtoken`/`bcryptjs`/`zod`
+- Used by: The frontend's `apiClient.js`, exclusively over HTTP (no shared code/imports across the frontend/backend boundary)
 
 ## Data Flow
 
-- No React Context, Redux, Zustand, etc. — a single module-scoped object in `src/store.js` is the entire app's state
-- Persisted synchronously and fully (not incrementally) to `localStorage` on every mutation
-- `store.getState()` and most getters return a deep clone (`JSON.parse(JSON.stringify(...))`) to prevent external mutation of internal state
+- No React Context, Redux, Zustand, etc. — a single module-scoped object in `src/store.js` is the frontend's entire client-side state, but it is a *cache*, not the system of record
+- `store.hydrate()` runs once per login/session-restore (`App.jsx` effect on `snapshot.userAktif?.username`) and `Promise.all`s every domain loader; synchronous getters (`getState`, `getDaftarKota`, ...) read the cache, mutators `await` the API then write the server's authoritative response into the cache before `notify()`
+- `store.getState()` and most getters still return a deep clone (`JSON.parse(JSON.stringify(...))`) to prevent external mutation of internal state
+- Server is the single point of truth for validation, RBAC, and conflict resolution (e.g. `keputusan` status changes use an optimistic-lock `updateMany` + 409 response, not a client-side guard)
 
 ## Key Abstractions
 
-- Purpose: Acts as the entire backend — auth, persistence, business mutations, notifications, activity logging
-- Examples: `src/store.js` exports a single `store` object with ~30 methods (`addPermintaan`, `updateKeputusan`, `cariAkun`, `setStokTbs`, ...)
-- Pattern: Module-level singleton + observer/pub-sub (`subscribe`/`listeners`/`notify`)
+- Purpose: Frontend hydrated cache + REST client facade — looks like the old "store as backend" API to calling pages, but every mutator now round-trips the real backend
+- Examples: `src/store.js` exports the same ~30-method shape (`addPermintaan`, `updateKeputusan`, `cariAkun`→login, `setStokTbs`, ...) but each is `async` and calls `apiClient`
+- Pattern: Module-level singleton + observer/pub-sub (`subscribe`/`listeners`/`notify`), now layered over async I/O
 - Purpose: Maps a logical page key (string) to both a React component and a URL path
 - Examples: `pageRegistry`, `pathByPage`, `pageByPath` in `src/App.jsx:18-42`
 - Pattern: Plain object lookup tables, no router library
 - Purpose: Declares which pages each of the three roles (`Admin`, `Manajer Distribusi`, `Tim Logistik`) can see/access
 - Examples: `menuByRole`, `getDefaultMenuByRole` in `src/utils/navigation.js`
-- Pattern: Static config object; enforcement happens only in `App.jsx`'s `allowedPages` check (UI-level, not a security boundary)
+- Pattern: Static config object; frontend enforcement in `App.jsx`'s `allowedPages` check is still UI-only — real enforcement is `requireRole(...)` middleware server-side (`server/src/middleware/`)
 
 ## Entry Points
 
@@ -189,18 +214,17 @@ Switera is a client-only React SPA for managing the distribution of TBS (kelapa 
 ## Error Handling
 
 - `try/catch` swallowing in `src/store.js` for `localStorage` read/write (`loadPersisted`, `persistState`) — failures degrade silently to in-memory-only state
-- Validation errors thrown as plain `Error` from store mutators (e.g. `tambahKota` throws `"Kota dengan nama tersebut sudah ada."`) — calling pages are expected to catch these themselves
+- Frontend: `apiClient.js` throws an `Error` with `.message`/`.fields`/`.status` set from the backend's JSON error response; calling pages catch it and map fields/messages onto form state or a `Toast`
+- Backend: domain errors are thrown as `Error` (optionally with `.statusCode`), caught by `server/src/middleware/errorHandler.js`, which prefers `err.statusCode` and falls back to matching a few legacy Indonesian message strings
 - No React error boundary component found — an unhandled render error would produce a blank/broken page
 
 ## Cross-Cutting Concerns
 
-- Application-level activity logging is a first-class feature: `recordActivity`/`pushActivity` in `src/store.js:157-174` write to `state.activityLog`, surfaced on `src/pages/RiwayatAktivitas.jsx`
-- No developer-facing logging framework (no Winston/Pino); relies on default browser console
-- Ad-hoc, inline in store mutators (e.g. duplicate-city check in `tambahKota`, duplicate-request check in `hasPermintaanDuplikat`)
-- No schema validation library (no Zod/Yup)
-- `store.cariAkun(username, password, role)` does a plaintext string match against `state.daftarAkun` (`src/store.js:213-223`)
-- "Session" is just `state.userAktif`, persisted to `localStorage` in plaintext alongside everything else
-- No real authorization: page/menu gating in `App.jsx` and `navigation.js` only hides UI, it does not prevent calling store mutators directly
+- Application-level activity logging is a first-class feature: the backend writes `ActivityLog`/`Notifikasi` rows inside the same request as the triggering mutation (`server/src/services/*`); the frontend reads them via REST and surfaces them on `src/pages/RiwayatAktivitas.jsx` and the header notification dropdown
+- No developer-facing logging framework (no Winston/Pino) on either side; relies on default console output
+- Request validation is centralized via `zod` schemas + a `validate(schema)` middleware on the backend (no client-side schema validation library)
+- Auth is real: `POST /auth/login` checks `bcryptjs`-hashed passwords server-side and returns a JWT; the frontend stores it in `localStorage` (`switera_token`) and sends it as `Authorization: Bearer <token>`; the accepted XSS-exposure tradeoff for this school-demo milestone is documented in `.planning/STATE.md` (threat T-09-JWT) — refresh-token rotation is deferred (v2 Requirements: AUTH-05/06)
+- Real authorization: every mutating route is gated by `requireAuth` + `requireRole(...)` middleware server-side; frontend page/menu gating in `App.jsx`/`navigation.js` is now purely a UX convenience layered on top of that, not the security boundary
 
 <!-- GSD:architecture-end -->
 
@@ -213,17 +237,9 @@ No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skill
 
 <!-- GSD:workflow-start source:GSD defaults -->
 
-## GSD Workflow Enforcement
+## Workflow
 
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
-
-Use these entry points:
-
-- `/gsd-quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd-debug` for investigation and bug fixing
-- `/gsd-execute-phase` for planned phase work
-
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
+GSD is not used on this project anymore (explicit standing instruction from the user, given after the v2.0 backend migration). Work directly: read files, edit/write code with normal tools, verify by running the app, and commit when asked — without routing through `/gsd-*` commands or spawning GSD subagents. `.planning/` still holds historical phase artifacts from v1.0/v2.0 for reference, but it is not being maintained going forward.
 <!-- GSD:workflow-end -->
 
 <!-- GSD:profile-start -->

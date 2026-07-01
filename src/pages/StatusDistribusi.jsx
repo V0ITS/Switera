@@ -165,7 +165,7 @@ function StatusDistribusi({ onNavigate }) {
           />
         </div>
 
-        <Card>
+        <Card style={{ animationDelay: "80ms" }}>
           <SectionHeader>Daftar Distribusi Aktif</SectionHeader>
           {rows.length > 0 ? (
             <Tabel
@@ -241,8 +241,8 @@ function StatusDistribusi({ onNavigate }) {
                   fontSize: "var(--text-sm)",
                   padding: "9px 12px",
                   outline: "none",
-                  boxShadow: isSelectFocused ? "0 0 0 3px var(--color-primary-subtle)" : "none",
-                  transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
+                  boxShadow: isSelectFocused ? "0 0 0 3px var(--color-primary-glow)" : "none",
+                  transition: "border-color var(--transition-input), box-shadow var(--transition-input)",
                 }}
               >
                 {statusOptions.map((status) => (

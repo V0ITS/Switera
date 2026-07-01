@@ -197,6 +197,13 @@ function IkonMenu({ type, color }) {
           <path d="M9 16H15" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       );
+    case "user":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" style={iconStyle}>
+          <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="1.5" />
+          <path d="M4 20C4 16.134 7.58172 13 12 13C16.4183 13 20 16.134 20 20" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
     case "dashboard":
     default:
       return (
@@ -330,8 +337,8 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
           right: 0,
           height: HEADER_HEIGHT,
           backgroundColor: "var(--color-elevated-glass)",
-          backdropFilter: "blur(14px) saturate(160%)",
-          WebkitBackdropFilter: "blur(14px) saturate(160%)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
           borderBottom: "1px solid var(--color-border-mid)",
           boxShadow: "0 1px 0 rgba(255,255,255,0.04)",
           zIndex: "var(--z-sticky)",
@@ -509,7 +516,7 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                   boxShadow: "var(--shadow-lg)",
                   overflow: "hidden",
                   zIndex: "var(--z-dropdown)",
-                  animation: "fadeInUp 150ms var(--ease-smooth) both",
+                  animation: "scaleIn 150ms var(--ease-out) both",
                 }}
               >
                 <div
@@ -720,7 +727,7 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                   boxShadow: "var(--shadow-lg)",
                   overflow: "hidden",
                   zIndex: "var(--z-dropdown)",
-                  animation: "fadeInUp 150ms var(--ease-smooth) both",
+                  animation: "scaleIn 150ms var(--ease-out) both",
                 }}
               >
                 <button
@@ -817,15 +824,9 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               type="button"
               className={`app-sidebar-menu-item${active ? " is-active" : ""}`}
               onClick={() => handleMenuChange(item.key)}
-              onMouseDown={(event) => onRippleDown(event, item.key)}
             >
               <IkonMenu type={item.icon} color={active ? "var(--color-primary)" : "currentColor"} />
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>
-              <RippleSpans
-                ripples={ripples}
-                removeRipple={removeRipple}
-                groupId={item.key}
-              />
             </button>
           );
         })}

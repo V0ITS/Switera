@@ -58,7 +58,7 @@
 .anim-fadeIn      { animation: fadeIn 400ms var(--ease-out) both; }
 .anim-fadeInUp    { animation: fadeInUp16 500ms var(--ease-out) both; }
 .anim-fadeInDown  { animation: fadeInDown 400ms var(--ease-out) both; }
-.anim-scaleIn     { animation: scaleIn 300ms var(--ease-bounce) both; }
+.anim-scaleIn     { animation: scaleIn 200ms var(--ease-out) both; }
 .anim-slideRight  { animation: slideInRight 400ms var(--ease-out) both; }
 
 /* Table row enter/exit (Tabel.jsx) */

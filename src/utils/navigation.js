@@ -10,6 +10,7 @@ export const menuByRole = {
     { key: "input-data", label: "Input Data", icon: "input" },
     { key: "manajemen-data", label: "Manajemen Data", icon: "database" },
     { key: "manajemen-kota", label: "Manajemen Kota", icon: "city" },
+    { key: "manajemen-akun", label: "Manajemen Akun", icon: "user" },
     { key: "riwayat-aktivitas", label: "Riwayat Aktivitas", icon: "report" },
   ],
   "Manajer Distribusi": [

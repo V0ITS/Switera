@@ -134,7 +134,7 @@ function GrafikRankingHorizontal({ ranking }) {
   }, [ranking]);
 
   return (
-    <Card style={{ minHeight: "420px" }}>
+    <Card style={{ minHeight: "420px", animationDelay: "60ms" }}>
       <SectionHeader>Grafik Ranking Permintaan</SectionHeader>
 
       {chartError ? (
@@ -167,16 +167,11 @@ function AnalisisRanking({ onNavigate }) {
     return unsubscribe;
   }, []);
 
-  // Load server data so the existing client-side ranking computation
-  // (aggregatePermintaanRanking, below) runs against fresh server data.
-  // Deliberately NOT switching to GET /rekomendasi-distribusi here — see
-  // store.js's loadRekomendasi/loadKpi comment: keeping this page's exact
-  // client-side computation preserves pixel-identical displayed numbers
-  // (FE-03), which is required for this no-visual-change phase.
   useEffect(() => {
     store.loadPermintaan();
     store.loadKota();
     store.loadStok();
+    store.loadRekomendasi();
   }, []);
 
   const ranking = useMemo(
@@ -196,6 +191,8 @@ function AnalisisRanking({ onNavigate }) {
     return `${formatDate(dates[0])} sampai ${formatDate(dates[dates.length - 1])}`;
   }, [snapshot.permintaan]);
 
+  const rekomendasi = snapshot.rekomendasi ?? [];
+
   const topValue = ranking[0]?.totalPermintaan ?? 0;
   const rows = ranking.map((item, index) => ({
     id: item.kota,
@@ -214,7 +211,6 @@ function AnalisisRanking({ onNavigate }) {
           ...getRankColor(index + 1),
         }}
       >
-        {index === 0 ? "🏆 " : ""}
         {index + 1}
       </span>
     ),
@@ -283,6 +279,81 @@ function AnalisisRanking({ onNavigate }) {
           </Card>
 
           <GrafikRankingHorizontal ranking={ranking} />
+
+          {rekomendasi.length > 0 ? (
+            <Card style={{ animationDelay: "80ms" }}>
+              <SectionHeader>Skor & Alokasi Distribusi</SectionHeader>
+              <p
+                style={{
+                  margin: "0 0 1rem",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.6,
+                  fontSize: "var(--text-sm)",
+                }}
+              >
+                Dihitung server berdasarkan skor gabungan: 65% permintaan + 35% kapasitas.
+              </p>
+              <Tabel
+                kolom={[
+                  { key: "peringkat", label: "#" },
+                  { key: "namaKota", label: "Kota" },
+                  { key: "skor", label: "Skor", numeric: true },
+                  { key: "totalPermintaan", label: "Permintaan (ton)", numeric: true },
+                  { key: "kapasitas", label: "Kapasitas (ton)", numeric: true },
+                  { key: "alokasi", label: "Alokasi (ton)", numeric: true },
+                  { key: "status", label: "Status" },
+                ]}
+                data={rekomendasi.map((item, index) => ({
+                  id: item.kota,
+                  peringkat: (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        minWidth: "26px",
+                        padding: "2px 8px",
+                        borderRadius: "var(--radius-xs)",
+                        fontSize: "var(--text-sm)",
+                        ...getRankColor(index + 1),
+                      }}
+                    >
+                      {index + 1}
+                    </span>
+                  ),
+                  namaKota: item.kota,
+                  skor: (
+                    <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                      {item.skor}
+                    </span>
+                  ),
+                  totalPermintaan: formatTonase(item.totalPermintaan),
+                  kapasitas: formatTonase(item.kapasitas),
+                  alokasi: (
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontWeight: 700,
+                        color: item.alokasi > 0 ? "var(--color-success)" : "var(--color-text-muted)",
+                      }}
+                    >
+                      {formatTonase(item.alokasi)}
+                    </span>
+                  ),
+                  status: item.terpenuhiPenuh ? (
+                    <span style={{ color: "var(--color-success)", fontSize: "var(--text-xs)", fontWeight: 600 }}>Terpenuhi</span>
+                  ) : item.dibatasiKapasitas ? (
+                    <span style={{ color: "var(--color-warning)", fontSize: "var(--text-xs)", fontWeight: 600 }}>Dibatasi Kapasitas</span>
+                  ) : (
+                    <span style={{ color: "var(--color-danger)", fontSize: "var(--text-xs)", fontWeight: 600 }}>Stok Tidak Cukup</span>
+                  ),
+                }))}
+                getRowStyle={(_baris, index) =>
+                  index === 0 ? { backgroundColor: "rgba(242,167,27,0.06)" } : undefined
+                }
+              />
+            </Card>
+          ) : null}
         </div>
       )}
     </>

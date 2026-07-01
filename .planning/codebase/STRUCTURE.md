@@ -1,122 +1,270 @@
+<!-- refreshed: 2026-07-01 -->
 # Codebase Structure
 
-**Analysis Date:** 2026-06-21
+**Analysis Date:** 2026-07-01
 
 ## Directory Layout
 
 ```
-Switera/
-├── public/             # Static assets served as-is by Vite
-├── src/                # Application source
-│   ├── components/    # Shared/reusable UI components
-│   │   └── auth/      # Auth-page-specific shared UI
-│   ├── data/           # Static JSON seed data (acts as initial "database")
-│   ├── hooks/          # Custom React hooks
-│   ├── pages/          # One component per route/screen
-│   ├── styles/         # Extra CSS (animations)
-│   ├── utils/          # Framework-free business logic and helpers
-│   ├── App.jsx          # Manual router + top-level page switch
-│   ├── main.jsx          # React DOM mount / entry point
-│   ├── store.js          # Singleton "fake backend" store
-│   ├── tokens.css         # Design tokens (colors, spacing, etc.)
-│   └── index.css          # Global styles
-├── index.html           # Vite HTML entry, mounts src/main.jsx
-├── vite.config.js        # Vite + @vitejs/plugin-react config
-├── package.json          # Scripts: dev, build (no test/lint scripts)
-└── favicon.svg
+Switera/                          # Repo root — frontend project
+├── src/                          # React SPA source
+│   ├── main.jsx                  # DOM mount entry point
+│   ├── App.jsx                   # Route orchestrator, auth state, polling
+│   ├── store.js                  # Hydrated cache + REST client singleton
+│   ├── tokens.css                # CSS custom-property design tokens
+│   ├── index.css                 # Global base styles
+│   ├── api/
+│   │   └── apiClient.js          # fetch wrapper: JWT, loading, 401 handler
+│   ├── pages/                    # One component per authenticated route
+│   │   ├── Landing.jsx           # Pre-login marketing/demo page (route: /)
+│   │   ├── Login.jsx             # Login form (route: /login)
+│   │   ├── Register.jsx          # Registration form (route: /register)
+│   │   ├── Dashboard.jsx         # Overview KPIs & charts (route: /dashboard)
+│   │   ├── InputData.jsx         # Submit new permintaan (route: /input-data)
+│   │   ├── ManajemenData.jsx     # Admin: edit/delete permintaan (route: /manajemen-data)
+│   │   ├── ManajemenKota.jsx     # Admin: CRUD cities (route: /manajemen-kota)
+│   │   ├── AnalisisRanking.jsx   # Manajer: ranking & recommendation (route: /analisis-ranking)
+│   │   ├── KeputusanDistribusi.jsx # Manajer: approve/cancel decisions (route: /keputusan-distribusi)
+│   │   ├── StatusDistribusi.jsx  # Logistik: update shipment status (route: /status-distribusi)
+│   │   ├── Laporan.jsx           # Reports & charts (route: /laporan)
+│   │   └── RiwayatAktivitas.jsx  # Activity log viewer (route: /riwayat-aktivitas)
+│   ├── components/               # Shared UI primitives and app chrome
+│   │   ├── Layout.jsx            # App shell: sidebar nav, header, notifications
+│   │   ├── Card.jsx              # Generic card container
+│   │   ├── Modal.jsx             # Dialog overlay
+│   │   ├── Tabel.jsx             # Sortable/paginated data table
+│   │   ├── Toast.jsx             # Toast notification system + useToast hook
+│   │   ├── Tombol.jsx            # Button with ripple + loading state
+│   │   ├── MetricCard.jsx        # KPI metric display card
+│   │   ├── PageHeader.jsx        # Page title + breadcrumb header
+│   │   ├── SectionHeader.jsx     # Section divider with title
+│   │   ├── Badge.jsx             # Status/label badge
+│   │   ├── EmptyState.jsx        # Empty list placeholder
+│   │   ├── Skeleton.jsx          # Loading skeleton placeholder
+│   │   ├── Sparkline.jsx         # Inline mini chart
+│   │   ├── ProgressBar.jsx       # Progress/capacity bar
+│   │   ├── Tooltip.jsx           # Hover tooltip
+│   │   ├── CommandPalette.jsx    # Keyboard command palette
+│   │   ├── PetaGeografis.jsx     # Leaflet map for geographic distribution
+│   │   ├── IkonDaun.jsx          # SVG leaf icon (brand identity)
+│   │   └── auth/
+│   │       └── AuthShared.jsx    # Shared auth form elements
+│   ├── utils/                    # Pure JS helpers — no React/store imports
+│   │   ├── distribusi.js         # Ranking & recommendation calculation engine
+│   │   ├── forecast.js           # Per-city TBS demand forecasting
+│   │   ├── format.js             # Date, number, tonase formatting
+│   │   ├── waktu.js              # Time/duration helpers
+│   │   ├── csv.js                # CSV parse + download utilities
+│   │   ├── navigation.js         # Role→menu mapping (menuByRole, getDefaultMenuByRole)
+│   │   └── chartDefaults.js      # Chart.js global defaults (colors, fonts, plugins)
+│   ├── hooks/                    # Custom React hooks
+│   │   ├── useRipple.jsx         # Ripple click-effect hook
+│   │   └── useMountSkeleton.js   # Skeleton show/hide on mount hook
+│   ├── styles/
+│   │   └── animations.css        # Shared keyframe animations + utility classes
+│   └── data/                     # Static seed JSON — used only by seed script + Landing.jsx
+│       ├── permintaan.json
+│       ├── keputusan.json
+│       └── (other seed files)
+│
+├── server/                       # Express backend — separate process
+│   ├── package.json              # Backend dependencies (express, prisma, zod, etc.)
+│   ├── src/
+│   │   ├── index.js              # Express app setup, route mounting, error handler
+│   │   ├── auth/
+│   │   │   └── jwt.js            # signToken / verifyToken (HS256, 1h)
+│   │   ├── db/
+│   │   │   └── prismaClient.js   # Prisma singleton client instance
+│   │   ├── middleware/
+│   │   │   ├── requireAuth.js    # Verifies Bearer JWT → attaches req.user
+│   │   │   ├── requireRole.js    # Checks req.user.role against allow-list
+│   │   │   ├── validate.js       # Zod schema validation middleware factory
+│   │   │   └── errorHandler.js   # Central 4-arg Express error handler
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js     # POST /auth/login, POST /auth/register
+│   │   │   ├── kotaRoutes.js     # GET/POST /kota, PUT/DELETE /kota/:nama
+│   │   │   ├── stokRoutes.js     # GET /stok-tbs, PUT /stok-tbs
+│   │   │   ├── permintaanRoutes.js # GET/POST /permintaan, PUT/DELETE /permintaan/:id
+│   │   │   ├── keputusanRoutes.js  # GET/POST /keputusan, PUT/DELETE/:id, POST/:id/restore
+│   │   │   ├── distribusiRoutes.js # GET /rekomendasi-distribusi, GET /kpi
+│   │   │   ├── notifikasiRoutes.js # GET /notifikasi, PUT /notifikasi/:id/baca
+│   │   │   ├── activityLogRoutes.js # GET /activity-log
+│   │   │   └── roleOptions.js    # Exported array of valid role strings
+│   │   ├── schemas/              # Zod request-body schemas
+│   │   │   ├── keputusanSchemas.js
+│   │   │   ├── kotaSchemas.js
+│   │   │   ├── permintaanSchemas.js
+│   │   │   └── stokSchemas.js
+│   │   └── services/             # Business logic + Prisma access
+│   │       ├── akunService.js    # Password hashing, login verification, registration
+│   │       ├── kotaService.js    # City CRUD, reference-count check before delete
+│   │       ├── permintaanService.js # Request CRUD + activity logging
+│   │       ├── keputusanService.js  # Decision CRUD, optimistic-lock status update
+│   │       ├── stokService.js    # Singleton TBS stock read/write
+│   │       ├── distribusiService.js # Server-side ranking/KPI engine
+│   │       ├── notifikasiService.js # Notification CRUD + mark-read
+│   │       └── activityLogService.js # Activity log append + read
+│   └── prisma/
+│       ├── schema.prisma         # Prisma schema: 8 models, PostgreSQL datasource
+│       ├── seed.js               # DB seeder (reads src/data/*.json)
+│       └── migrations/           # Prisma migration history
+│
+├── index.html                    # Vite entry HTML: loads Inter/JetBrains Mono fonts
+├── vite.config.js                # Vite + React plugin, dev server on 0.0.0.0:5173
+├── package.json                  # Frontend deps + scripts: dev, build
+├── package-lock.json             # Frontend lockfile
+├── docker-compose.yml            # PostgreSQL 16 container for local dev
+└── .planning/                    # Historical GSD phase artifacts (not maintained)
 ```
 
 ## Directory Purposes
 
-**src/pages/**
-- Purpose: One large component per top-level route/screen
-- Contains: `*.jsx`, no subdirectories
-- Key files: `Landing.jsx` (1619 lines, marketing/public page), `Dashboard.jsx` (1534 lines), `KeputusanDistribusi.jsx`, `AnalisisRanking.jsx`, `StatusDistribusi.jsx`, `ManajemenData.jsx`, `InputData.jsx`, `Laporan.jsx`, `RiwayatAktivitas.jsx`, `Login.jsx`, `Register.jsx`
-- Subdirectories: None (`.gitkeep` present, flat structure intentional)
+**`src/pages/`:**
+- Purpose: One component per authenticated route; owns local form/modal/filter state
+- Contains: 9 authenticated page components + 3 unauthenticated (`Landing`, `Login`, `Register`)
+- Key pattern: Import `store` directly, read `snapshot` from `useState(store.getState())`, subscribe in `useEffect`
 
-**src/components/**
-- Purpose: Shared UI building blocks used across multiple pages
-- Contains: `*.jsx` components (`Layout.jsx` 899-line app shell, `Card.jsx`, `Modal.jsx`, `Tabel.jsx`, `Tombol.jsx` (button), `Toast.jsx`, `Badge.jsx`, `ProgressBar.jsx`, `Skeleton.jsx`, `Sparkline.jsx`, `Tooltip.jsx`, `CommandPalette.jsx`, `PetaGeografis.jsx` (Leaflet map), `MetricCard.jsx`, `PageHeader.jsx`, `SectionHeader.jsx`, `EmptyState.jsx`, `IkonDaun.jsx`)
-- Key files: `Layout.jsx` (header/sidebar/notifications shell for authenticated views)
-- Subdirectories: `auth/` — `AuthShared.jsx` (shared styling/markup for Login/Register)
+**`src/components/`:**
+- Purpose: Shared UI primitives, app chrome, and the toast/notification system
+- Key files: `Layout.jsx` (nav shell), `Tabel.jsx` (reusable sortable table), `Toast.jsx` (global toast + `showToast` imperatively callable), `Tombol.jsx` (button with built-in loading/ripple)
+- Do not add page-specific logic here — components must remain generic
 
-**src/data/**
-- Purpose: Static seed data that initializes the store on first load
-- Contains: `permintaan.json` (requests), `keputusan.json` (decisions), `notifikasi.json` (notifications), `activityLog.json`
-- Key files: All four are read once by `src/store.js` at module load
+**`src/utils/`:**
+- Purpose: Pure JS computation — no React, no store imports; importable anywhere including tests
+- Key files: `distribusi.js` (ranking algorithm used by `AnalisisRanking`, `Dashboard`, `Laporan`), `format.js` (used everywhere for dates/numbers), `navigation.js` (used by `App.jsx` and `Layout.jsx`)
 
-**src/utils/**
-- Purpose: Pure(ish) logic decoupled from React/store — the most testable code in the repo
-- Contains: `distribusi.js` (ranking/recommendation math), `forecast.js` (per-city forecasting), `csv.js` (export), `format.js` (display formatting), `waktu.js` (date/time helpers), `navigation.js` (role→menu config), `chartDefaults.js` (Chart.js config)
-- Key files: `distribusi.js`, `forecast.js` — core decision-support calculations
+**`src/api/`:**
+- Purpose: Single fetch abstraction; the only code path that calls the backend
+- One file only: `src/api/apiClient.js`. Do not add more files here; extend `apiFetch` options if needed.
 
-**src/hooks/**
-- Purpose: Custom React hooks shared across components
-- Contains: `useMountSkeleton.js`, `useRipple.jsx`
-- Key files: Both are small, presentation-focused hooks (loading skeleton timing, button ripple effect)
+**`src/hooks/`:**
+- Purpose: Reusable React hooks for UI behaviour (not data)
+- `useRipple.jsx` — attach to button elements for material ripple effect
+- `useMountSkeleton.js` — show skeleton on mount, hide after first data load
+
+**`src/styles/`:**
+- Purpose: Shared CSS keyframes and utility animation classes
+- `animations.css` is the single source of truth for named keyframes (`fadeIn`, `fadeInUp16`, `slideInRight`, `rowEnter`, `shimmerSlide`, etc.)
+
+**`src/data/`:**
+- Purpose: Static seed JSON consumed only by `server/prisma/seed.js` and `src/pages/Landing.jsx` pre-login demo widgets
+- Authenticated pages must NOT read from here; use `store.getState()` instead
+
+**`server/src/routes/`:**
+- Purpose: HTTP route definitions — compose middleware and call services
+- Pattern: `requireAuth` then `requireRole(...)` then `validate(schema)` then async handler calling a service function and returning JSON
+
+**`server/src/services/`:**
+- Purpose: All real business logic and Prisma queries; the backend's equivalent of the old store
+- Pattern: Named async function exports; throw `new Error(message)` with optional `.statusCode`; write `ActivityLog`/`Notifikasi` rows as side-effects inside the same service call
+
+**`server/src/middleware/`:**
+- Purpose: Cross-cutting request handling
+- `requireAuth.js` — must come before `requireRole` on every protected route
+- `validate.js` — call as `validate(zodSchema)` in the route chain after auth
+- `errorHandler.js` — must be mounted last in `server/src/index.js`
+
+**`server/prisma/`:**
+- Purpose: Prisma schema, migration history, and DB seeder
+- `schema.prisma` — 8 models: `Akun`, `Kota`, `Permintaan`, `Keputusan`, `RiwayatKeputusan`, `ActivityLog`, `Notifikasi`, `Stok`
+- Run `npx prisma migrate dev` from `server/` to apply migrations
+- Run `npm run db:seed` from `server/` to seed initial data from `src/data/*.json`
 
 ## Key File Locations
 
 **Entry Points:**
-- `index.html` — Vite HTML entry, loads `src/main.jsx` as a module
-- `src/main.jsx` — React DOM root mount
-- `src/App.jsx` — manual router and top-level page switch
+- `src/main.jsx` — browser entry; mounts `<App />`
+- `src/App.jsx` — route/auth orchestrator
+- `server/src/index.js` — Express app + route mounting
 
 **Configuration:**
-- `vite.config.js` — Vite + React plugin config, dev server bound to `0.0.0.0:5173`
-- `package.json` — only `dev`/`build` scripts; no lint/test scripts
-- No `.env`, `.eslintrc`, `.prettierrc`, or `tsconfig.json` present
+- `vite.config.js` — Vite dev server (port 5173, all interfaces)
+- `server/prisma/schema.prisma` — database schema
+- `docker-compose.yml` — local PostgreSQL 16 container
+- `server/.env` (gitignored) — `DATABASE_URL`, `JWT_SECRET`, `PORT`, `CORS_ORIGIN`
 
 **Core Logic:**
-- `src/store.js` — all data, auth, and mutation logic (the "backend")
-- `src/utils/distribusi.js`, `src/utils/forecast.js` — distribution decision/ranking/forecasting algorithms
+- `src/store.js` — frontend state singleton
+- `src/api/apiClient.js` — fetch wrapper
+- `server/src/auth/jwt.js` — token sign/verify
+- `server/src/middleware/requireAuth.js` — auth guard
+- `server/src/middleware/requireRole.js` — RBAC guard
 
-**Testing:**
-- None — no test directory, no test files anywhere in the repo
+**Design System:**
+- `src/tokens.css` — all CSS custom properties (colors, spacing, shadows, radii, typography)
+- `src/styles/animations.css` — all shared keyframes and animation utility classes
+- `src/index.css` — global base styles and resets
 
-**Documentation:**
-- None present (no README.md, no docs/ directory)
+**Business Logic:**
+- `src/utils/distribusi.js` — TBS ranking and recommendation engine (client-side, pure JS)
+- `server/src/services/distribusiService.js` — server-side equivalent (KPI, rekomendasi endpoints)
+- `server/src/services/keputusanService.js` — optimistic-lock decision status updates
 
 ## Naming Conventions
 
 **Files:**
-- `PascalCase.jsx` for React components (e.g. `Dashboard.jsx`, `Tombol.jsx`)
-- `camelCase.js` for non-component modules (e.g. `store.js`, `format.js`, `navigation.js`)
-- Indonesian naming throughout for domain concepts (e.g. `permintaan` = request, `keputusan` = decision, `distribusi` = distribution, `kota` = city) — component/file names mix English (React idioms) and Indonesian (domain terms)
+- React components: PascalCase `.jsx` — `MetricCard.jsx`, `KeputusanDistribusi.jsx`
+- Hooks: camelCase `.jsx` or `.js` prefixed `use` — `useRipple.jsx`, `useMountSkeleton.js`
+- Utilities: camelCase `.js` — `distribusi.js`, `format.js`
+- Backend route files: camelCase `*Routes.js` — `kotaRoutes.js`
+- Backend service files: camelCase `*Service.js` — `kotaService.js`
+- Backend schema files: camelCase `*Schemas.js` — `keputusanSchemas.js`
 
 **Directories:**
-- lowercase, plural where it's a collection (`pages/`, `components/`, `utils/`, `hooks/`)
-
-**Special Patterns:**
-- `.gitkeep` files preserved in otherwise-empty directories (`src/pages/.gitkeep`, `src/components/.gitkeep`, `src/utils/.gitkeep`) — leftover from when these dirs may have been empty; harmless
-- No `index.js` barrel files — every import references the concrete file directly
+- Lowercase, no hyphens: `pages/`, `components/`, `utils/`, `routes/`, `services/`, `middleware/`
 
 ## Where to Add New Code
 
-**New Page/Route:**
-- Component: `src/pages/NamaHalaman.jsx`
-- Register it: add to `pageRegistry`, `pathByPage` in `src/App.jsx:18-38`
-- Menu visibility: add an entry to the relevant role(s) in `src/utils/navigation.js`
+**New authenticated page:**
+1. Create `src/pages/NamaHalaman.jsx` (PascalCase, named function declaration + `export default`)
+2. Add to `pageRegistry`, `pathByPage` in `src/App.jsx:19-44`
+3. Add to the appropriate role(s) in `menuByRole` in `src/utils/navigation.js`
+4. Add the backend route(s) in `server/src/routes/` with `requireAuth` + `requireRole`
+5. Add business logic in `server/src/services/`
 
-**New Shared Component:**
-- Implementation: `src/components/NamaKomponen.jsx`
-- Styling: reuse tokens from `src/tokens.css` rather than new inline styles (existing inline-style duplication is a known issue — see CONCERNS.md)
+**New shared component:**
+- Add to `src/components/NamaKomponen.jsx`
+- Export only a default export (named function declaration)
+- Keep it generic — no page-specific logic or direct store reads unless absolutely necessary (only `Layout` and `Toast` read `store` today)
 
-**New Store Capability:**
-- Implementation: add getter/mutator method to the `store` object in `src/store.js`
-- Follow the existing pattern: mutate `state`, call `notify()`, return a `clone(...)` of the result
+**New utility function:**
+- Add to the relevant file in `src/utils/` (or create a new `src/utils/namaUtil.js`)
+- Use named exports; no default export
+- No React or store imports — keep utils pure JS
 
-**Utilities:**
-- Shared business logic: `src/utils/*.js` (keep framework-free, as the existing files are)
+**New backend route + service:**
+1. Create `server/src/services/namaService.js` (business logic + Prisma)
+2. Create `server/src/schemas/namaSchemas.js` (Zod schemas if needed)
+3. Create `server/src/routes/namaRoutes.js` (chain `requireAuth` → `requireRole` → `validate` → handler)
+4. Mount the router in `server/src/index.js` with `app.use("/nama", namaRouter)` before `app.use(errorHandler)`
+5. Add hydration loader to `store.hydrate()` in `src/store.js`
+
+**New database model:**
+1. Add model to `server/prisma/schema.prisma`
+2. Run `npx prisma migrate dev --name describe-change` from `server/`
+3. Add service functions in `server/src/services/`
 
 ## Special Directories
 
-**public/**
-- Purpose: Static assets copied as-is into the build output
-- Source: Manually placed assets
-- Committed: Yes
+**`.planning/`:**
+- Purpose: Historical GSD phase artifacts from v1.0/v2.0 milestones
+- Generated: No (hand-written during planning phases)
+- Committed: Yes (historical reference only; not actively maintained going forward)
+
+**`server/prisma/migrations/`:**
+- Purpose: Prisma migration history — one subdirectory per migration with SQL
+- Generated: Yes (by `prisma migrate dev`)
+- Committed: Yes (required for team consistency and production deploys)
+
+**`node_modules/` (root and `server/`):**
+- Generated: Yes (npm install)
+- Committed: No
+
+**`dist/` (root):**
+- Purpose: Vite production build output
+- Generated: Yes (`npm run build`)
+- Committed: No
 
 ---
 
-*Structure analysis: 2026-06-21*
-*Update when directory structure changes*
+*Structure analysis: 2026-07-01*

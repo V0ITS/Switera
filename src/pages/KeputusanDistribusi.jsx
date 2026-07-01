@@ -161,7 +161,7 @@ function KeputusanDistribusi({ onNavigate }) {
         >
           <Card
             style={{
-              background: "linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface-3) 100%)",
+              backgroundColor: "var(--color-surface-2)",
               border: "1px solid var(--color-border-mid)",
               borderTop: "2px solid var(--color-primary)",
               borderRadius: "var(--radius-xl)",
@@ -176,7 +176,7 @@ function KeputusanDistribusi({ onNavigate }) {
                 style={{
                   display: "inline-block",
                   backgroundColor: "var(--color-primary-subtle)",
-                  border: "1px solid rgba(45,106,79,0.25)",
+                  border: "1px solid var(--color-primary)",
                   color: "var(--color-primary)",
                   borderRadius: "var(--radius-full)",
                   padding: "3px 10px",
@@ -353,6 +353,7 @@ function KeputusanDistribusi({ onNavigate }) {
               justifyContent: "space-between",
               gap: "1rem",
               flexWrap: "wrap",
+              animationDelay: "80ms",
             }}
           >
             <div>
