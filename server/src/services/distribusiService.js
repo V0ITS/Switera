@@ -13,7 +13,7 @@ import { getKeputusan } from "./keputusanService.js";
 
 const parseDate = (value) => new Date(`${value}T00:00:00`);
 
-const aggregatePermintaanRanking = (permintaan) => {
+export const aggregatePermintaanRanking = (permintaan) => {
   const grouped = permintaan.reduce((result, item) => {
     const current = result.get(item.kota) ?? {
       kota: item.kota,
