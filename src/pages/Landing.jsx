@@ -1081,7 +1081,7 @@ function Landing({ onNavigate }) {
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--color-primary)", animation: "pulse 2s infinite" }} />
-            Platform Distribusi TBS Kelapa Sawit
+            Platform Distribusi Tandan Buah Segar (TBS) Kelapa Sawit
           </span>
 
           <h1
@@ -1127,7 +1127,7 @@ function Landing({ onNavigate }) {
             }}
           >
             Sistem informasi berbasis data untuk membantu manajer distribusi
-            menentukan kota tujuan TBS dengan tepat dan cepat.
+            menentukan kota tujuan TBS kelapa sawit dengan tepat dan cepat.
           </p>
 
           <div

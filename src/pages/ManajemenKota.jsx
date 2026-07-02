@@ -7,11 +7,29 @@ import SectionHeader from "../components/SectionHeader";
 import Tabel from "../components/Tabel";
 import Tombol from "../components/Tombol";
 import MetricCard from "../components/MetricCard";
+import Tooltip from "../components/Tooltip";
 import { showToast } from "../components/Toast";
 import useRipple, { RippleSpans } from "../hooks/useRipple";
 import store from "../store";
 
 const initialForm = { nama: "", kapasitas: "" };
+
+function IkonInfo() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      style={{ display: "block", color: "var(--color-text-muted)", cursor: "help" }}
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 11V16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="8" r="1" fill="currentColor" />
+    </svg>
+  );
+}
 
 function IkonEditKecil() {
   return (
@@ -274,7 +292,14 @@ function ManajemenKota({ onNavigate }) {
         }}
       >
         <MetricCard
-          label="Stok TBS Tersedia (ton)"
+          label={
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              Stok TBS Tersedia (ton)
+              <Tooltip content="Tandan Buah Segar" position="top">
+                <IkonInfo />
+              </Tooltip>
+            </span>
+          }
           nilai={`${stokTbs} ton`}
           size="lg"
           accent="primary"
