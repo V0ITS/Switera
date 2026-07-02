@@ -71,13 +71,15 @@
   --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .22);
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, .28);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, .32);
-  --shadow-lg: 0 8px 28px rgba(0, 0, 0, .38);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, .45);
-  --shadow-glow-primary: 0 0 20px rgba(45, 106, 79, .3);
-  --shadow-glow-accent: 0 0 20px rgba(242, 167, 27, .25);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .16);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .2);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, .24);
+  --shadow-lg: 0 6px 20px rgba(0, 0, 0, .3);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, .36);
+  /* Glow token dinetralkan jadi shadow halus (tanpa glow berwarna) — tampilan
+     enterprise yang bersih; nama token dipertahankan agar referensi tak putus. */
+  --shadow-glow-primary: 0 1px 3px rgba(0, 0, 0, .2);
+  --shadow-glow-accent: 0 1px 3px rgba(0, 0, 0, .2);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -93,11 +95,11 @@
   --ease-smooth: cubic-bezier(.4, 0, .2, 1);
   --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
   --ease-out: cubic-bezier(0, 0, .2, 1);
-  --transition-fast: 100ms var(--ease-smooth);
-  --transition-base: 150ms var(--ease-smooth);
-  --transition-slow: 250ms var(--ease-smooth);
-  --transition-input: 150ms var(--ease-smooth);
-  --transition-page: 250ms var(--ease-out);
+  --transition-fast: 120ms var(--ease-out);
+  --transition-base: 150ms var(--ease-out);
+  --transition-slow: 220ms var(--ease-out);
+  --transition-input: 150ms var(--ease-out);
+  --transition-page: 200ms var(--ease-out);
 
   --z-dropdown: 100;
   --z-sticky: 200;
@@ -211,9 +213,6 @@
 
 .content-main {
   background-color: var(--color-bg);
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(45, 106, 79, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(242, 167, 27, 0.02) 0%, transparent 50%);
 }
 
 @keyframes cardShimmerSweep {
@@ -230,14 +229,12 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-  transform: translateX(-100%);
+  background: transparent;
   pointer-events: none;
 }
 
-.card-shimmer:hover::before {
-  animation: cardShimmerSweep 600ms ease;
-}
+/* Sweep shimmer sengaja dinonaktifkan — diganti hover border/shadow halus
+   (lebih bersih, tidak terlihat "buatan AI"). */
 
 .field-select {
   appearance: none;
@@ -518,7 +515,7 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
 .app-card {
   border: 1px solid var(--color-border);
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
-  animation: fadeInUp 300ms var(--ease-smooth) both;
+  animation: fadeInUp 200ms var(--ease-out) both;
 }
 .app-card-hoverable:hover {
   border-color: var(--color-border-strong);
@@ -603,8 +600,7 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
 }
 .dashboard-action-card:hover {
   background-color: var(--color-surface-3);
-  border-color: var(--color-primary);
-  transform: translateX(2px);
+  border-color: var(--color-border-strong);
 }
 
 /* ===== Inline link buttons (warning/underline-on-hover) ===== */
@@ -744,7 +740,6 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
 }
 .landing-btn-primer:hover {
   background-color: rgba(255, 255, 255, 0.88);
-  transform: scale(1.02);
 }
 .landing-btn-sekunder {
   background-color: transparent;
