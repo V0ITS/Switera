@@ -188,7 +188,7 @@ New from 09-05 (Phase 9's final plan — ALL resolved within this plan, no open 
 | 260625-cvb | Tambahkan kolom armada/eta ke model Keputusan+RiwayatKeputusan | 2026-06-25 | c3c1aaa | [260625-cvb-tambahkan-kolom-armada-dan-eta-ke-model-](./quick/260625-cvb-tambahkan-kolom-armada-dan-eta-ke-model-/) |
 | 260625-izb | Kembalikan validasi role pada login ke perilaku v1.0 | 2026-06-25 | c8e83d8 (4/4 tasks complete, checkpoint approved) | [260625-izb-kembalikan-validasi-role-pada-login-ke-p](./quick/260625-izb-kembalikan-validasi-role-pada-login-ke-p/) |
 | 260702-p1v | Hapus dummy/static data frontend; Landing ambil ranking/kota dari DB via endpoint publik GET /public/landing-stats | 2026-07-02 | f26fe8e | [260702-p1v-hapus-dummy-static-data-dari-frontend-sw](./quick/260702-p1v-hapus-dummy-static-data-dari-frontend-sw/) |
-| 260704-2y2 | Implementasi AI-1: ringkasan AI di halaman Laporan (endpoint POST /laporan/ringkasan via Claude API + section Ringkasan AI di Laporan.jsx) | 2026-07-04 | b2fe09e | [260704-2y2-implementasi-ai-1-ringkasan-ai-di-halama](./quick/260704-2y2-implementasi-ai-1-ringkasan-ai-di-halama/) |
+| 260704-2y2 | Implementasi AI-1: ringkasan AI di halaman Laporan (endpoint POST /laporan/ringkasan via Gemini API free tier + section Ringkasan AI di Laporan.jsx) | 2026-07-04 | ea07505 | [260704-2y2-implementasi-ai-1-ringkasan-ai-di-halama](./quick/260704-2y2-implementasi-ai-1-ringkasan-ai-di-halama/) |
 
 ## Deferred Items
 
