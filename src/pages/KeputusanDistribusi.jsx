@@ -159,87 +159,108 @@ function KeputusanDistribusi({ onNavigate }) {
             gap: "1.5rem",
           }}
         >
+          {/* Kartu rekomendasi unggulan ala keputusan_distribusi_switera:
+              panel kiri (badge + kota + 2 kotak stat) | panel kanan (aksi). */}
           <Card
+            className="app-grid-2"
             style={{
-              backgroundColor: "var(--color-surface-2)",
-              border: "1px solid var(--color-border-mid)",
-              borderTop: "2px solid var(--color-primary)",
-              borderRadius: "var(--radius-xl)",
               padding: "var(--space-8)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
+              display: "grid",
+              gridTemplateColumns: "1.1fr 1fr",
+              gap: "var(--space-8)",
+              alignItems: "start",
             }}
           >
-            <div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", minWidth: 0 }}>
               <span
                 style={{
-                  display: "inline-block",
-                  backgroundColor: "var(--color-primary-subtle)",
-                  border: "1px solid var(--color-primary)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  width: "fit-content",
+                  backgroundColor: "rgba(0, 134, 86, 0.1)",
+                  border: "1px solid rgba(0, 106, 67, 0.2)",
                   color: "var(--color-primary)",
                   borderRadius: "var(--radius-full)",
-                  padding: "3px 10px",
+                  padding: "4px 12px",
                   fontSize: "var(--text-xs)",
                   fontWeight: "var(--font-weight-semibold)",
-                  marginBottom: "var(--space-3)",
                 }}
               >
-                Rekomendasi Sistem · Skor {rekomendasi.skor}
+                <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: "16px", lineHeight: 1 }}>stars</span>
+                Rekomendasi Utama
               </span>
-              <h2
-                style={{
-                  margin: 0,
-                  fontFamily: "var(--font-display)",
-                  fontSize: "var(--text-3xl)",
-                  fontWeight: "var(--font-weight-bold)",
-                  letterSpacing: "var(--tracking-tight)",
-                  color: "var(--color-text-primary)",
-                }}
-              >
-                {rekomendasi.kota}
-              </h2>
-              <p
-                style={{
-                  margin: "0.45rem 0 0",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.6,
-                }}
-              >
+              <div>
+                <h2
+                  style={{
+                    margin: "0 0 6px",
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "var(--text-lg)",
+                    fontWeight: "var(--font-weight-semibold)",
+                    color: "var(--color-on-surface)",
+                  }}
+                >
+                  Rekomendasi Distribusi Selanjutnya
+                </h2>
+                <span
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "var(--text-4xl)",
+                    fontWeight: "var(--font-weight-bold)",
+                    letterSpacing: "var(--tracking-tight)",
+                    color: "var(--color-primary)",
+                  }}
+                >
+                  {rekomendasi.kota}
+                </span>
+              </div>
+              <div className="app-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+                <div style={{ backgroundColor: "var(--color-surface-container-low)", border: "1px solid var(--color-border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-4)" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)" }}>Volume Alokasi</p>
+                  <p style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-xl)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
+                    {formatTonase(rekomendasi.alokasi)}
+                  </p>
+                </div>
+                <div style={{ backgroundColor: "var(--color-surface-container-low)", border: "1px solid var(--color-border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-4)" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)" }}>Skor Kelayakan</p>
+                  <p style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-xl)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-primary)" }}>
+                    {rekomendasi.skor} <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-normal)", color: "var(--color-on-surface-variant)" }}>/ 100</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ borderLeft: "1px solid var(--color-border)", paddingLeft: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-3)", minWidth: 0 }} className="keputusan-aksi-panel">
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
+                Aksi Keputusan
+              </p>
+              <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-on-surface-variant)", lineHeight: 1.6 }}>
                 Permintaan {formatTonase(rekomendasi.totalPermintaan)} dari kapasitas{" "}
                 {formatTonase(rekomendasi.kapasitas)}. Alokasi disarankan{" "}
-                <strong style={{ color: "var(--color-text-primary)" }}>
-                  {formatTonase(rekomendasi.alokasi)}
-                </strong>
+                <strong style={{ color: "var(--color-on-surface)" }}>{formatTonase(rekomendasi.alokasi)}</strong>
                 {!rekomendasi.terpenuhiPenuh
                   ? rekomendasi.dibatasiKapasitas
                     ? " (dibatasi oleh kapasitas kota)."
                     : " (dibatasi oleh ketersediaan stok TBS)."
-                  : "."}
+                  : "."}{" "}
+                Menyetujui rekomendasi ini akan mencatat keputusan dan mengurangi stok TBS secara otomatis.
               </p>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "0.75rem",
-                flexWrap: "wrap",
-              }}
-            >
-              <Tombol
-                label="Setujui Rekomendasi"
-                onClick={() =>
-                  saveKeputusan(
-                    rekomendasi,
-                    "Rekomendasi sistem berdasarkan skor permintaan dan kapasitas"
-                  )
-                }
-              />
-              <Tombol
-                label="Pilih Kota Lain"
-                variant="sekunder"
-                onClick={() => setIsCustomSelection((current) => !current)}
-              />
+              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
+                <Tombol
+                  label="Setujui Rekomendasi"
+                  onClick={() =>
+                    saveKeputusan(
+                      rekomendasi,
+                      "Rekomendasi sistem berdasarkan skor permintaan dan kapasitas"
+                    )
+                  }
+                />
+                <Tombol
+                  label="Pilih Kota Lain"
+                  variant="sekunder"
+                  onClick={() => setIsCustomSelection((current) => !current)}
+                />
+              </div>
             </div>
           </Card>
 

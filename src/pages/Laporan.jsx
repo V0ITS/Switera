@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
+import MetricCard from "../components/MetricCard";
 import EmptyState from "../components/EmptyState";
 import PageHeader from "../components/PageHeader";
 import SectionHeader from "../components/SectionHeader";
@@ -528,6 +529,30 @@ function Laporan({ onNavigate }) {
           gap: "1.5rem",
         }}
       >
+        {/* Summary stats bento ala laporan_distribusi_switera. */}
+        {!noData ? (
+          <div
+            className="stagger-children app-grid-4"
+            style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(160px, 1fr))", gap: "var(--space-4)" }}
+          >
+            {isTimLogistik ? (
+              <>
+                <MetricCard label="Total Volume TBS" nilai={`${filteredKeputusan.reduce((total, item) => total + (Number(item.volume_tbs) || 0), 0)} ton`} size="lg" accent="primary" />
+                <MetricCard label="Total Pengiriman" nilai={String(filteredKeputusan.length)} size="lg" accent="info" />
+                <MetricCard label="Dalam Pengiriman" nilai={String(statusCounts["dalam-pengiriman"])} size="lg" accent="warning" />
+                <MetricCard label="Selesai" nilai={String(statusCounts.selesai)} size="lg" accent="success" />
+              </>
+            ) : (
+              <>
+                <MetricCard label="Total Volume TBS" nilai={`${filteredRiwayat.reduce((total, item) => total + (Number(item.volume_tbs) || 0), 0)} ton`} size="lg" accent="primary" />
+                <MetricCard label="Total Keputusan" nilai={String(filteredRiwayat.length)} size="lg" accent="info" />
+                <MetricCard label="Selesai" nilai={String(filteredRiwayat.filter((item) => item.status === "selesai").length)} size="lg" accent="success" />
+                <MetricCard label="Dibatalkan" nilai={String(filteredRiwayat.filter((item) => item.status === "dibatalkan").length)} size="lg" accent="danger" />
+              </>
+            )}
+          </div>
+        ) : null}
+
         {noData ? (
           <EmptyState pesan="Tidak ada data pada periode yang dipilih." />
         ) : isTimLogistik ? (

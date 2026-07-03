@@ -335,6 +335,13 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   .app-grid-2-1 {
     grid-template-columns: 1fr !important;
   }
+  /* Panel aksi kartu keputusan: pemisah pindah ke atas saat menumpuk. */
+  .keputusan-aksi-panel {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid var(--color-border) !important;
+    padding-top: var(--space-5) !important;
+  }
 }
 
 /* ===== App shell: responsive sidebar/header ===== */

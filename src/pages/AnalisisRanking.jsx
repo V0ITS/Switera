@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Card from "../components/Card";
 import EmptyState from "../components/EmptyState";
+import MetricCard from "../components/MetricCard";
 import PageHeader from "../components/PageHeader";
 import SectionHeader from "../components/SectionHeader";
 import Tabel from "../components/Tabel";
@@ -260,6 +261,35 @@ function AnalisisRanking({ onNavigate }) {
             gap: "1.5rem",
           }}
         >
+          {/* Metrik bento ala ranking_distribusi_switera. */}
+          <div
+            className="stagger-children app-grid-3"
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(200px, 1fr))", gap: "var(--space-4)" }}
+          >
+            <MetricCard
+              label="Total Permintaan (Ton)"
+              nilai={`${ranking.reduce((total, item) => total + item.totalPermintaan, 0)} ton`}
+              size="lg"
+              accent="primary"
+            />
+            <MetricCard
+              label="Rata-rata Skor Pemenuhan"
+              nilai={
+                rekomendasi.length > 0
+                  ? String(Math.round(rekomendasi.reduce((total, item) => total + item.skor, 0) / rekomendasi.length))
+                  : "-"
+              }
+              size="lg"
+              accent="info"
+            />
+            <MetricCard
+              label="Kota Prioritas Tinggi"
+              nilai={String(rekomendasi.filter((item) => !item.terpenuhiPenuh).length)}
+              size="lg"
+              accent="warning"
+            />
+          </div>
+
           <Card>
             <SectionHeader>Ranking Permintaan Kota</SectionHeader>
             <p
