@@ -167,6 +167,23 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
         ...style,
       }}
     >
+      {/* Lingkaran dekoratif sudut ala kartu metrik Stitch — membesar saat hover. */}
+      <span
+        aria-hidden="true"
+        className="metric-deco"
+        style={{
+          position: "absolute",
+          right: "-16px",
+          top: "-16px",
+          width: "96px",
+          height: "96px",
+          borderRadius: "var(--radius-full)",
+          backgroundColor: colors.subtle,
+          opacity: 0.6,
+          pointerEvents: "none",
+          transition: "transform 700ms var(--ease-out)",
+        }}
+      />
       <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-3)" }}>
         {ikon ? (
           <div

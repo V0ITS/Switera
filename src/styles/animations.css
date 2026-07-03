@@ -34,6 +34,10 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+@keyframes floatSubtle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
 .animate-ticker { animation: ticker 30s linear infinite; }
 .animate-ticker:hover { animation-play-state: paused; }
 

@@ -148,65 +148,48 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
         >
           {onClose ? <TombolClose onClick={onClose} /> : null}
 
-          <div style={{ marginBottom: "var(--space-8)" }}>
-            <div
+          {/* Header terpusat ala Stitch masuk_switera: badge ikon bulat + judul. */}
+          <div style={{ marginBottom: "var(--space-8)", textAlign: "center" }}>
+            <span
+              aria-hidden="true"
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--space-2)",
-                marginBottom: "var(--space-5)",
+                width: "64px",
+                height: "64px",
+                margin: "0 auto var(--space-3)",
+                borderRadius: "var(--radius-full)",
+                backgroundColor: "rgba(0, 106, 67, 0.1)",
+                color: "var(--color-primary)",
+                display: "grid",
+                placeItems: "center",
               }}
             >
               <span
-                aria-hidden="true"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "var(--radius-lg)",
-                  backgroundColor: "var(--color-primary-container)",
-                  color: "var(--color-on-primary-container)",
-                  display: "grid",
-                  placeItems: "center",
-                }}
+                className="material-symbols-outlined"
+                style={{ fontSize: "32px", lineHeight: 1, fontVariationSettings: "'FILL' 1" }}
               >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: "22px", lineHeight: 1, fontVariationSettings: "'FILL' 1" }}
-                >
-                  eco
-                </span>
+                local_shipping
               </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontWeight: "var(--font-weight-bold)",
-                  fontSize: "var(--text-lg)",
-                  color: "var(--color-primary)",
-                }}
-              >
-                Switera
-              </span>
-            </div>
+            </span>
             <h1
               style={{
                 margin: 0,
-                fontFamily: "var(--font-display)",
+                fontFamily: "var(--font-heading)",
                 fontSize: "var(--text-2xl)",
                 fontWeight: "var(--font-weight-bold)",
                 letterSpacing: "var(--tracking-tight)",
-                color: "var(--color-text-primary)",
+                color: "var(--color-on-surface)",
               }}
             >
-              Masuk
+              Selamat Datang di Switera
             </h1>
             <p
               style={{
                 margin: "4px 0 0",
                 fontSize: "var(--text-sm)",
-                color: "var(--color-text-muted)",
+                color: "var(--color-on-surface-variant)",
               }}
             >
-              Masuk ke akun Anda
+              Logistik Sawit — masuk ke akun Anda
             </p>
           </div>
 
