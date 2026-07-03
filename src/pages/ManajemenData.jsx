@@ -395,37 +395,40 @@ function ManajemenData({ onNavigate }) {
         judul="Manajemen Data Permintaan"
         deskripsi="Tinjau, ubah, atau hapus data permintaan kota yang sudah tersimpan."
         aksi={
-          <div
-            style={{
-              width: "min(360px, 100%)",
-              position: "relative",
-            }}
-          >
-            <span
-              aria-hidden="true"
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+            <div
               style={{
-                position: "absolute",
-                left: "14px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                display: "inline-flex",
-                color: "var(--color-text-muted)",
-                pointerEvents: "none",
+                width: "min(320px, 100%)",
+                position: "relative",
               }}
             >
-              <IkonSearch />
-            </span>
-            <input
-              type="search"
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              placeholder="Cari berdasarkan nama kota"
-              style={{
-                ...getFieldStyle("keyword"),
-                paddingLeft: "40px",
-              }}
-              {...getFieldHandlers("keyword")}
-            />
+              <span
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  display: "inline-flex",
+                  color: "var(--color-text-muted)",
+                  pointerEvents: "none",
+                }}
+              >
+                <IkonSearch />
+              </span>
+              <input
+                type="search"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                placeholder="Cari berdasarkan nama kota"
+                style={{
+                  ...getFieldStyle("keyword"),
+                  paddingLeft: "40px",
+                }}
+                {...getFieldHandlers("keyword")}
+              />
+            </div>
+            <Tombol label="+ Tambah Data Baru" onClick={() => onNavigate?.("input-data")} />
           </div>
         }
       />

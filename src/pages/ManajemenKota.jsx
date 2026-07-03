@@ -153,10 +153,42 @@ function ManajemenKota({ onNavigate }) {
   const daftarKota = useMemo(() => snapshot.daftarKota ?? [], [snapshot.daftarKota]);
   const stokTbs = snapshot.stokTbs ?? 0;
 
+  // Bar kapasitas ala Stitch — lebar relatif terhadap kapasitas terbesar,
+  // dianimasikan via transisi width saat data masuk.
+  const maxKapasitas = Math.max(1, ...daftarKota.map((kota) => kota.kapasitas));
+
   const tableRows = daftarKota.map((kota) => ({
     id: kota.nama,
     nama: kota.nama,
-    kapasitas: kota.kapasitas,
+    kapasitas: (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "12px", justifyContent: "flex-end" }}>
+        <span style={{ minWidth: "64px", textAlign: "right", fontWeight: "var(--font-weight-semibold)" }}>
+          {kota.kapasitas}
+        </span>
+        <span
+          aria-hidden="true"
+          style={{
+            width: "120px",
+            height: "8px",
+            borderRadius: "var(--radius-full)",
+            backgroundColor: "var(--color-surface-container)",
+            overflow: "hidden",
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              display: "block",
+              height: "100%",
+              width: `${Math.round((kota.kapasitas / maxKapasitas) * 100)}%`,
+              borderRadius: "var(--radius-full)",
+              backgroundColor: "var(--color-primary)",
+              transition: "width 600ms cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          />
+        </span>
+      </span>
+    ),
   }));
 
   const validateForm = (nextForm) => {
