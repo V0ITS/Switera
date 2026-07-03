@@ -110,13 +110,16 @@ Backend (`server/package.json`):
 
 - None configured. All imports use relative paths (`../components/...`, `./pages/...`). `vite.config.js` defines no `resolve.alias`.
 
-## Animation System
+## Design System (Agro-Distribution Catalyst — light mode)
 
-- `src/styles/animations.css` is the single source of truth for shared keyframes (`fadeIn`, `fadeInUp16`, `fadeInDown`, `slideInRight`/`slideInLeft`, `scaleIn`, `shimmerSlide`, `pulse`, `rowEnter`/`rowExit`, etc.) and utility classes (`.anim-*`, `.row-enter`/`.row-exit`, `.skeleton`, `.reveal`/`.reveal.visible`); `src/tokens.css` separately defines a few component-scoped keyframes used inline (`fadeInUp` at 8px translate, `pageEnter`, `shimmer`, `spin`) — these are intentionally distinct from animations.css's similarly-named ones, not duplicates to merge
-- Prefer composing `animation: "<name> <duration> <easing> both"` inline referencing the shared keyframes over defining new local `<style>` keyframe blocks per component/page
-- `--ease-out` is the standard entrance easing; `--ease-bounce` exists in `tokens.css` but is intentionally unused by default (kept for any future deliberate playful-motion case) — do not reach for it for standard UI entrances
-- `prefers-reduced-motion` is handled once, globally, in `animations.css` — no per-component media query needed
-- Shadows (`--shadow-xs` … `--shadow-xl` in `tokens.css`) are tuned for the dark theme's restrained-but-visible range (opacity ~0.22–0.45); avoid heavier ad-hoc `boxShadow` literals in page/component code — compose from these tokens instead
+- The app uses the **"Agro-Distribution Catalyst"** design system from Google Stitch (reference HTML + `DESIGN.md` under `stitch_switera_palm_distribution_system/`), applied 2026-07-03. **Light mode only** — the dark theme and its `[data-theme]` override block were removed from `tokens.css`; the header theme toggle is gone (store's `tema` state still exists but is inert — do not re-add a toggle without being asked)
+- Core palette (all in `tokens.css`): bg `#f8f9ff`, surface white, primary `#006a43` (hover `#008656` = `--color-primary-container`), secondary `#00668a`, tertiary/accent `#994100`, error `#ba1a1a`, text `#0b1c30`/`#3e4941`/`#6e7a71`, border `#e5eeff`, status chips via `--color-{success,info,warning,danger}-{bg,text}`
+- Fonts: **Plus Jakarta Sans** (`--font-heading`) for headings/metric values, **Inter** (`--font-body`) for body/labels; icons are **Material Symbols Outlined** (`<span className="material-symbols-outlined">name</span>`, base class in `tokens.css`; pages define a local `Ikon` helper) — loaded via `index.html` Google Fonts links
+- **Legacy-token aliases**: `tokens.css` still defines old names (`--color-surface-2/3`, `--color-border-mid/strong`, `--color-accent`, `--color-danger/success/info/warning(+subtle)`, `--font-display/mono`, `--shadow-xs/xl`, etc.) as aliases onto the new palette so untouched code keeps rendering correctly — new code should use the new token names; do not delete aliases without checking all references
+- `src/styles/animations.css` holds shared keyframes (`fadeInUp` 16px, `fadeIn`, `scaleIn` .95, `slideInRight` 110%, `shimmer`, `pulse`/`pulseDot`, `ticker`, plus legacy `fadeInUp16`/`rowEnter`/`rowExit` aliases) and utilities (`.animate-*`, `.anim-*` legacy, `.delay-1..6`, `.skeleton`, `.reveal`, `.animate-ticker`); `prefers-reduced-motion` is handled once, globally, there
+- Motion rules: entrances ≤300ms with `ease-out` or `--ease-spring` (cubic-bezier(.16,1,.3,1)); buttons hover lift `translateY(-2px)` at `--transition-slow` (400ms spring), active `scale(.98)` 100ms; cards hover `translateY(-3px)` + `--shadow-md`
+- Shadows are green-tinted (`rgba(0,106,67,…)`) per the Stitch spec — compose from `--shadow-sm/md/lg/glow/focus`, no ad-hoc black `boxShadow` literals
+- Login/Register keep the **sawit photo background** (`public/images/sawit-bg.jpg`) + dark overlay as brand identity — restyle the card, never replace the photo
 
 ## Error Handling
 
