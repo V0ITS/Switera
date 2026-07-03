@@ -454,6 +454,52 @@ function Laporan({ onNavigate }) {
     downloadCsv(`laporan-distribusi-${periode}.csv`, rows);
   };
 
+  // Tab switching ala Stitch — underline geser antara tabel & grafik.
+  const [activeTab, setActiveTab] = useState(0);
+  const tabLabels = isTimLogistik
+    ? ["Distribusi Aktif", "Status Pengiriman"]
+    : ["Riwayat Keputusan", "Tren Permintaan"];
+
+  const TabBar = (
+    <div style={{ position: "relative", display: "inline-flex", borderBottom: "1px solid var(--color-border)" }}>
+      {tabLabels.map((label, index) => (
+        <button
+          key={label}
+          type="button"
+          onClick={() => setActiveTab(index)}
+          style={{
+            width: "180px",
+            padding: "12px 8px",
+            border: "none",
+            background: "transparent",
+            fontFamily: "var(--font-body)",
+            fontSize: "var(--text-sm)",
+            fontWeight: "var(--font-weight-semibold)",
+            color: activeTab === index ? "var(--color-primary)" : "var(--color-on-surface-variant)",
+            cursor: "pointer",
+            transition: "color var(--transition-fast)",
+          }}
+        >
+          {label}
+        </button>
+      ))}
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: "-1px",
+          left: 0,
+          width: "180px",
+          height: "3px",
+          borderRadius: "var(--radius-full)",
+          backgroundColor: "var(--color-primary)",
+          transform: `translateX(${activeTab * 180}px)`,
+          transition: "transform 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      />
+    </div>
+  );
+
   return (
     <>
       <PageHeader
@@ -486,7 +532,9 @@ function Laporan({ onNavigate }) {
           <EmptyState pesan="Tidak ada data pada periode yang dipilih." />
         ) : isTimLogistik ? (
           <>
-            {filteredKeputusan.length > 0 ? (
+            {TabBar}
+            {activeTab === 0 ? (
+            filteredKeputusan.length > 0 ? (
               <Card>
                 <SectionHeader>Distribusi Aktif</SectionHeader>
                 <p
@@ -513,9 +561,8 @@ function Laporan({ onNavigate }) {
               </Card>
             ) : (
               <EmptyState pesan="Belum ada distribusi aktif pada periode yang dipilih." />
-            )}
-
-            {statusCounts.menunggu + statusCounts["dalam-pengiriman"] + statusCounts.selesai > 0 ? (
+            )
+            ) : statusCounts.menunggu + statusCounts["dalam-pengiriman"] + statusCounts.selesai > 0 ? (
               <GrafikStatusPengiriman counts={statusCounts} />
             ) : (
               <EmptyState pesan="Belum ada data status distribusi pada periode yang dipilih." />
@@ -523,7 +570,9 @@ function Laporan({ onNavigate }) {
           </>
         ) : (
           <>
-            {filteredRiwayat.length > 0 ? (
+            {TabBar}
+            {activeTab === 0 ? (
+            filteredRiwayat.length > 0 ? (
               <Card>
                 <SectionHeader>Riwayat Keputusan</SectionHeader>
                 <p
@@ -550,9 +599,8 @@ function Laporan({ onNavigate }) {
               </Card>
             ) : (
               <EmptyState pesan="Belum ada riwayat keputusan pada periode yang dipilih." />
-            )}
-
-            {chartConfig.labels.length > 0 && chartConfig.datasets.length > 0 ? (
+            )
+            ) : chartConfig.labels.length > 0 && chartConfig.datasets.length > 0 ? (
               <GrafikTrenPermintaan
                 labels={chartConfig.labels}
                 datasets={chartConfig.datasets}
