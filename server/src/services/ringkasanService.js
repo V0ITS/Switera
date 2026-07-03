@@ -1,36 +1,29 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { getDaftarKota } from "./kotaService.js";
 import { getPermintaan } from "./permintaanService.js";
 import { getStokTbs } from "./stokService.js";
 import { getKeputusan, getRiwayatKeputusan } from "./keputusanService.js";
 import { getKpiMetrics } from "./distribusiService.js";
 
-// AI-1: ringkasan naratif halaman Laporan. Panggilan Claude API hanya
-// terjadi di sini (server-side) — ANTHROPIC_API_KEY dibaca dari server/.env
-// dan tidak pernah dikirim ke frontend.
+// AI-1: ringkasan naratif halaman Laporan. Panggilan Gemini API hanya
+// terjadi di sini (server-side) — GEMINI_API_KEY dibaca dari server/.env
+// dan tidak pernah dikirim ke frontend. Gemini dipilih karena punya free
+// tier tanpa kartu kredit (aistudio.google.com), cukup untuk demo sekolah.
+// Dipanggil via fetch bawaan Node (REST v1beta), tanpa dependency baru.
 
-const MODEL = "claude-opus-4-8";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-// Klien dibuat lazy (bukan module-level) supaya server tetap bisa boot
-// tanpa ANTHROPIC_API_KEY — endpoint lain tidak boleh ikut tumbang hanya
-// karena fitur AI belum dikonfigurasi.
-let anthropicClient = null;
-
-const getClient = () => {
-  if (!process.env.ANTHROPIC_API_KEY) {
+const getApiKey = () => {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key || !key.trim()) {
     throw Object.assign(
       new Error(
-        "Ringkasan AI belum dikonfigurasi. Set ANTHROPIC_API_KEY di server/.env lalu restart server."
+        "Ringkasan AI belum dikonfigurasi. Set GEMINI_API_KEY di server/.env lalu restart server."
       ),
       { statusCode: 503 }
     );
   }
-
-  if (!anthropicClient) {
-    anthropicClient = new Anthropic();
-  }
-
-  return anthropicClient;
+  return key.trim();
 };
 
 // Ported verbatim dari src/utils/distribusi.js (getPeriodRange/isDateInRange)
@@ -165,15 +158,14 @@ const SYSTEM_PROMPT = [
   "  status tertentu, atau stok menipis).",
 ].join("\n");
 
-const extractText = (response) =>
-  response.content
-    .filter((block) => block.type === "text")
-    .map((block) => block.text)
+const extractText = (data) =>
+  (data?.candidates?.[0]?.content?.parts ?? [])
+    .map((part) => part.text ?? "")
     .join("\n")
     .trim();
 
 export async function buatRingkasanLaporan(periode, role) {
-  const client = getClient();
+  const apiKey = getApiKey();
 
   const [permintaan, keputusan, riwayat, daftarKota, stokTbs, kpi] =
     await Promise.all([
@@ -194,48 +186,66 @@ export async function buatRingkasanLaporan(periode, role) {
     kpi,
   });
 
+  // Kegagalan layanan AI tidak boleh bocor sebagai 500 generik — semua
+  // jalur gagal dipetakan ke pesan Indonesia yang bisa ditampilkan
+  // langsung oleh Laporan.jsx.
   let response;
   try {
-    response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 16000,
-      thinking: { type: "adaptive" },
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `Buat ringkasan laporan distribusi dari data berikut:\n\n${JSON.stringify(dataLaporan, null, 2)}`,
-        },
-      ],
+    response = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Buat ringkasan laporan distribusi dari data berikut:\n\n${JSON.stringify(dataLaporan, null, 2)}`,
+              },
+            ],
+          },
+        ],
+      }),
+      signal: AbortSignal.timeout(60000),
     });
-  } catch (error) {
-    // Kegagalan layanan AI tidak boleh bocor sebagai 500 generik — petakan
-    // ke pesan Indonesia yang bisa ditampilkan langsung oleh Laporan.jsx.
-    if (error instanceof Anthropic.AuthenticationError) {
-      throw Object.assign(
-        new Error("Kunci API layanan AI tidak valid. Periksa ANTHROPIC_API_KEY di server/.env."),
-        { statusCode: 503 }
-      );
-    }
-    if (error instanceof Anthropic.RateLimitError) {
-      throw Object.assign(
-        new Error("Layanan AI sedang sibuk. Coba lagi beberapa saat lagi."),
-        { statusCode: 503 }
-      );
-    }
-    if (error instanceof Anthropic.APIConnectionError) {
-      throw Object.assign(
-        new Error("Tidak dapat menghubungi layanan AI. Periksa koneksi internet server."),
-        { statusCode: 502 }
-      );
-    }
+  } catch {
+    throw Object.assign(
+      new Error("Tidak dapat menghubungi layanan AI. Periksa koneksi internet server."),
+      { statusCode: 502 }
+    );
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    throw Object.assign(
+      new Error("Kunci API layanan AI tidak valid. Periksa GEMINI_API_KEY di server/.env."),
+      { statusCode: 503 }
+    );
+  }
+  if (response.status === 429) {
+    throw Object.assign(
+      new Error("Kuota gratis layanan AI tercapai. Coba lagi beberapa saat lagi."),
+      { statusCode: 503 }
+    );
+  }
+  if (!response.ok) {
     throw Object.assign(
       new Error("Layanan AI mengalami gangguan. Coba lagi nanti."),
       { statusCode: 502 }
     );
   }
 
-  const ringkasan = extractText(response);
+  let payload;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  const ringkasan = extractText(payload);
 
   if (!ringkasan) {
     throw Object.assign(
