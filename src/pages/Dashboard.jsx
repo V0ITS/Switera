@@ -685,42 +685,44 @@ function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
           <Card>
             <SectionHeader>Aktivitas Terbaru</SectionHeader>
             {aktivitasTerbaru.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                {aktivitasTerbaru.map((item) => (
-                  <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-                    <span
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "var(--radius-md)",
-                        backgroundColor: "var(--color-surface-2)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "var(--color-text-muted)",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {item.ikon}
-                    </span>
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        fontSize: "var(--text-sm)",
-                        color: "var(--color-text-secondary)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {item.teks}
-                    </span>
-                    <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", flexShrink: 0, whiteSpace: "nowrap" }}>
-                      {formatWaktuRelatif(item.waktu)}
-                    </span>
-                  </div>
-                ))}
+              /* Feed timeline ala Stitch: ikon bulat + garis penghubung vertikal. */
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {aktivitasTerbaru.map((item, index) => {
+                  const isLast = index === aktivitasTerbaru.length - 1;
+
+                  return (
+                    <div key={item.id} style={{ display: "flex", gap: "var(--space-4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                        <span
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "var(--radius-full)",
+                            backgroundColor: "rgba(0, 134, 86, 0.12)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--color-primary)",
+                          }}
+                        >
+                          {item.ikon}
+                        </span>
+                        {!isLast ? (
+                          <span aria-hidden="true" style={{ width: "1px", flex: 1, backgroundColor: "var(--color-surface-variant)", marginTop: "6px" }} />
+                        ) : null}
+                      </div>
+                      <div style={{ paddingBottom: isLast ? 0 : "var(--space-4)", minWidth: 0 }}>
+                        <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {item.teks}
+                        </p>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "4px", fontSize: "var(--text-xs)", color: "var(--color-outline)" }}>
+                          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: "14px", lineHeight: 1 }}>schedule</span>
+                          {formatWaktuRelatif(item.waktu)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <EmptyState pesan="Belum ada aktivitas untuk ditampilkan." />

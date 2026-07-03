@@ -147,27 +147,28 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
     );
   }
 
+  // Layout kanonik switera_konsistensi_global: ikon kiri-atas dalam kotak,
+  // chip trend kanan-atas, lalu label + nilai besar di bawah.
   return (
     <Card
       hoverable
       shimmer={shimmer}
       style={{
-        padding: "var(--space-5) var(--space-6)",
+        padding: "var(--space-6)",
         minHeight: "120px",
         boxSizing: "border-box",
-        borderTop: "1px solid var(--color-border-mid)",
-        borderRight: "1px solid var(--color-border-mid)",
-        borderBottom: "1px solid var(--color-border-mid)",
-        borderLeft: `3px solid ${colors.solid}`,
+        borderRadius: "var(--radius-2xl)",
+        border: "1px solid var(--color-surface-container)",
+        boxShadow: "0px 4px 20px rgba(0, 106, 67, 0.05)",
         position: "relative",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        gap: "var(--space-3)",
+        gap: "var(--space-4)",
         ...style,
       }}
     >
-      {/* Lingkaran dekoratif sudut ala kartu metrik Stitch — membesar saat hover. */}
+      {/* Lingkaran dekoratif sudut — membesar saat hover (konsistensi_global). */}
       <span
         aria-hidden="true"
         className="metric-deco"
@@ -175,15 +176,17 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
           position: "absolute",
           right: "-16px",
           top: "-16px",
-          width: "96px",
-          height: "96px",
+          width: "128px",
+          height: "128px",
           borderRadius: "var(--radius-full)",
           backgroundColor: colors.subtle,
-          opacity: 0.6,
+          opacity: 0.5,
           pointerEvents: "none",
-          transition: "transform 700ms var(--ease-out)",
+          transition: "transform 500ms var(--ease-out)",
         }}
       />
+
+      {/* Baris atas: kotak ikon kiri + chip trend/sparkline kanan */}
       <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-3)" }}>
         {ikon ? (
           <div
@@ -191,8 +194,8 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
               width: iconBoxSize,
               height: iconBoxSize,
               flexShrink: 0,
-              borderRadius: "var(--radius-md)",
-              backgroundColor: colors.subtle,
+              borderRadius: "var(--radius-lg)",
+              backgroundColor: "var(--color-surface-container)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -205,47 +208,17 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
         ) : (
           <span />
         )}
-        <p
-          style={{
-            margin: 0,
-            fontSize: valueFontSize ?? "var(--text-2xl)",
-            fontWeight: "var(--font-weight-bold)",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "-0.02em",
-            color: "var(--color-text-primary)",
-            textAlign: "right",
-          }}
-        >
-          {displayValue}
-        </p>
-      </div>
-
-      {children ? <div style={{ position: "relative", flex: 1 }}>{children}</div> : null}
-
-      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)" }}>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "var(--text-xs)",
-            fontWeight: "var(--font-weight-semibold)",
-            color: "var(--color-text-muted)",
-            textTransform: "uppercase",
-            letterSpacing: "var(--tracking-wider)",
-          }}
-        >
-          {label}
-        </p>
         <span style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexShrink: 0 }}>
           {sparkline ? <Sparkline data={sparkline} color={colors.solid} width={56} height={18} /> : null}
           {trend ? (
             <span
               style={{
                 fontSize: "var(--text-2xs)",
-                backgroundColor: colors.subtle,
-                color: colors.solid,
-                padding: "2px 8px",
+                backgroundColor: "var(--color-surface-container)",
+                color: "var(--color-on-surface-variant)",
+                padding: "4px 12px",
                 borderRadius: "var(--radius-full)",
-                fontWeight: "var(--font-weight-semibold)",
+                fontWeight: "var(--font-weight-medium)",
                 whiteSpace: "nowrap",
               }}
             >
@@ -253,6 +226,35 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
             </span>
           ) : null}
         </span>
+      </div>
+
+      {children ? <div style={{ position: "relative", flex: 1 }}>{children}</div> : null}
+
+      {/* Bawah: label lalu nilai besar */}
+      <div style={{ position: "relative" }}>
+        <p
+          style={{
+            margin: "0 0 4px",
+            fontSize: "var(--text-sm)",
+            fontWeight: "var(--font-weight-semibold)",
+            color: "var(--color-on-surface-variant)",
+          }}
+        >
+          {label}
+        </p>
+        <p
+          style={{
+            margin: 0,
+            fontSize: valueFontSize ?? "1.75rem",
+            fontWeight: "var(--font-weight-bold)",
+            fontFamily: "var(--font-heading)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
+            color: "var(--color-on-surface)",
+          }}
+        >
+          {displayValue}
+        </p>
       </div>
     </Card>
   );

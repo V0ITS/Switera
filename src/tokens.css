@@ -432,15 +432,21 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   transition: transform var(--transition-slow), background-color var(--transition-fast), color var(--transition-fast);
 }
 .app-sidebar-menu-item:hover {
-  background-color: rgba(0, 106, 67, 0.05);
+  background-color: var(--color-surface-container);
   color: var(--color-primary);
-  transform: scale(1.02);
 }
+/* Aktif = pill hijau solid teks putih (kanonik switera_konsistensi_global). */
 .app-sidebar-menu-item.is-active {
-  background-color: rgba(0, 106, 67, 0.10);
-  color: var(--color-primary);
-  border-right-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-right-color: transparent;
   font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+.app-sidebar-menu-item.is-active:hover {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary);
+  transform: none;
 }
 
 /* ===== Buttons (Tombol) ===== */
