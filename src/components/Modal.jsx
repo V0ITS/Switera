@@ -5,21 +5,39 @@ function Modal({ judul, konten, onTutup }) {
   const { ripples, onMouseDown, removeRipple } = useRipple();
   const dialogRef = useRef(null);
 
+  // onTutup dibaca via ref agar efek fokus TIDAK bergantung pada identitas
+  // fungsi inline milik pemanggil. Sebelumnya deps [onTutup] membuat efek
+  // jalan ulang di SETIAP render induk (setiap ketikan pada input di dalam
+  // modal) dan mencuri fokus kembali ke elemen pertama — gejalanya: hanya
+  // bisa mengetik satu huruf lalu harus mengklik input lagi.
+  const onTutupRef = useRef(onTutup);
+  onTutupRef.current = onTutup;
+
   useEffect(() => {
     const previouslyFocused = document.activeElement;
     const node = dialogRef.current;
-    const focusable = node?.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    (focusable && focusable.length > 0 ? focusable[0] : node)?.focus();
+    const getFocusable = () =>
+      node?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+    const initialFocusable = getFocusable();
+    (initialFocusable && initialFocusable.length > 0 ? initialFocusable[0] : node)?.focus();
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
-        onTutup?.();
+        onTutupRef.current?.();
         return;
       }
 
-      if (event.key === "Tab" && focusable && focusable.length > 0) {
+      if (event.key === "Tab") {
+        // Dibaca ulang tiap penekanan Tab agar field yang muncul dinamis
+        // (mis. armada/ETA saat status Dalam Pengiriman) ikut masuk trap.
+        const focusable = getFocusable();
+        if (!focusable || focusable.length === 0) {
+          return;
+        }
+
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
 
@@ -40,7 +58,8 @@ function Modal({ judul, konten, onTutup }) {
         previouslyFocused.focus();
       }
     };
-  }, [onTutup]);
+    // Sengaja hanya saat mount/unmount modal — bukan setiap render induk.
+  }, []);
 
   return (
     <>
