@@ -165,36 +165,115 @@ function StatusDistribusi({ onNavigate }) {
           />
         </div>
 
-        <Card style={{ animationDelay: "80ms" }}>
-          <SectionHeader>Daftar Distribusi Aktif</SectionHeader>
-          {rows.length > 0 ? (
-            <Tabel
-              kolom={[
-                { key: "kotaTujuan", label: "Kota Tujuan" },
-                { key: "volume", label: "Volume", numeric: true },
-                { key: "armada", label: "Armada / ETA" },
-                { key: "tanggalKeputusan", label: "Tanggal Keputusan" },
-                { key: "status", label: "Status" },
-              ]}
-              data={rows}
-              aksi={(baris) => {
-                const item = keputusanAktif.find(
-                  (keputusanItem) => keputusanItem.id === baris.id
-                );
+        {rows.length > 0 ? (
+          /* Papan kanban 3 kolom ala Stitch — satu kolom per status. */
+          <div
+            className="app-grid-3"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(220px, 1fr))",
+              gap: "var(--space-4)",
+              alignItems: "start",
+            }}
+          >
+            {statusOptions.map((statusKey) => {
+              const kolomWarna = {
+                menunggu: { dot: "var(--color-warning-text)", bg: "var(--color-warning-bg)" },
+                "dalam-pengiriman": { dot: "var(--color-info-text)", bg: "var(--color-info-bg)" },
+                selesai: { dot: "var(--color-success-text)", bg: "var(--color-success-bg)" },
+              }[statusKey];
+              const itemsKolom = keputusanAktif.filter((item) => item.status === statusKey);
 
-                return (
-                  <Tombol
-                    label="Perbarui Status"
-                    variant="sekunder"
-                    onClick={() => openStatusModal(item)}
-                  />
-                );
-              }}
-            />
-          ) : (
+              return (
+                <div
+                  key={statusKey}
+                  style={{
+                    backgroundColor: "var(--color-surface-container-low)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "var(--radius-xl)",
+                    padding: "var(--space-3)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "var(--space-3)",
+                    minHeight: "180px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "4px 6px" }}>
+                    <span
+                      className={statusKey !== "selesai" ? "animate-pulse-dot" : undefined}
+                      style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: kolomWarna.dot }}
+                    />
+                    <span style={{ fontFamily: "var(--font-heading)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
+                      {statusLabels[statusKey]}
+                    </span>
+                    <span style={{ marginLeft: "auto", fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-bold)", backgroundColor: kolomWarna.bg, color: kolomWarna.dot, borderRadius: "var(--radius-full)", padding: "2px 8px" }}>
+                      {itemsKolom.length}
+                    </span>
+                  </div>
+
+                  {itemsKolom.length === 0 ? (
+                    <p style={{ margin: 0, padding: "16px 8px", textAlign: "center", fontSize: "var(--text-xs)", color: "var(--color-text-disabled)" }}>
+                      Tidak ada kiriman.
+                    </p>
+                  ) : (
+                    itemsKolom.map((item) => (
+                      <div
+                        key={item.id}
+                        className="app-card app-card-hoverable"
+                        style={{
+                          backgroundColor: "var(--color-surface)",
+                          borderRadius: "var(--radius-lg)",
+                          padding: "var(--space-4)",
+                          boxShadow: "var(--shadow-sm)",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                          <strong style={{ fontFamily: "var(--font-heading)", fontSize: "var(--text-sm)", color: "var(--color-on-surface)" }}>
+                            {item.kota_tujuan}
+                          </strong>
+                          <span style={{ fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-primary)" }}>
+                            {formatTonase(item.volume_tbs)}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)", display: "flex", flexDirection: "column", gap: "4px" }}>
+                          <span>{item.armada ? `${item.armada}${item.eta ? ` · ETA ${formatDate(item.eta)}` : ""}` : "Armada belum ditetapkan"}</span>
+                          <span>Keputusan: {formatDate(item.tanggal_keputusan)}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => openStatusModal(item)}
+                          style={{
+                            marginTop: "4px",
+                            alignSelf: "flex-start",
+                            border: "1px solid var(--color-border)",
+                            borderRadius: "var(--radius-md)",
+                            backgroundColor: "transparent",
+                            color: "var(--color-primary)",
+                            fontFamily: "var(--font-body)",
+                            fontSize: "var(--text-xs)",
+                            fontWeight: "var(--font-weight-semibold)",
+                            padding: "6px 12px",
+                            cursor: "pointer",
+                            transition: "background-color var(--transition-fast), border-color var(--transition-fast)",
+                          }}
+                        >
+                          Perbarui Status
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <Card style={{ animationDelay: "80ms" }}>
             <EmptyState pesan="Belum ada distribusi aktif untuk dipantau saat ini." />
-          )}
-        </Card>
+          </Card>
+        )}
       </div>
 
       {selectedKeputusan ? (

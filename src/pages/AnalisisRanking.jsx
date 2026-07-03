@@ -211,6 +211,15 @@ function AnalisisRanking({ onNavigate }) {
           ...getRankColor(index + 1),
         }}
       >
+        {index < 3 ? (
+          <span
+            className="material-symbols-outlined"
+            aria-hidden="true"
+            style={{ fontSize: "16px", lineHeight: 1, fontVariationSettings: "'FILL' 1" }}
+          >
+            {index === 0 ? "emoji_events" : "military_tech"}
+          </span>
+        ) : null}
         {index + 1}
       </span>
     ),
@@ -273,7 +282,7 @@ function AnalisisRanking({ onNavigate }) {
               ]}
               data={rows}
               getRowStyle={(_baris, index) =>
-                index === 0 ? { backgroundColor: "rgba(242,167,27,0.06)" } : undefined
+                index === 0 ? { backgroundColor: "rgba(0,106,67,0.05)" } : undefined
               }
             />
           </Card>
@@ -323,8 +332,32 @@ function AnalisisRanking({ onNavigate }) {
                   ),
                   namaKota: item.kota,
                   skor: (
-                    <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>
-                      {item.skor}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "10px", justifyContent: "flex-end" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, minWidth: "28px", textAlign: "right" }}>
+                        {item.skor}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          width: "72px",
+                          height: "6px",
+                          borderRadius: "var(--radius-full)",
+                          backgroundColor: "var(--color-surface-container)",
+                          overflow: "hidden",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "block",
+                            height: "100%",
+                            width: `${Math.max(0, Math.min(100, item.skor))}%`,
+                            borderRadius: "var(--radius-full)",
+                            backgroundColor: "var(--color-primary)",
+                            transition: "width 600ms cubic-bezier(0.16, 1, 0.3, 1)",
+                          }}
+                        />
+                      </span>
                     </span>
                   ),
                   totalPermintaan: formatTonase(item.totalPermintaan),

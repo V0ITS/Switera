@@ -198,15 +198,97 @@ function RiwayatAktivitas({ onNavigate }) {
         </Card>
 
         {tableRows.length > 0 ? (
-          <Tabel
-            kolom={[
-              { key: "waktu", label: "Waktu" },
-              { key: "aktor", label: "Aktor" },
-              { key: "role", label: "Role" },
-              { key: "aksi", label: "Aksi" },
-            ]}
-            data={tableRows}
-          />
+          /* Timeline ala Stitch — garis vertikal, avatar inisial, badge role. */
+          <Card style={{ animationDelay: "80ms" }}>
+            <div className="stagger-children" style={{ display: "flex", flexDirection: "column" }}>
+              {filteredLog.map((item, index) => {
+                const inisial = item.aktor
+                  .trim()
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((kata) => kata[0]?.toUpperCase() ?? "")
+                  .join("") || "?";
+                const roleWarna =
+                  item.role === "Admin"
+                    ? { bg: "var(--color-warning-bg)", text: "var(--color-warning-text)" }
+                    : item.role === "Manajer Distribusi"
+                      ? { bg: "var(--color-info-bg)", text: "var(--color-info-text)" }
+                      : { bg: "var(--color-success-bg)", text: "var(--color-success-text)" };
+                const isLast = index === filteredLog.length - 1;
+
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: "flex",
+                      gap: "var(--space-4)",
+                      animation: "fadeInUp 250ms var(--ease-spring) both",
+                    }}
+                  >
+                    {/* Kolom garis + avatar */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "var(--radius-full)",
+                          backgroundColor: "var(--color-surface-container)",
+                          color: "var(--color-primary)",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: "var(--text-xs)",
+                          fontWeight: "var(--font-weight-bold)",
+                        }}
+                      >
+                        {inisial}
+                      </span>
+                      {!isLast ? (
+                        <span
+                          aria-hidden="true"
+                          style={{ width: "2px", flex: 1, backgroundColor: "var(--color-border)", marginTop: "6px" }}
+                        />
+                      ) : null}
+                    </div>
+
+                    {/* Konten */}
+                    <div style={{ paddingBottom: isLast ? 0 : "var(--space-5)", minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                        <strong style={{ fontSize: "var(--text-sm)", color: "var(--color-on-surface)" }}>
+                          {item.aktor}
+                        </strong>
+                        <span
+                          style={{
+                            fontSize: "var(--text-2xs)",
+                            fontWeight: "var(--font-weight-semibold)",
+                            backgroundColor: roleWarna.bg,
+                            color: roleWarna.text,
+                            borderRadius: "var(--radius-full)",
+                            padding: "2px 10px",
+                          }}
+                        >
+                          {item.role}
+                        </span>
+                      </div>
+                      <p style={{ margin: "4px 0 6px", fontSize: "var(--text-sm)", color: "var(--color-on-surface-variant)", lineHeight: 1.6 }}>
+                        {item.aksi}
+                      </p>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "var(--text-xs)", color: "var(--color-outline)" }}>
+                        <span
+                          className="material-symbols-outlined"
+                          aria-hidden="true"
+                          style={{ fontSize: "14px", lineHeight: 1 }}
+                        >
+                          schedule
+                        </span>
+                        {formatWaktu(item.waktu)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
         ) : (
           <EmptyState pesan="Tidak ada aktivitas yang cocok dengan filter saat ini." />
         )}
