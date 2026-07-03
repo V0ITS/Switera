@@ -309,6 +309,105 @@ function GrafikStatusPengiriman({ counts }) {
   );
 }
 
+function RingkasanAI({ periode }) {
+  const [ringkasan, setRingkasan] = useState("");
+  const [ringkasanError, setRingkasanError] = useState("");
+  const [isMembuatRingkasan, setIsMembuatRingkasan] = useState(false);
+
+  // Ringkasan terikat pada periode saat dibuat — reset saat periode berganti
+  // agar narasi periode lama tidak menyesatkan pembaca.
+  useEffect(() => {
+    setRingkasan("");
+    setRingkasanError("");
+  }, [periode]);
+
+  const handleBuatRingkasan = async () => {
+    setIsMembuatRingkasan(true);
+    setRingkasanError("");
+    try {
+      const hasil = await store.buatRingkasanLaporan(periode);
+      setRingkasan(hasil?.ringkasan ?? "");
+    } catch (error) {
+      setRingkasanError(error.message || "Gagal membuat ringkasan. Coba lagi.");
+    } finally {
+      setIsMembuatRingkasan(false);
+    }
+  };
+
+  return (
+    <Card style={{ animationDelay: "40ms" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: "var(--space-3)",
+          flexWrap: "wrap",
+        }}
+      >
+        <SectionHeader>
+          <span
+            className="material-symbols-outlined"
+            aria-hidden="true"
+            style={{ fontSize: "16px", verticalAlign: "-3px", marginRight: "6px" }}
+          >
+            auto_awesome
+          </span>
+          Ringkasan AI
+        </SectionHeader>
+        <Tombol
+          label={ringkasan ? "Buat Ulang" : "Buat Ringkasan"}
+          variant="sekunder"
+          onClick={handleBuatRingkasan}
+          isLoading={isMembuatRingkasan}
+        />
+      </div>
+
+      {ringkasanError ? (
+        <p
+          style={{
+            margin: 0,
+            color: "var(--color-danger)",
+            fontSize: "var(--text-sm)",
+            lineHeight: 1.6,
+          }}
+        >
+          {ringkasanError}
+        </p>
+      ) : ringkasan ? (
+        <div style={{ animation: "fadeInUp 300ms var(--ease-smooth) both" }}>
+          {ringkasan.split(/\n{2,}/).map((paragraf, index) => (
+            <p
+              key={index}
+              style={{
+                margin: index === 0 ? 0 : "0.75rem 0 0",
+                color: "var(--color-text-secondary)",
+                fontSize: "var(--text-sm)",
+                lineHeight: 1.7,
+              }}
+            >
+              {paragraf}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p
+          style={{
+            margin: 0,
+            color: "var(--color-text-muted)",
+            fontSize: "var(--text-sm)",
+            lineHeight: 1.6,
+          }}
+        >
+          {isMembuatRingkasan
+            ? "AI sedang menganalisis data laporan periode ini…"
+            : "Buat ringkasan naratif otomatis dari data laporan periode terpilih dengan bantuan AI."}
+        </p>
+      )}
+    </Card>
+  );
+}
+
 function Laporan({ onNavigate }) {
   const [snapshot, setSnapshot] = useState(store.getState());
   // Default "semua" agar laporan langsung terisi — filter minggu/bulan yang
@@ -560,6 +659,10 @@ function Laporan({ onNavigate }) {
             )}
           </div>
         ) : null}
+
+        {/* AI-1: ringkasan naratif otomatis — tampil untuk kedua role selama
+            ada data pada periode terpilih. */}
+        {!noData ? <RingkasanAI periode={periode} /> : null}
 
         {noData ? (
           <EmptyState pesan="Tidak ada data pada periode yang dipilih." />

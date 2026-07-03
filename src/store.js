@@ -634,6 +634,16 @@ export const store = {
     }
   },
 
+  // AI-1: ringkasan AI halaman Laporan. Stateless dari sisi cache — hasilnya
+  // konten sekali-pakai per klik tombol, bukan data domain yang di-polling,
+  // jadi komponen pemanggil (Laporan.jsx) yang memegang state-nya sendiri.
+  async buatRingkasanLaporan(periode) {
+    return apiFetch("/laporan/ringkasan", {
+      method: "POST",
+      body: { periode },
+    });
+  },
+
   // Server owns the notification + activity-log side effects for this
   // mutation (keputusanService.addKeputusan, LOGIC-03) — do NOT duplicate
   // pushNotifikasi/recordActivity here. POST /keputusan returns the single
