@@ -172,8 +172,8 @@ function HeroStrip({ nama, role }) {
   return (
     <Card
       style={{
-        backgroundColor: "var(--color-surface-2)",
-        border: "1px solid var(--color-border-mid)",
+        background: "linear-gradient(135deg, #f0fdf4 0%, #eff4ff 100%)",
+        border: "1px solid var(--color-border)",
         borderRadius: "var(--radius-xl)",
         padding: "var(--space-5) var(--space-6)",
         minHeight: "80px",
@@ -200,9 +200,10 @@ function HeroStrip({ nama, role }) {
         <p
           style={{
             margin: "var(--space-1) 0 0",
+            fontFamily: "var(--font-heading)",
             fontSize: "var(--text-2xl)",
             fontWeight: "var(--font-weight-bold)",
-            color: "var(--color-text-primary)",
+            color: "var(--color-on-surface)",
           }}
         >
           {nama ?? "Pengguna"}
@@ -212,12 +213,13 @@ function HeroStrip({ nama, role }) {
             style={{
               display: "inline-flex",
               marginTop: "var(--space-2)",
-              backgroundColor: "var(--color-surface-2)",
-              border: "1px solid var(--color-border-mid)",
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-full)",
               padding: "2px 10px",
               fontSize: "var(--text-xs)",
-              color: "var(--color-text-secondary)",
+              color: "var(--color-primary)",
+              fontWeight: "var(--font-weight-semibold)",
             }}
           >
             {role}
@@ -543,7 +545,7 @@ function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
         judul="Dashboard"
         deskripsi="Ringkasan data permintaan dan keputusan distribusi."
       />
-      <div className="bento-grid">
+      <div className="bento-grid stagger-children">
         <div className="bento-span-full">
           <HeroStrip nama={userAktif?.nama} role={userAktif?.role} />
         </div>
