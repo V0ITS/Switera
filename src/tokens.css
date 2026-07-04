@@ -1,70 +1,79 @@
 :root {
   color-scheme: light;
 
-  /* ===== Design System: Agro-Distribution Catalyst (light mode) ===== */
-  --color-bg: #f8f9ff;
+  /* ===== Design System: Neo-Brutalism (referensi stitch_neo_brutalism) =====
+     Kontras tinggi, border hitam tebal, hard shadow tanpa blur, sudut
+     membulat besar pada kartu, tombol berbentuk pill, aksen lime neon. */
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-surface-container: #e5eeff;
-  --color-surface-container-low: #eff4ff;
-  --color-surface-container-high: #dce9ff;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-low: #f3f3f3;
+  --color-surface-container-high: #e8e8e8;
 
-  --color-primary: #006a43;
+  /* Lime neon dipakai agresif untuk CTA dan indikator aktif */
+  --color-lime: #bcf819;
+  --color-lime-bold: #abf600;
+  --color-lime-dim: #a2d800;
+  --color-pastel: #f2fed1;
+  --color-pastel-card: #eafcc2;
+
+  /* primary yaitu warna teks atau ikon aksen (olive gelap agar terbaca);
+     primary-container yaitu lime untuk latar tombol dan pill aktif */
+  --color-primary: #4c6700;
   --color-on-primary: #ffffff;
-  --color-primary-container: #008656;
-  --color-secondary: #00668a;
+  --color-primary-container: #bcf819;
+  --color-secondary: #556437;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #40c2fd;
-  --color-tertiary: #994100;
+  --color-secondary-container: #d8eab1;
+  --color-tertiary: #3f6375;
   --color-on-tertiary: #ffffff;
   --color-error: #ba1a1a;
 
-  --color-text-primary: #0b1c30;
-  --color-text-secondary: #3e4941;
-  --color-text-muted: #6e7a71;
+  --color-text-primary: #111111;
+  --color-text-secondary: #434934;
+  --color-text-muted: #737a61;
 
-  --color-border: #e5eeff;
-  --color-border-subtle: #f1f5f9;
+  /* Border serba hitam pekat khas brutalist */
+  --color-border: #000000;
+  --color-border-subtle: #000000;
 
-  --color-success-bg: #d1fae5;
-  --color-success-text: #006a43;
-  --color-info-bg: #dbeafe;
-  --color-info-text: #00668a;
-  --color-warning-bg: #ffedd5;
-  --color-warning-text: #994100;
-  --color-danger-bg: #fee2e2;
-  --color-danger-text: #ba1a1a;
+  --color-success-bg: #d8eab1;
+  --color-success-text: #253600;
+  --color-info-bg: #c4eaff;
+  --color-info-text: #001f2a;
+  --color-warning-bg: #ffe8a3;
+  --color-warning-text: #4a3200;
+  --color-danger-bg: #ffdad6;
+  --color-danger-text: #93000a;
 
-  /* Token surface/on-surface/outline lengkap (dari DESIGN.md Catalyst) */
+  /* Token surface/on-surface/outline lengkap */
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-highest: #d3e4fe;
-  --color-surface-variant: #d3e4fe;
-  --color-on-surface: #0b1c30;
-  --color-on-surface-variant: #3e4941;
-  --color-outline: #6e7a71;
-  --color-outline-variant: #bdcabf;
-  --color-on-primary: #ffffff;
-  --color-on-primary-container: #f6fff6;
-  --color-tertiary-container: #c05400;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-variant: #e2e2e2;
+  --color-on-surface: #111111;
+  --color-on-surface-variant: #434934;
+  --color-outline: #737a61;
+  --color-outline-variant: #c3caad;
+  --color-on-primary-container: #141f00;
+  --color-tertiary-container: #c4eaff;
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
 
-  /* ===== Alias kompatibilitas: nama token lama -> palet baru =====
-     Agar komponen/halaman yang belum dimigrasi tetap tampil di light mode;
-     dicabut bertahap saat tiap file dimigrasi ke design system baru. */
+  /* ===== Alias kompatibilitas: nama token lama dan palet baru ===== */
   --color-surface-2: var(--color-surface-container-low);
   --color-surface-3: var(--color-surface-container);
-  --color-surface-hover: var(--color-surface-container-low);
+  --color-surface-hover: var(--color-pastel);
   --color-elevated: var(--color-surface);
-  --color-elevated-glass: rgba(255, 255, 255, 0.72);
-  --color-overlay: rgba(11, 28, 48, 0.5);
-  --color-border-mid: var(--color-border);
-  --color-border-strong: #c9d6ee;
-  --color-text-disabled: #9aa6b2;
-  --color-primary-hover: var(--color-primary-container);
-  --color-primary-active: #005234;
-  --color-primary-subtle: rgba(0, 106, 67, 0.08);
-  --color-primary-glow: rgba(0, 134, 86, 0.3);
-  --color-accent: var(--color-tertiary);
+  --color-elevated-glass: rgba(255, 255, 255, 0.92);
+  --color-overlay: rgba(0, 0, 0, 0.55);
+  --color-border-mid: #000000;
+  --color-border-strong: #000000;
+  --color-text-disabled: #9aa08c;
+  --color-primary-hover: var(--color-lime-dim);
+  --color-primary-active: #8fc400;
+  --color-primary-subtle: rgba(188, 248, 25, 0.28);
+  --color-primary-glow: rgba(188, 248, 25, 0.55);
+  --color-accent: #3f6375;
   --color-accent-subtle: var(--color-warning-bg);
   --color-danger: var(--color-error);
   --color-danger-subtle: var(--color-danger-bg);
@@ -75,54 +84,53 @@
   --color-warning: var(--color-warning-text);
   --color-warning-subtle: var(--color-warning-bg);
 
-  --font-heading: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  --font-body: 'Inter', -apple-system, sans-serif;
-  /* Alias font lama -> baru (mono kini memakai heading, sesuai spec metrik) */
+  --font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
   --font-display: var(--font-heading);
   --font-mono: var(--font-heading);
 
   --text-2xs: .6875rem;
   --text-xs: .75rem;
-  --text-sm: .8125rem;
-  --text-base: .875rem;
-  --text-md: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.625rem;
-  --text-3xl: 2rem;
-  --text-4xl: 2.5rem;
+  --text-sm: .875rem;
+  --text-base: .9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.125rem;
+  --text-4xl: 2.75rem;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-semibold: 700;
+  --font-weight-bold: 800;
 
   --leading-tight: 1.2;
   --leading-normal: 1.5;
   --leading-loose: 1.75;
 
-  --tracking-tight: -0.02em;
+  --tracking-tight: -0.03em;
   --tracking-wide: 0.04em;
   --tracking-wider: 0.08em;
 
-  --radius-xs: 4px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-2xl: 24px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 4px rgba(0, 106, 67, 0.06), 0 2px 8px rgba(0, 106, 67, 0.04);
-  --shadow-md: 0 4px 16px rgba(0, 106, 67, 0.10), 0 8px 24px rgba(0, 106, 67, 0.06);
-  --shadow-lg: 0 8px 32px rgba(0, 106, 67, 0.12), 0 16px 48px rgba(0, 106, 67, 0.08);
-  --shadow-glow: 0 0 40px -10px rgba(0, 134, 86, 0.5);
-  --shadow-focus: 0 0 0 3px rgba(0, 106, 67, 0.2);
-  /* Alias shadow lama -> baru */
+  /* Hard shadow tanpa blur khas Neo-Brutalism */
+  --shadow-sm: 2px 2px 0px 0px #000000;
+  --shadow-md: 4px 4px 0px 0px #000000;
+  --shadow-lg: 8px 8px 0px 0px #000000;
+  --shadow-glow: 4px 4px 0px 0px #000000;
+  --shadow-focus: 0 0 0 3px rgba(188, 248, 25, 0.6);
   --shadow-xs: var(--shadow-sm);
   --shadow-xl: var(--shadow-lg);
-  --shadow-glow-primary: var(--shadow-glow);
-  --shadow-glow-accent: var(--shadow-glow);
+  --shadow-glow-primary: var(--shadow-md);
+  --shadow-glow-accent: var(--shadow-md);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -139,11 +147,11 @@
   --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
   --ease-out: cubic-bezier(0, 0, .2, 1);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-fast: 150ms ease-out;
-  --transition-base: 250ms ease-out;
-  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-input: 150ms ease-out;
-  --transition-page: 250ms ease-out;
+  --transition-fast: 120ms ease-out;
+  --transition-base: 180ms ease-out;
+  --transition-slow: 250ms ease-out;
+  --transition-input: 120ms ease-out;
+  --transition-page: 200ms ease-out;
 
   --z-dropdown: 100;
   --z-sticky: 200;
@@ -151,9 +159,7 @@
   --z-toast: 400;
 }
 
-/* Override tema dark/light dihapus — aplikasi kini light-only (Catalyst). */
-
-/* ===== Material Symbols Outlined — kelas dasar (font-family wajib) ===== */
+/* ===== Material Symbols Outlined, kelas dasar (font-family wajib) ===== */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -212,23 +218,20 @@
   }
 }
 
+/* Shimmer lime khas referensi sistem_ui neo brutalist */
 .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--color-border) 25%,
-    var(--color-surface-2) 37%,
-    var(--color-border) 63%
-  );
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #bcf819 0%, #d8eab1 50%, #bcf819 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-full);
+  border: 2px solid #000000;
 }
 
 .ripple-span {
   position: absolute;
   border-radius: 50%;
   background: currentColor;
-  opacity: 0.45;
+  opacity: 0.3;
   pointer-events: none;
   transform: scale(0);
   animation: rippleEffect 500ms var(--ease-smooth);
@@ -249,35 +252,14 @@
   background-color: var(--color-bg);
 }
 
-@keyframes cardShimmerSweep {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
-}
-
-.card-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-shimmer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  pointer-events: none;
-}
-
-/* Sweep shimmer sengaja dinonaktifkan — diganti hover border/shadow halus
-   (lebih bersih, tidak terlihat "buatan AI"). */
-
 .field-select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23686868' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 14px center;
+  padding-right: 38px;
   cursor: pointer;
 }
 
@@ -299,13 +281,13 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   display: inline-block;
   width: 13px;
   height: 13px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #000000;
   border-radius: 50%;
   animation: spin 600ms linear infinite;
 }
 
-/* ===== Bento grid (Dashboard - Admin) ===== */
+/* ===== Bento grid (Dashboard Admin) ===== */
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -339,7 +321,7 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   .keputusan-aksi-panel {
     border-left: none !important;
     padding-left: 0 !important;
-    border-top: 1px solid var(--color-border) !important;
+    border-top: 2px solid var(--color-border) !important;
     padding-top: var(--space-5) !important;
   }
 }
@@ -350,9 +332,8 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
     display: flex !important;
   }
   .app-sidebar {
-    transform: translateX(-100%);
+    transform: translateX(-105%);
     transition: transform var(--transition-base);
-    box-shadow: var(--shadow-xl);
   }
   .app-sidebar.is-open {
     transform: translateX(0);
@@ -371,53 +352,56 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   }
 }
 
-/* ===== Header icon buttons / interactive press states (CSS-hover migration) ===== */
+/* ===== Tombol ikon header: bulat, border hitam, hard shadow ===== */
 .app-header-icon-btn {
   position: relative;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: transparent;
-  color: var(--color-text-secondary);
+  border: 2px solid #000000;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-primary);
   cursor: pointer;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 .app-header-icon-btn:hover,
 .app-header-icon-btn.is-active {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-border-strong);
+  background-color: var(--color-pastel);
   color: var(--color-text-primary);
+}
+.app-header-icon-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .app-press {
   transition: transform var(--transition-fast);
 }
 .app-press:active {
-  transform: scale(0.97);
+  transform: translate(2px, 2px);
 }
 
 .app-dropdown-item:hover {
-  background-color: var(--color-surface-hover);
+  background-color: var(--color-pastel);
   color: var(--color-text-primary);
 }
 
 .app-logout-btn:hover {
-  background-color: var(--color-danger-subtle);
-  border-color: var(--color-danger);
-  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .app-logo-link:hover span {
   color: var(--color-primary);
 }
 
-/* ===== Sidebar menu items ===== */
+/* ===== Item menu sidebar: pill, aktif lime dengan border hitam ===== */
 .app-sidebar-menu-item {
   position: relative;
   overflow: hidden;
@@ -427,36 +411,35 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   width: 100%;
   text-align: left;
   padding: 10px 16px;
-  border: none;
-  border-right: 4px solid transparent;
-  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
   background-color: transparent;
   color: var(--color-on-surface-variant);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: transform var(--transition-slow), background-color var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 .app-sidebar-menu-item:hover {
-  background-color: var(--color-surface-container);
-  color: var(--color-primary);
+  background-color: var(--color-pastel);
+  color: var(--color-text-primary);
 }
-/* Aktif = pill hijau solid teks putih (kanonik switera_konsistensi_global). */
+/* Aktif yaitu pill lime, teks hitam, border hitam, hard shadow kecil */
 .app-sidebar-menu-item.is-active {
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
-  border-right-color: transparent;
+  background-color: var(--color-lime);
+  color: var(--color-on-primary-container);
+  border-color: #000000;
   font-weight: var(--font-weight-bold);
   box-shadow: var(--shadow-sm);
 }
 .app-sidebar-menu-item.is-active:hover {
-  background-color: var(--color-primary-container);
-  color: var(--color-on-primary);
+  background-color: var(--color-lime-dim);
+  color: var(--color-on-primary-container);
   transform: none;
 }
 
-/* ===== Buttons (Tombol) ===== */
+/* ===== Buttons (Tombol): pill, border hitam, hard shadow ===== */
 .tombol {
   position: relative;
   overflow: hidden;
@@ -464,46 +447,49 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-full);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
-  padding: 10px 20px;
+  font-weight: var(--font-weight-bold);
+  padding: 10px 22px;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: background-color var(--transition-slow), border-color var(--transition-slow), box-shadow var(--transition-slow), opacity var(--transition-base), transform var(--transition-slow);
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-base);
+}
+.tombol:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
 }
 .tombol:active {
-  transform: scale(0.98);
-  transition-duration: 100ms;
+  transform: translate(4px, 4px);
+  box-shadow: none;
+  transition-duration: 80ms;
 }
 .tombol:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 .tombol-primer {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-on-primary);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--color-lime);
+  border-color: #000000;
+  color: #000000;
 }
 .tombol-primer:hover:not(:disabled) {
-  background-color: var(--color-primary-container);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background-color: var(--color-lime-dim);
 }
 .tombol-sekunder {
-  background-color: transparent;
-  border-color: var(--color-secondary);
-  color: var(--color-secondary);
+  background-color: var(--color-surface);
+  border-color: #000000;
+  color: #000000;
 }
 .tombol-sekunder:hover:not(:disabled) {
-  background-color: var(--color-surface-container-low);
+  background-color: var(--color-pastel);
 }
 .tombol-bahaya {
   background-color: var(--color-error);
-  border-color: var(--color-error);
-  color: #fff;
+  border-color: #000000;
+  color: #ffffff;
 }
 .tombol-bahaya:hover:not(:disabled) {
   background-color: #93000a;
@@ -514,25 +500,26 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  background-color: var(--color-surface-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  border: 2px solid #000000;
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
   cursor: pointer;
   font-size: 1.1rem;
   line-height: 1;
-  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 .auth-close-btn:hover {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
+  background-color: var(--color-pastel);
 }
 .auth-close-btn:active {
-  transform: scale(0.97);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .role-pill {
@@ -540,12 +527,12 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   overflow: hidden;
   flex: 1;
   text-align: center;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
+  padding: 7px 8px;
+  border-radius: var(--radius-full);
   border: none;
   font-size: var(--text-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
   background-color: transparent;
   cursor: pointer;
   user-select: none;
@@ -556,27 +543,27 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   transform: scale(0.97);
 }
 .role-pill.is-active {
-  /* Latar dilukis oleh sliding indicator di RolePills — pill cukup teks putih. */
-  font-weight: var(--font-weight-semibold);
-  color: #fff;
+  /* Latar dilukis oleh sliding indicator lime di RolePills */
+  font-weight: var(--font-weight-bold);
+  color: #000000;
   background-color: transparent;
 }
 
-/* ===== Table scroll container (sticky header reference frame) ===== */
+/* ===== Table scroll container ===== */
 .app-table-scroll {
   scrollbar-gutter: stable;
 }
 
-/* ===== Card (hoverable) ===== */
+/* ===== Card: border hitam 2px, hard shadow, radius besar ===== */
 .app-card {
-  border: 1px solid var(--color-border);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
   animation: fadeInUp 250ms var(--ease-spring) both;
 }
 .app-card-hoverable:hover {
-  border-color: var(--color-border-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
+  box-shadow: 6px 6px 0px 0px #000000;
+  transform: translate(-2px, -2px);
 }
 .app-card-hoverable:hover .metric-deco {
   transform: scale(1.5);
@@ -588,82 +575,84 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   overflow: hidden;
   top: 16px;
   right: 16px;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-3);
-  color: var(--color-text-muted);
+  width: 34px;
+  height: 34px;
+  border: 2px solid #000000;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-family: var(--font-body);
+  font-size: 1.15rem;
   line-height: 1;
-  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 .modal-close-btn:hover {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
+  background-color: var(--color-pastel);
 }
 .modal-close-btn:active {
-  transform: scale(0.97);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
-/* ===== Table row action buttons (edit/delete) ===== */
+/* ===== Tombol aksi baris tabel (edit/hapus): pill border hitam ===== */
 .aksi-btn {
   position: relative;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-radius: var(--radius-sm);
-  background-color: transparent;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  padding: 6px 10px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 6px 12px;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-sm);
   transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 .aksi-btn:active {
-  transform: scale(0.97);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 .aksi-btn-edit {
-  border: 1px solid var(--color-info);
-  color: var(--color-info);
+  color: #000000;
 }
 .aksi-btn-edit:hover {
-  background-color: var(--color-info-subtle);
-  box-shadow: var(--shadow-xs);
+  background-color: var(--color-info-bg);
 }
 .aksi-btn-delete {
-  border: 1px solid var(--color-danger);
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 .aksi-btn-delete:hover {
-  background-color: var(--color-danger-subtle);
-  box-shadow: var(--shadow-xs);
+  background-color: var(--color-danger-bg);
 }
 
 /* ===== Dashboard action card ===== */
 .dashboard-action-card {
-  background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-pastel-card);
+  border: 2px solid #000000;
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  transition: background-color var(--transition-base), border-color var(--transition-base), transform var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
 }
 .dashboard-action-card:hover {
-  background-color: var(--color-surface-3);
-  border-color: var(--color-border-strong);
+  background-color: var(--color-pastel);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* ===== Inline link buttons (warning/underline-on-hover) ===== */
+/* ===== Inline link buttons ===== */
 .link-underline-hover {
   position: relative;
   overflow: hidden;
@@ -677,31 +666,35 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   text-decoration: underline;
 }
 
-/* ===== Auth (Login/Register) submit + link buttons ===== */
+/* ===== Auth (Login/Register) submit dan link ===== */
 .auth-submit-btn {
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding: 11px;
-  background-color: var(--color-primary);
-  border: 1px solid var(--color-primary-hover);
-  border-radius: var(--radius-sm);
-  color: #fff;
+  padding: 12px;
+  background-color: var(--color-lime);
+  border: 2px solid #000000;
+  border-radius: var(--radius-full);
+  color: #000000;
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
-  transition: background-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 .auth-submit-btn:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
-  box-shadow: var(--shadow-glow-primary);
+  background-color: var(--color-lime-dim);
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
 }
 .auth-submit-btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 .auth-submit-btn:disabled {
   cursor: default;
+  opacity: 0.6;
 }
 
 .auth-link-btn {
@@ -713,7 +706,7 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   cursor: pointer;
   font-family: var(--font-body);
   font-size: var(--text-xs);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   padding: 0;
   text-decoration: none;
   transition: transform var(--transition-fast);
@@ -734,14 +727,14 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
   color: var(--color-primary);
 }
 
-/* ===== Toast action/dismiss buttons ===== */
+/* ===== Toast action/dismiss ===== */
 .toast-action-btn {
   border: none;
   background: transparent;
   color: var(--color-primary);
   cursor: pointer;
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   padding: 0;
   flex-shrink: 0;
   white-space: nowrap;
@@ -767,58 +760,64 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
 
 /* ===== Landing page buttons / nav links ===== */
 .landing-nav-link {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  color: #111111;
   text-decoration: none;
   transition: color 150ms;
 }
 .landing-nav-link:hover {
-  color: #fff;
+  color: var(--color-primary);
 }
 
 .landing-btn {
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   cursor: pointer;
   font-family: var(--font-body);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   white-space: nowrap;
-  transition: background-color var(--transition-base), color var(--transition-base), transform var(--transition-base);
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.landing-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
 }
 .landing-btn:active {
-  transform: scale(0.97);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 .landing-btn-primer {
-  background-color: #fff;
-  color: #000;
-  border: 1px solid transparent;
+  background-color: var(--color-lime);
+  color: #000000;
 }
 .landing-btn-primer:hover {
-  background-color: rgba(255, 255, 255, 0.88);
+  background-color: var(--color-lime-dim);
 }
 .landing-btn-sekunder {
-  background-color: transparent;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border-mid);
+  background-color: var(--color-surface);
+  color: #000000;
 }
 .landing-btn-sekunder:hover {
-  background-color: var(--color-surface-3);
-  transform: translateY(-1px);
+  background-color: var(--color-pastel);
 }
 .landing-btn-ghost {
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px solid transparent;
+  color: #111111;
+  border: 2px solid transparent;
+  box-shadow: none;
 }
 .landing-btn-ghost:hover {
-  background-color: var(--color-surface-hover);
-  color: rgba(255, 255, 255, 0.85);
-  transform: translateY(-1px);
+  background-color: var(--color-pastel);
+  transform: none;
+  box-shadow: none;
 }
 
 /* ===== Landing: responsif (hero/fitur/nav) ===== */
@@ -840,14 +839,18 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
 
 /* ===== Leaflet map theming ===== */
 .leaflet-container {
-  background-color: var(--color-surface-2) !important;
+  background-color: var(--color-pastel) !important;
   font-family: var(--font-body) !important;
+  border-radius: var(--radius-lg);
 }
 .leaflet-popup-content-wrapper {
-  background-color: var(--color-surface-2) !important;
+  background-color: var(--color-surface) !important;
   color: var(--color-text-primary) !important;
-  border-radius: var(--radius-sm) !important;
+  border: 2px solid #000000 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 .leaflet-popup-tip {
-  background-color: var(--color-surface-2) !important;
+  background-color: var(--color-surface) !important;
+  border: 2px solid #000000 !important;
 }

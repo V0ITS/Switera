@@ -8,7 +8,7 @@ function PageHeader({ judul, deskripsi, aksi }) {
         gap: "var(--space-4)",
         flexWrap: "wrap",
         paddingBottom: "var(--space-6)",
-        borderBottom: "1px solid var(--color-border)",
+        borderBottom: "2px solid #000000",
         marginBottom: "var(--space-6)",
         animation: "fadeInDown 300ms var(--ease-out) both",
       }}
@@ -18,7 +18,7 @@ function PageHeader({ judul, deskripsi, aksi }) {
           style={{
             margin: 0,
             fontFamily: "var(--font-display)",
-            fontSize: "var(--text-2xl)",
+            fontSize: "var(--text-3xl)",
             fontWeight: "var(--font-weight-bold)",
             letterSpacing: "var(--tracking-tight)",
             color: "var(--color-text-primary)",
@@ -31,7 +31,8 @@ function PageHeader({ judul, deskripsi, aksi }) {
             style={{
               margin: "var(--space-2) 0 0",
               fontSize: "var(--text-sm)",
-              color: "var(--color-text-muted)",
+              color: "var(--color-text-secondary)",
+              fontWeight: "var(--font-weight-medium)",
             }}
           >
             {deskripsi}

@@ -189,8 +189,9 @@ function StatusDistribusi({ onNavigate }) {
                   key={statusKey}
                   style={{
                     backgroundColor: "var(--color-surface-container-low)",
-                    border: "1px solid var(--color-border)",
+                    border: "2px solid #000000",
                     borderRadius: "var(--radius-xl)",
+                    boxShadow: "var(--shadow-sm)",
                     padding: "var(--space-3)",
                     display: "flex",
                     flexDirection: "column",
@@ -206,7 +207,7 @@ function StatusDistribusi({ onNavigate }) {
                     <span style={{ fontFamily: "var(--font-heading)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
                       {statusLabels[statusKey]}
                     </span>
-                    <span style={{ marginLeft: "auto", fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-bold)", backgroundColor: kolomWarna.bg, color: kolomWarna.dot, borderRadius: "var(--radius-full)", padding: "2px 8px" }}>
+                    <span style={{ marginLeft: "auto", fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-bold)", backgroundColor: kolomWarna.bg, color: kolomWarna.dot, border: "2px solid #000000", borderRadius: "var(--radius-full)", padding: "2px 8px" }}>
                       {itemsKolom.length}
                     </span>
                   </div>
@@ -248,14 +249,15 @@ function StatusDistribusi({ onNavigate }) {
                           style={{
                             marginTop: "4px",
                             alignSelf: "flex-start",
-                            border: "1px solid var(--color-border)",
-                            borderRadius: "var(--radius-md)",
-                            backgroundColor: "transparent",
-                            color: "var(--color-primary)",
+                            border: "2px solid #000000",
+                            borderRadius: "var(--radius-full)",
+                            backgroundColor: "var(--color-lime)",
+                            color: "#000000",
                             fontFamily: "var(--font-body)",
                             fontSize: "var(--text-xs)",
-                            fontWeight: "var(--font-weight-semibold)",
-                            padding: "6px 12px",
+                            fontWeight: "var(--font-weight-bold)",
+                            padding: "6px 14px",
+                            boxShadow: "var(--shadow-sm)",
                             cursor: "pointer",
                             transition: "background-color var(--transition-fast), border-color var(--transition-fast)",
                           }}
@@ -312,16 +314,16 @@ function StatusDistribusi({ onNavigate }) {
                 onBlur={() => setIsSelectFocused(false)}
                 style={{
                   width: "100%",
-                  border: `1px solid ${isSelectFocused ? "var(--color-primary)" : "var(--color-border)"}`,
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "var(--color-surface-2)",
+                  border: "2px solid #000000",
+                  borderRadius: "var(--radius-lg)",
+                  backgroundColor: isSelectFocused ? "var(--color-pastel)" : "#ffffff",
                   color: "var(--color-text-primary)",
                   fontFamily: "var(--font-body)",
                   fontSize: "var(--text-sm)",
-                  padding: "9px 12px",
+                  padding: "10px 14px",
                   outline: "none",
-                  boxShadow: isSelectFocused ? "0 0 0 3px var(--color-primary-glow)" : "none",
-                  transition: "border-color var(--transition-input), box-shadow var(--transition-input)",
+                  boxShadow: "var(--shadow-sm)",
+                  transition: "background-color var(--transition-input)",
                 }}
               >
                 {statusOptions.map((status) => (
@@ -348,15 +350,16 @@ function StatusDistribusi({ onNavigate }) {
                       style={{
                         width: "100%",
                         border: modalErrors.armada
-                          ? "1px solid var(--color-danger)"
-                          : "1px solid var(--color-border)",
-                        borderRadius: "var(--radius-sm)",
-                        backgroundColor: "var(--color-surface-2)",
+                          ? "2px solid var(--color-danger)"
+                          : "2px solid #000000",
+                        borderRadius: "var(--radius-lg)",
+                        backgroundColor: "#ffffff",
                         color: "var(--color-text-primary)",
                         fontFamily: "var(--font-body)",
                         fontSize: "var(--text-sm)",
-                        padding: "9px 12px",
+                        padding: "10px 14px",
                         outline: "none",
+                        boxShadow: "var(--shadow-sm)",
                         boxSizing: "border-box",
                       }}
                     />
@@ -376,15 +379,16 @@ function StatusDistribusi({ onNavigate }) {
                       style={{
                         width: "100%",
                         border: modalErrors.eta
-                          ? "1px solid var(--color-danger)"
-                          : "1px solid var(--color-border)",
-                        borderRadius: "var(--radius-sm)",
-                        backgroundColor: "var(--color-surface-2)",
+                          ? "2px solid var(--color-danger)"
+                          : "2px solid #000000",
+                        borderRadius: "var(--radius-lg)",
+                        backgroundColor: "#ffffff",
                         color: "var(--color-text-primary)",
                         fontFamily: "var(--font-body)",
                         fontSize: "var(--text-sm)",
-                        padding: "9px 12px",
+                        padding: "10px 14px",
                         outline: "none",
+                        boxShadow: "var(--shadow-sm)",
                         boxSizing: "border-box",
                       }}
                     />

@@ -307,10 +307,10 @@ function ManajemenData({ onNavigate }) {
             }
           }}
           style={{
-            width: "80px",
-            border: "1px solid var(--color-primary)",
-            borderRadius: "var(--radius-xs)",
-            backgroundColor: "var(--color-surface-2)",
+            width: "90px",
+            border: "2px solid #000000",
+            borderRadius: "var(--radius-sm)",
+            backgroundColor: "var(--color-pastel)",
             color: "var(--color-text-primary)",
             fontFamily: "var(--font-mono)",
             fontSize: "var(--text-sm)",
@@ -322,7 +322,7 @@ function ManajemenData({ onNavigate }) {
         <span
           onClick={() => startInlineEdit(item)}
           title="Klik untuk edit cepat"
-          style={{ cursor: "pointer", borderBottom: "1px dashed var(--color-border-mid)" }}
+          style={{ cursor: "pointer", borderBottom: "2px dashed #000000" }}
         >
           {item.jumlah_permintaan} ton
         </span>
@@ -332,32 +332,32 @@ function ManajemenData({ onNavigate }) {
 
   const fieldBaseStyle = {
     width: "100%",
-    border: "1px solid var(--color-border-mid)",
-    borderRadius: "var(--radius-sm)",
-    backgroundColor: "var(--color-surface-2)",
+    border: "2px solid #000000",
+    borderRadius: "var(--radius-lg)",
+    backgroundColor: "var(--color-surface)",
     color: "var(--color-text-primary)",
     fontFamily: "var(--font-body)",
     fontSize: "var(--text-sm)",
     padding: "10px 14px",
     outline: "none",
     boxSizing: "border-box",
+    boxShadow: "var(--shadow-sm)",
     transition:
       "border-color var(--transition-input), box-shadow var(--transition-input), background-color var(--transition-input)",
   };
 
+  // Fokus ala neo brutalist: latar pastel, border tetap hitam.
   const getFieldStyle = (field) => {
     const isFocused = focusedField === field;
     const isHovered = hoveredField === field && !isFocused;
 
     return {
       ...fieldBaseStyle,
-      backgroundColor: isHovered ? "var(--color-surface-3)" : "var(--color-surface-2)",
-      borderColor: isFocused
-        ? "var(--color-primary)"
+      backgroundColor: isFocused
+        ? "var(--color-pastel)"
         : isHovered
-          ? "var(--color-border-strong)"
-          : "var(--color-border-mid)",
-      boxShadow: isFocused ? "0 0 0 3px var(--color-primary-glow)" : "none",
+          ? "var(--color-surface-container-low)"
+          : "var(--color-surface)",
     };
   };
 

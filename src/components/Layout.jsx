@@ -11,9 +11,9 @@ import useRipple, { RippleSpans } from "../hooks/useRipple";
 const HEADER_HEIGHT = "64px";
 const SIDEBAR_WIDTH = "280px";
 
-// Material Symbols per tipe notifikasi + warna teks/bg (design system Catalyst).
+// Material Symbols per tipe notifikasi dan warna teks/bg (Neo-Brutalism).
 const notifStyle = {
-  info: { ikon: "info", warna: "var(--color-secondary)", bg: "var(--color-info-bg)" },
+  info: { ikon: "info", warna: "var(--color-info-text)", bg: "var(--color-info-bg)" },
   warning: { ikon: "warning", warna: "var(--color-warning-text)", bg: "var(--color-warning-bg)" },
   success: { ikon: "check_circle", warna: "var(--color-success-text)", bg: "var(--color-success-bg)" },
 };
@@ -198,8 +198,8 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
           width: SIDEBAR_WIDTH,
           height: "100vh",
           backgroundColor: "var(--color-surface-container-lowest)",
-          borderRight: "1px solid var(--color-border)",
-          boxShadow: "var(--shadow-sm)",
+          borderRight: "2px solid #000000",
+          boxShadow: "4px 0px 0px 0px #000000",
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
@@ -222,20 +222,36 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
             color: "inherit",
           }}
         >
-          <Ikon name="eco" size={36} fill style={{ color: "var(--color-primary)" }} />
+          <span
+            aria-hidden="true"
+            style={{
+              width: "44px",
+              height: "44px",
+              flexShrink: 0,
+              display: "grid",
+              placeItems: "center",
+              backgroundColor: "var(--color-lime)",
+              border: "2px solid #000000",
+              borderRadius: "var(--radius-full)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <Ikon name="eco" size={26} fill style={{ color: "#000000" }} />
+          </span>
           <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
             <span
               style={{
                 fontFamily: "var(--font-heading)",
                 fontWeight: "var(--font-weight-bold)",
                 fontSize: "var(--text-xl)",
-                color: "var(--color-primary)",
+                letterSpacing: "var(--tracking-tight)",
+                color: "#000000",
               }}
             >
               {title}
             </span>
-            <span style={{ fontSize: "var(--text-2xs)", color: "var(--color-on-surface-variant)" }}>
-              Logistik Sawit
+            <span style={{ fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-medium)", color: "var(--color-on-surface-variant)" }}>
+              Manajemen Sawit
             </span>
           </span>
         </a>
@@ -264,7 +280,7 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
           style={{
             marginTop: "var(--space-4)",
             paddingTop: "var(--space-4)",
-            borderTop: "1px solid var(--color-border)",
+            borderTop: "2px solid #000000",
             display: "flex",
             alignItems: "center",
             gap: "var(--space-3)",
@@ -276,8 +292,9 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               width: "38px",
               height: "38px",
               borderRadius: "var(--radius-full)",
-              backgroundColor: "var(--color-surface-container)",
-              color: "var(--color-primary)",
+              backgroundColor: "var(--color-pastel)",
+              border: "2px solid #000000",
+              color: "#000000",
               display: "grid",
               placeItems: "center",
               fontSize: "var(--text-sm)",
@@ -313,13 +330,14 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "34px",
-              height: "34px",
+              width: "36px",
+              height: "36px",
               flexShrink: 0,
-              backgroundColor: "transparent",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-md)",
-              color: "var(--color-on-surface-variant)",
+              backgroundColor: "var(--color-surface)",
+              border: "2px solid #000000",
+              borderRadius: "var(--radius-full)",
+              boxShadow: "var(--shadow-sm)",
+              color: "#000000",
               cursor: "pointer",
             }}
           >
@@ -351,11 +369,9 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
           left: SIDEBAR_WIDTH,
           right: 0,
           height: HEADER_HEIGHT,
-          backgroundColor: "var(--color-elevated-glass)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          borderBottom: "1px solid var(--color-border)",
-          boxShadow: "var(--shadow-sm)",
+          backgroundColor: "var(--color-surface-container-lowest)",
+          borderBottom: "2px solid #000000",
+          boxShadow: "0px 4px 0px 0px #000000",
           zIndex: "calc(var(--z-sticky) - 1)",
           padding: "0 var(--space-8)",
           display: "flex",
@@ -372,15 +388,16 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
             onClick={() => setIsSidebarOpen((value) => !value)}
             style={{
               display: "none",
-              width: "36px",
-              height: "36px",
+              width: "38px",
+              height: "38px",
               flexShrink: 0,
               alignItems: "center",
               justifyContent: "center",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: "transparent",
-              color: "var(--color-on-surface-variant)",
+              border: "2px solid #000000",
+              borderRadius: "var(--radius-full)",
+              backgroundColor: "var(--color-surface)",
+              boxShadow: "var(--shadow-sm)",
+              color: "#000000",
               cursor: "pointer",
             }}
           >
@@ -412,26 +429,30 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: "var(--color-surface-container-low)",
-              color: "var(--color-on-surface-variant)",
-              padding: "7px 12px",
+              border: "2px solid #000000",
+              borderRadius: "var(--radius-full)",
+              backgroundColor: "var(--color-surface)",
+              boxShadow: "var(--shadow-sm)",
+              color: "var(--color-text-secondary)",
+              padding: "8px 14px",
               cursor: "pointer",
               fontFamily: "var(--font-body)",
               fontSize: "var(--text-xs)",
+              fontWeight: "var(--font-weight-medium)",
               width: "220px",
             }}
           >
-            <Ikon name="search" size={16} />
+            <Ikon name="search" size={16} style={{ color: "#000000" }} />
             <span style={{ flex: 1, textAlign: "left" }}>Cari...</span>
             <span
               style={{
                 fontSize: "var(--text-2xs)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "var(--radius-xs)",
-                padding: "1px 5px",
-                color: "var(--color-on-surface-variant)",
+                border: "1px solid #000000",
+                borderRadius: "var(--radius-full)",
+                padding: "1px 7px",
+                fontWeight: "var(--font-weight-bold)",
+                color: "#000000",
+                backgroundColor: "var(--color-pastel)",
               }}
             >
               ⌘K
@@ -454,17 +475,17 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                     position: "absolute",
                     top: "1px",
                     right: "1px",
-                    minWidth: "14px",
-                    height: "14px",
+                    minWidth: "16px",
+                    height: "16px",
                     padding: "0 3px",
                     borderRadius: "var(--radius-full)",
                     backgroundColor: "var(--color-error)",
                     color: "#fff",
                     fontSize: "0.625rem",
-                    fontWeight: "var(--font-weight-semibold)",
+                    fontWeight: "var(--font-weight-bold)",
                     display: "grid",
                     placeItems: "center",
-                    border: "2px solid var(--color-surface)",
+                    border: "2px solid #000000",
                   }}
                 >
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -477,7 +498,7 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               <div
                 style={{
                   position: "absolute",
-                  top: "calc(100% + 8px)",
+                  top: "calc(100% + 10px)",
                   right: 0,
                   width: "360px",
                   maxHeight: "400px",
@@ -485,8 +506,8 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                   flexDirection: "column",
                   backgroundColor: "var(--color-surface)",
                   color: "var(--color-on-surface)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "var(--radius-xl)",
+                  border: "2px solid #000000",
+                  borderRadius: "var(--radius-2xl)",
                   boxShadow: "var(--shadow-lg)",
                   overflow: "hidden",
                   zIndex: "var(--z-dropdown)",
@@ -500,15 +521,17 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                     justifyContent: "space-between",
                     gap: "0.5rem",
                     padding: "14px 16px",
-                    borderBottom: "1px solid var(--color-border)",
+                    borderBottom: "2px solid #000000",
+                    backgroundColor: "var(--color-lime)",
                   }}
                 >
                   <span
                     style={{
                       fontFamily: "var(--font-heading)",
-                      fontWeight: "var(--font-weight-semibold)",
-                      fontSize: "var(--text-sm)",
-                      color: "var(--color-on-surface)",
+                      fontWeight: "var(--font-weight-bold)",
+                      fontSize: "var(--text-md)",
+                      letterSpacing: "var(--tracking-tight)",
+                      color: "var(--color-on-primary-container)",
                     }}
                   >
                     Notifikasi
@@ -524,13 +547,14 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                       overflow: "hidden",
                       border: "none",
                       background: "transparent",
-                      color: unreadCount === 0 ? "var(--color-outline)" : "var(--color-primary)",
+                      color: unreadCount === 0 ? "rgba(20, 31, 0, 0.4)" : "var(--color-on-primary-container)",
                       cursor: unreadCount === 0 ? "default" : "pointer",
                       fontFamily: "var(--font-body)",
                       fontSize: "var(--text-xs)",
-                      fontWeight: "var(--font-weight-semibold)",
+                      fontWeight: "var(--font-weight-bold)",
                       padding: "4px 6px",
-                      borderRadius: "var(--radius-sm)",
+                      borderRadius: "var(--radius-full)",
+                      textDecoration: unreadCount === 0 ? "none" : "underline",
                     }}
                   >
                     Tandai semua dibaca
@@ -567,8 +591,8 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                             textAlign: "left",
                             gap: "0.75rem",
                             border: "none",
-                            borderBottom: "1px solid var(--color-border)",
-                            backgroundColor: item.dibaca ? "transparent" : "var(--color-surface-container-low)",
+                            borderBottom: "2px solid #000000",
+                            backgroundColor: item.dibaca ? "transparent" : "var(--color-pastel)",
                             padding: "12px 16px",
                             cursor: "pointer",
                             fontFamily: "var(--font-body)",
@@ -578,10 +602,11 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                           <span
                             aria-hidden="true"
                             style={{
-                              width: "32px",
-                              height: "32px",
+                              width: "36px",
+                              height: "36px",
                               flexShrink: 0,
                               borderRadius: "var(--radius-full)",
+                              border: "2px solid #000000",
                               backgroundColor: gaya.bg,
                               color: gaya.warna,
                               display: "grid",
@@ -632,10 +657,11 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                backgroundColor: "var(--color-surface-container-low)",
-                border: "1px solid var(--color-border)",
+                backgroundColor: "var(--color-surface)",
+                border: "2px solid #000000",
                 borderRadius: "var(--radius-full)",
-                padding: "4px 6px",
+                boxShadow: "var(--shadow-sm)",
+                padding: "4px 8px 4px 4px",
                 cursor: "pointer",
                 fontFamily: "var(--font-body)",
               }}
@@ -646,8 +672,9 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                   width: "28px",
                   height: "28px",
                   borderRadius: "var(--radius-full)",
-                  backgroundColor: "var(--color-surface-container)",
-                  color: "var(--color-primary)",
+                  backgroundColor: "var(--color-lime)",
+                  border: "2px solid #000000",
+                  color: "#000000",
                   display: "grid",
                   placeItems: "center",
                   fontSize: "var(--text-xs)",
@@ -657,20 +684,20 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
               >
                 {getInisial(snapshot.userAktif?.nama)}
               </span>
-              <Ikon name="expand_more" size={18} style={{ color: "var(--color-on-surface-variant)" }} />
+              <Ikon name="expand_more" size={18} style={{ color: "#000000" }} />
             </button>
 
             {isAvatarOpen ? (
               <div
                 style={{
                   position: "absolute",
-                  top: "calc(100% + 8px)",
+                  top: "calc(100% + 10px)",
                   right: 0,
-                  width: "200px",
+                  width: "210px",
                   backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
+                  border: "2px solid #000000",
                   borderRadius: "var(--radius-xl)",
-                  boxShadow: "var(--shadow-lg)",
+                  boxShadow: "var(--shadow-md)",
                   overflow: "hidden",
                   zIndex: "var(--z-dropdown)",
                   animation: "scaleIn 150ms var(--ease-out) both",
@@ -679,7 +706,8 @@ function Layout({ children, title = "Switera", menuAktif: menuAktifProp, onMenuC
                 <div
                   style={{
                     padding: "12px 14px",
-                    borderBottom: "1px solid var(--color-border)",
+                    borderBottom: "2px solid #000000",
+                    backgroundColor: "var(--color-pastel-card)",
                   }}
                 >
                   <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>

@@ -4,24 +4,26 @@ export const roleOptions = ["Admin", "Manajer Distribusi", "Tim Logistik"];
 
 export const fieldLabelStyle = {
   fontSize: "var(--text-sm)",
-  fontWeight: "var(--font-weight-semibold)",
-  color: "var(--color-on-surface)",
+  fontWeight: "var(--font-weight-bold)",
+  color: "#000000",
   marginBottom: "6px",
+  paddingLeft: "4px",
 };
 
 export const inputBaseStyle = {
   width: "100%",
   boxSizing: "border-box",
-  border: "1px solid var(--color-border)",
+  border: "2px solid #000000",
   borderRadius: "var(--radius-lg)",
-  backgroundColor: "var(--color-surface)",
+  backgroundColor: "#ffffff",
   color: "var(--color-on-surface)",
   fontFamily: "var(--font-body)",
   fontSize: "var(--text-sm)",
-  padding: "12px 44px 12px 16px",
+  padding: "13px 44px 13px 18px",
   outline: "none",
   WebkitAppearance: "none",
-  transition: "border-color var(--transition-input), box-shadow var(--transition-input)",
+  boxShadow: "var(--shadow-sm)",
+  transition: "background-color var(--transition-input), border-color var(--transition-input), box-shadow var(--transition-input)",
 };
 
 export function IkonOrang() {
@@ -68,8 +70,8 @@ export function TombolClose({ onClick }) {
   );
 }
 
-// Pill tabs peran dengan sliding indicator — indikator hijau bergeser halus
-// mengikuti peran terpilih (design system Catalyst).
+// Pill tabs peran dengan sliding indicator, yaitu pill lime bergeser halus
+// mengikuti peran terpilih (Neo-Brutalism).
 export function RolePills({ selectedRole, onSelectRole }) {
   const { ripples, onMouseDown, removeRipple } = useRipple();
   const activeIndex = Math.max(0, roleOptions.indexOf(selectedRole));
@@ -80,9 +82,10 @@ export function RolePills({ selectedRole, onSelectRole }) {
         position: "relative",
         display: "flex",
         gap: "0",
-        backgroundColor: "var(--color-surface-container-low)",
-        border: "1px solid var(--color-border)",
+        backgroundColor: "#ffffff",
+        border: "2px solid #000000",
         borderRadius: "var(--radius-full)",
+        boxShadow: "var(--shadow-sm)",
         padding: "4px",
         marginBottom: "var(--space-6)",
       }}
@@ -96,8 +99,9 @@ export function RolePills({ selectedRole, onSelectRole }) {
           left: "4px",
           width: `calc((100% - 8px) / ${roleOptions.length})`,
           borderRadius: "var(--radius-full)",
-          backgroundColor: "var(--color-primary)",
-          boxShadow: "var(--shadow-sm)",
+          backgroundColor: "var(--color-lime)",
+          border: "2px solid #000000",
+          boxSizing: "border-box",
           transform: `translateX(${activeIndex * 100}%)`,
           transition: "transform 250ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}
@@ -132,7 +136,7 @@ export function FieldIcon({ children, onClick, clickable }) {
         right: "14px",
         top: "50%",
         transform: "translateY(-50%)",
-        color: "var(--color-outline)",
+        color: "#000000",
         width: "16px",
         height: "16px",
         display: "inline-flex",

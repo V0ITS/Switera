@@ -11,8 +11,8 @@ function EmptyState({ pesan, aksi }) {
         gap: "var(--space-2)",
       }}
     >
-      {/* Area ilustrasi ala Stitch data_kosong: lingkaran besar + ikon Material
-          + dua titik dekoratif blur, dengan animasi mengambang halus. */}
+      {/* Ilustrasi ala sistem_ui neo brutalist: lingkaran pastel dengan
+          border hitam dan ikon Material, dimiringkan 12 derajat. */}
       <div
         aria-hidden="true"
         style={{
@@ -22,10 +22,12 @@ function EmptyState({ pesan, aksi }) {
           flexShrink: 0,
           display: "grid",
           placeItems: "center",
-          backgroundColor: "var(--color-surface-container-low)",
+          backgroundColor: "var(--color-pastel)",
+          border: "2px solid #000000",
           borderRadius: "var(--radius-full)",
           marginBottom: "var(--space-4)",
-          animation: "floatSubtle 4s ease-in-out infinite",
+          transform: "rotate(12deg)",
+          boxShadow: "var(--shadow-md)",
         }}
       >
         <span
@@ -33,45 +35,20 @@ function EmptyState({ pesan, aksi }) {
           style={{
             fontSize: "64px",
             lineHeight: 1,
-            color: "rgba(0, 106, 67, 0.6)",
+            color: "var(--color-primary)",
             fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 48",
           }}
         >
-          folder_open
+          inbox
         </span>
-        <span
-          style={{
-            position: "absolute",
-            top: "-8px",
-            right: "-8px",
-            width: "24px",
-            height: "24px",
-            borderRadius: "var(--radius-full)",
-            backgroundColor: "var(--color-secondary-container)",
-            opacity: 0.5,
-            filter: "blur(4px)",
-          }}
-        />
-        <span
-          style={{
-            position: "absolute",
-            bottom: "-4px",
-            left: "-12px",
-            width: "32px",
-            height: "32px",
-            borderRadius: "var(--radius-full)",
-            backgroundColor: "#ffb690",
-            opacity: 0.4,
-            filter: "blur(4px)",
-          }}
-        />
       </div>
       <p
         style={{
           margin: 0,
           fontFamily: "var(--font-heading)",
           fontSize: "var(--text-xl)",
-          fontWeight: "var(--font-weight-semibold)",
+          fontWeight: "var(--font-weight-bold)",
+          letterSpacing: "var(--tracking-tight)",
           color: "var(--color-on-surface)",
         }}
       >

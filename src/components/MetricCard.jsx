@@ -92,14 +92,15 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
               width: iconBoxSize,
               height: iconBoxSize,
               flexShrink: 0,
-              borderRadius: "var(--radius-md)",
+              borderRadius: "var(--radius-full)",
+              border: "2px solid #000000",
               backgroundColor: colors.subtle,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <span style={{ width: iconSize, height: iconSize, display: "flex", color: colors.solid }}>
+            <span style={{ width: iconSize, height: iconSize, display: "flex", color: "#000000" }}>
               {ikon}
             </span>
           </div>
@@ -158,8 +159,6 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
         minHeight: "120px",
         boxSizing: "border-box",
         borderRadius: "var(--radius-2xl)",
-        border: "1px solid var(--color-surface-container)",
-        boxShadow: "0px 4px 20px rgba(0, 106, 67, 0.05)",
         position: "relative",
         overflow: "hidden",
         display: "flex",
@@ -194,14 +193,15 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
               width: iconBoxSize,
               height: iconBoxSize,
               flexShrink: 0,
-              borderRadius: "var(--radius-lg)",
-              backgroundColor: "var(--color-surface-container)",
+              borderRadius: "var(--radius-full)",
+              border: "2px solid #000000",
+              backgroundColor: colors.subtle,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <span style={{ width: iconSize, height: iconSize, display: "flex", color: colors.solid }}>
+            <span style={{ width: iconSize, height: iconSize, display: "flex", color: "#000000" }}>
               {ikon}
             </span>
           </div>
@@ -214,11 +214,12 @@ function MetricCard({ label, nilai, ikon, accent = "primary", shimmer = false, s
             <span
               style={{
                 fontSize: "var(--text-2xs)",
-                backgroundColor: "var(--color-surface-container)",
-                color: "var(--color-on-surface-variant)",
+                backgroundColor: "var(--color-pastel)",
+                color: "#000000",
                 padding: "4px 12px",
                 borderRadius: "var(--radius-full)",
-                fontWeight: "var(--font-weight-medium)",
+                border: "2px solid #000000",
+                fontWeight: "var(--font-weight-bold)",
                 whiteSpace: "nowrap",
               }}
             >

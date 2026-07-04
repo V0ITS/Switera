@@ -42,9 +42,10 @@ function Badge({ status }) {
         borderRadius: "var(--radius-full)",
         backgroundColor: config.backgroundColor,
         color: config.color,
+        border: "2px solid #000000",
         fontFamily: "var(--font-body)",
         fontSize: "var(--text-2xs)",
-        fontWeight: "var(--font-weight-semibold)",
+        fontWeight: "var(--font-weight-bold)",
         letterSpacing: "var(--tracking-wide)",
         whiteSpace: "nowrap",
       }}

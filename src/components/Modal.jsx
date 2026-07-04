@@ -92,7 +92,7 @@ function Modal({ judul, konten, onTutup }) {
             outline: "none",
             backgroundColor: "var(--color-surface)",
             color: "var(--color-on-surface)",
-            border: "1px solid var(--color-border)",
+            border: "3px solid #000000",
             borderRadius: "var(--radius-2xl)",
             boxShadow: "var(--shadow-lg)",
             padding: "var(--space-8)",
@@ -131,7 +131,8 @@ function Modal({ judul, konten, onTutup }) {
                 margin: 0,
                 fontFamily: "var(--font-display)",
                 fontSize: "var(--text-lg)",
-                fontWeight: "var(--font-weight-semibold)",
+                fontWeight: "var(--font-weight-bold)",
+                letterSpacing: "var(--tracking-tight)",
               }}
             >
               {judul}

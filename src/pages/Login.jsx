@@ -25,18 +25,12 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const linkRipple = useRipple();
 
+  // Fokus ala neo brutalist: latar berubah pastel, border tetap hitam.
+  // Error ditandai border merah tebal.
   const getInputStyle = (field) => ({
     ...inputBaseStyle,
-    borderColor: errors[field]
-      ? "var(--color-danger)"
-      : focusedField === field
-        ? "var(--color-primary)"
-        : "var(--color-border-mid)",
-    boxShadow: errors[field]
-      ? "none"
-      : focusedField === field
-        ? "0 0 0 3px var(--color-primary-glow)"
-        : "none",
+    borderColor: errors[field] ? "var(--color-error)" : "#000000",
+    backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
   });
 
   const handleSubmit = async (event) => {
@@ -123,25 +117,69 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
             bottom: "var(--space-6)",
             left: "var(--space-8)",
             fontSize: "var(--text-xs)",
-            color: "rgba(255,255,255,0.25)",
+            fontWeight: "var(--font-weight-bold)",
+            color: "rgba(255,255,255,0.45)",
           }}
         >
           © Switera 2026
+        </span>
+
+        {/* Stiker dekoratif ala masuk_switera_neo_brutalist */}
+        <span
+          aria-hidden="true"
+          className="landing-hero-mockup"
+          style={{
+            position: "absolute",
+            top: "20%",
+            left: "10%",
+            backgroundColor: "var(--color-info-bg)",
+            border: "3px solid #000000",
+            borderRadius: "var(--radius-full)",
+            boxShadow: "var(--shadow-md)",
+            padding: "8px 24px",
+            transform: "rotate(-12deg)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            fontSize: "var(--text-md)",
+            color: "#000000",
+          }}
+        >
+          TBS v2.0
+        </span>
+        <span
+          aria-hidden="true"
+          className="landing-hero-mockup"
+          style={{
+            position: "absolute",
+            bottom: "22%",
+            right: "10%",
+            backgroundColor: "var(--color-secondary-container)",
+            border: "3px solid #000000",
+            borderRadius: "var(--radius-full)",
+            boxShadow: "var(--shadow-md)",
+            padding: "8px 24px",
+            transform: "rotate(8deg)",
+            fontFamily: "var(--font-heading)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+            fontSize: "var(--text-md)",
+            color: "#000000",
+          }}
+        >
+          Aman dan Terpusat
         </span>
 
         <form
           onSubmit={handleSubmit}
           style={{
             position: "relative",
-            width: "min(440px, 90vw)",
+            width: "min(460px, 90vw)",
             boxSizing: "border-box",
-            backgroundColor: "rgba(255,255,255,0.94)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(255,255,255,0.6)",
-            borderTop: "6px solid var(--color-primary)",
-            borderRadius: "var(--radius-xl)",
-            boxShadow: "var(--shadow-xl)",
+            backgroundColor: "#ffffff",
+            border: "3px solid #000000",
+            borderRadius: "var(--radius-2xl)",
+            boxShadow: "6px 6px 0px 0px #000000",
             padding: "var(--space-10)",
             animation: "scaleIn 200ms var(--ease-out) both",
           }}
@@ -157,10 +195,13 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                 height: "64px",
                 margin: "0 auto var(--space-3)",
                 borderRadius: "var(--radius-full)",
-                backgroundColor: "rgba(0, 106, 67, 0.1)",
-                color: "var(--color-primary)",
+                backgroundColor: "var(--color-lime)",
+                border: "2px solid #000000",
+                boxShadow: "var(--shadow-sm)",
+                color: "#000000",
                 display: "grid",
                 placeItems: "center",
+                transform: "rotate(-6deg)",
               }}
             >
               <span
@@ -174,22 +215,23 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
               style={{
                 margin: 0,
                 fontFamily: "var(--font-heading)",
-                fontSize: "var(--text-2xl)",
-                fontWeight: "var(--font-weight-bold)",
-                letterSpacing: "var(--tracking-tight)",
-                color: "var(--color-on-surface)",
+                fontSize: "var(--text-3xl)",
+                fontWeight: 800,
+                letterSpacing: "-0.04em",
+                color: "#000000",
               }}
             >
-              Selamat Datang di Switera
+              Switera
             </h1>
             <p
               style={{
                 margin: "4px 0 0",
                 fontSize: "var(--text-sm)",
+                fontWeight: "var(--font-weight-medium)",
                 color: "var(--color-on-surface-variant)",
               }}
             >
-              Logistik Sawit — masuk ke akun Anda
+              Portal Manajemen Distribusi
             </p>
           </div>
 
@@ -278,7 +320,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
                 type="checkbox"
                 checked={ingatSaya}
                 onChange={(event) => setIngatSaya(event.target.checked)}
-                style={{ accentColor: "var(--color-primary)" }}
+                style={{ accentColor: "var(--color-lime)", width: "16px", height: "16px" }}
               />
               Ingat saya
             </label>

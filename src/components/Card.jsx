@@ -21,8 +21,8 @@ function Card({ children, style, hoverable = false, accent, shimmer = false, cla
       className={combinedClassName}
       style={{
         backgroundColor: "var(--color-surface)",
-        borderTop: accent ? `2px solid ${accentColors[accent] ?? accentColors.primary}` : undefined,
-        borderRadius: "var(--radius-xl)",
+        borderTop: accent ? `4px solid ${accentColors[accent] ?? accentColors.primary}` : undefined,
+        borderRadius: "var(--radius-2xl)",
         padding: "var(--space-6)",
         ...style,
       }}

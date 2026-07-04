@@ -145,19 +145,20 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
   const headerCellStyle = {
     padding: isCompact ? "6px 16px" : "10px 16px",
     textAlign: "left",
-    color: "var(--color-text-muted)",
+    color: "#000000",
     fontFamily: "var(--font-body)",
     fontSize: "var(--text-2xs)",
-    fontWeight: "var(--font-weight-semibold)",
+    fontWeight: "var(--font-weight-bold)",
     textTransform: "uppercase",
     letterSpacing: "var(--tracking-wider)",
     userSelect: "none",
-    backgroundColor: "var(--color-bg)",
+    backgroundColor: "var(--color-pastel-card)",
+    borderBottom: "2px solid #000000",
   };
 
   const getCellStyle = (isLastRow) => ({
     padding: isCompact ? "6px 16px" : "12px 16px",
-    borderBottom: isLastRow ? "none" : "1px solid var(--color-border-subtle)",
+    borderBottom: isLastRow ? "none" : "1px solid #000000",
     color: "var(--color-text-primary)",
     verticalAlign: "middle",
     fontSize: "var(--text-sm)",
@@ -165,12 +166,14 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
   });
 
   const paginationButtonStyle = (disabled) => ({
-    border: "1px solid var(--color-border-mid)",
-    borderRadius: "var(--radius-sm)",
-    backgroundColor: "var(--color-surface-2)",
-    color: disabled ? "var(--color-text-disabled)" : "var(--color-text-secondary)",
-    padding: "5px 10px",
+    border: "2px solid #000000",
+    borderRadius: "var(--radius-full)",
+    backgroundColor: disabled ? "var(--color-surface-container)" : "var(--color-surface)",
+    color: disabled ? "var(--color-text-disabled)" : "#000000",
+    boxShadow: disabled ? "none" : "var(--shadow-sm)",
+    padding: "5px 12px",
     fontSize: "var(--text-xs)",
+    fontWeight: "var(--font-weight-semibold)",
     fontFamily: "var(--font-body)",
     cursor: disabled ? "not-allowed" : "pointer",
   });
@@ -179,12 +182,13 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "26px",
-    height: "26px",
-    border: `1px solid ${active ? "var(--color-primary)" : "var(--color-border)"}`,
-    borderRadius: "var(--radius-sm)",
-    backgroundColor: active ? "var(--color-primary-subtle)" : "var(--color-surface-2)",
-    color: active ? "var(--color-primary)" : "var(--color-text-muted)",
+    width: "28px",
+    height: "28px",
+    border: "2px solid #000000",
+    borderRadius: "var(--radius-full)",
+    backgroundColor: active ? "var(--color-lime)" : "var(--color-surface)",
+    color: "#000000",
+    boxShadow: active ? "var(--shadow-sm)" : "none",
     cursor: "pointer",
   });
 
@@ -192,13 +196,14 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
     <div
       style={{
         backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-xl)",
+        border: "2px solid #000000",
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--shadow-md)",
         overflow: "hidden",
         animation: "fadeInUp 250ms var(--ease-spring) both",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "4px", padding: "6px 8px", borderBottom: "1px solid var(--color-border)" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "6px", padding: "8px 10px", borderBottom: "2px solid #000000", backgroundColor: "var(--color-surface)" }}>
         <button
           type="button"
           aria-label="Tampilan nyaman"
@@ -234,7 +239,6 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
               position: "sticky",
               top: 0,
               zIndex: 1,
-              borderBottom: "1px solid var(--color-border-mid)",
             }}
           >
             <tr>
@@ -268,7 +272,7 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
               const isLastRow = index === pagedData.length - 1;
               const customBackground = getRowStyle?.(baris, index)?.backgroundColor;
               const rowBackground = isRowHovered
-                ? "rgba(0, 106, 67, 0.04)"
+                ? "var(--color-pastel)"
                 : customBackground ?? "transparent";
               const cellStyle = getCellStyle(isLastRow);
 
@@ -288,8 +292,8 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
                         borderLeft:
                           colIndex === 0
                             ? isRowHovered
-                              ? "2px solid var(--color-primary)"
-                              : "2px solid transparent"
+                              ? "4px solid var(--color-lime)"
+                              : "4px solid transparent"
                             : undefined,
                         fontFamily: column.numeric ? "var(--font-mono)" : undefined,
                         fontVariantNumeric: column.numeric ? "tabular-nums" : undefined,
@@ -334,9 +338,10 @@ function Tabel({ kolom = [], data = [], aksi, getRowStyle }) {
             gap: "var(--space-3)",
             flexWrap: "wrap",
             padding: "10px 16px",
-            borderTop: "1px solid var(--color-border)",
+            borderTop: "2px solid #000000",
             fontSize: "var(--text-xs)",
-            color: "var(--color-text-muted)",
+            color: "var(--color-text-secondary)",
+            fontWeight: "var(--font-weight-medium)",
           }}
         >
           <span>

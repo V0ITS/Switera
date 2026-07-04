@@ -29,8 +29,9 @@ function ProgressBar({ value = 0, color = "primary", showLabel = false, size = "
       <div
         style={{
           width: "100%",
-          height,
-          backgroundColor: "var(--color-surface-3)",
+          height: size === "md" ? "12px" : "8px",
+          backgroundColor: "var(--color-surface)",
+          border: "2px solid #000000",
           borderRadius: "var(--radius-full)",
           overflow: "hidden",
         }}

@@ -27,23 +27,24 @@ export function SkeletonTable({ kolom = [], aksi = false, rows = 5 }) {
 
   const cellStyle = {
     padding: "12px 16px",
-    borderBottom: "1px solid var(--color-border)",
+    borderBottom: "1px solid #000000",
   };
 
   return (
     <div
       style={{
         backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
+        border: "2px solid #000000",
         borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--shadow-md)",
         overflow: "hidden",
       }}
     >
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead
           style={{
-            backgroundColor: "var(--color-surface-2)",
-            borderBottom: "1px solid var(--color-border-mid)",
+            backgroundColor: "var(--color-pastel-card)",
+            borderBottom: "2px solid #000000",
           }}
         >
           <tr>
@@ -97,9 +98,9 @@ export function SkeletonStatCard({ accent = "var(--color-border)" }) {
     <div
       style={{
         backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
+        border: "2px solid #000000",
         borderRadius: "var(--radius-lg)",
-        boxShadow: "var(--shadow-sm)",
+        boxShadow: "var(--shadow-md)",
         borderTop: `4px solid ${accent}`,
         padding: "24px",
         display: "flex",

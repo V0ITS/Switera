@@ -217,25 +217,23 @@ function KeputusanDistribusi({ onNavigate }) {
 
   const fieldStyle = {
     width: "100%",
-    border: "1px solid var(--color-border)",
-    borderRadius: "var(--radius-sm)",
-    backgroundColor: "var(--color-surface-2)",
+    border: "2px solid #000000",
+    borderRadius: "var(--radius-lg)",
+    backgroundColor: "#ffffff",
     color: "var(--color-text-primary)",
     fontFamily: "var(--font-body)",
     fontSize: "var(--text-sm)",
-    padding: "9px 12px",
+    padding: "10px 14px",
     outline: "none",
     boxSizing: "border-box",
-    transition:
-      "border-color var(--transition-input), box-shadow var(--transition-input)",
+    boxShadow: "var(--shadow-sm)",
+    transition: "background-color var(--transition-input)",
   };
 
+  // Fokus ala neo brutalist: latar pastel, border tetap hitam.
   const getFieldStyle = (field) => ({
     ...fieldStyle,
-    borderColor:
-      focusedField === field ? "var(--color-primary)" : "var(--color-border)",
-    boxShadow:
-      focusedField === field ? "0 0 0 3px var(--color-primary-subtle)" : "none",
+    backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
   });
 
   return (
@@ -273,13 +271,14 @@ function KeputusanDistribusi({ onNavigate }) {
                   alignItems: "center",
                   gap: "6px",
                   width: "fit-content",
-                  backgroundColor: "rgba(0, 134, 86, 0.1)",
-                  border: "1px solid rgba(0, 106, 67, 0.2)",
-                  color: "var(--color-primary)",
+                  backgroundColor: "var(--color-lime)",
+                  border: "2px solid #000000",
+                  color: "#000000",
                   borderRadius: "var(--radius-full)",
-                  padding: "4px 12px",
+                  padding: "4px 14px",
                   fontSize: "var(--text-xs)",
-                  fontWeight: "var(--font-weight-semibold)",
+                  fontWeight: "var(--font-weight-bold)",
+                  boxShadow: "var(--shadow-sm)",
                 }}
               >
                 <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: "16px", lineHeight: 1 }}>stars</span>
@@ -310,13 +309,13 @@ function KeputusanDistribusi({ onNavigate }) {
                 </span>
               </div>
               <div className="app-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-                <div style={{ backgroundColor: "var(--color-surface-container-low)", border: "1px solid var(--color-border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-4)" }}>
+                <div style={{ backgroundColor: "var(--color-pastel-card)", border: "2px solid #000000", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-sm)", padding: "var(--space-4)" }}>
                   <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)" }}>Volume Alokasi</p>
                   <p style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-xl)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
                     {formatTonase(rekomendasi.alokasi)}
                   </p>
                 </div>
-                <div style={{ backgroundColor: "var(--color-surface-container-low)", border: "1px solid var(--color-border-subtle)", borderRadius: "var(--radius-lg)", padding: "var(--space-4)" }}>
+                <div style={{ backgroundColor: "var(--color-pastel-card)", border: "2px solid #000000", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-sm)", padding: "var(--space-4)" }}>
                   <p style={{ margin: "0 0 4px", fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)" }}>Skor Kelayakan</p>
                   <p style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-xl)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-primary)" }}>
                     {rekomendasi.skor} <span style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-normal)", color: "var(--color-on-surface-variant)" }}>/ 100</span>
@@ -325,7 +324,7 @@ function KeputusanDistribusi({ onNavigate }) {
               </div>
             </div>
 
-            <div style={{ borderLeft: "1px solid var(--color-border)", paddingLeft: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-3)", minWidth: 0 }} className="keputusan-aksi-panel">
+            <div style={{ borderLeft: "2px solid #000000", paddingLeft: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-3)", minWidth: 0 }} className="keputusan-aksi-panel">
               <p style={{ margin: 0, fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
                 Aksi Keputusan
               </p>

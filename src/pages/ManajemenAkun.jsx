@@ -87,7 +87,7 @@ function AksiTabelButtons({ onEdit, onResetPassword, onDelete, isCurrentUser }) 
         className="aksi-btn"
         onClick={onResetPassword}
         onMouseDown={resetRipple.onMouseDown}
-        style={{ border: "1px solid var(--color-accent)", color: "var(--color-accent)" }}
+        style={{ color: "var(--color-tertiary)" }}
       >
         <IkonKunciKecil />
         Reset Sandi
@@ -124,15 +124,16 @@ const fieldLabelTextStyle = {
 
 const fieldBaseStyle = {
   width: "100%",
-  border: "1px solid var(--color-border-mid)",
-  borderRadius: "var(--radius-sm)",
-  backgroundColor: "var(--color-surface-2)",
+  border: "2px solid #000000",
+  borderRadius: "var(--radius-lg)",
+  backgroundColor: "#ffffff",
   color: "var(--color-text-primary)",
   fontFamily: "var(--font-body)",
   fontSize: "var(--text-sm)",
   padding: "10px 14px",
   outline: "none",
   boxSizing: "border-box",
+  boxShadow: "var(--shadow-sm)",
   transition: "border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)",
 };
 
@@ -193,10 +194,10 @@ function ManajemenAkun() {
     }, {});
   }, [snapshot.daftarAkun]);
 
+  // Fokus ala neo brutalist: latar pastel, border tetap hitam.
   const getFieldStyle = (field) => ({
     ...fieldBaseStyle,
-    borderColor: focusedField === field ? "var(--color-primary)" : "var(--color-border-mid)",
-    boxShadow: focusedField === field ? "0 0 0 3px var(--color-primary-glow)" : "none",
+    backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
   });
 
   const getFieldHandlers = (field) => ({

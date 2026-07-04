@@ -270,7 +270,7 @@ function InputData({ onNavigate }) {
 
   const fieldBaseStyle = {
     width: "100%",
-    border: "1px solid var(--color-border)",
+    border: "2px solid #000000",
     borderRadius: "var(--radius-lg)",
     backgroundColor: "var(--color-surface)",
     color: "var(--color-on-surface)",
@@ -279,6 +279,7 @@ function InputData({ onNavigate }) {
     padding: "12px 16px",
     outline: "none",
     boxSizing: "border-box",
+    boxShadow: "var(--shadow-sm)",
     transition:
       "border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)",
   };
@@ -393,9 +394,10 @@ function InputData({ onNavigate }) {
                         fontFamily: "var(--font-heading)",
                         fontWeight: "var(--font-weight-bold)",
                         fontSize: "var(--text-sm)",
-                        backgroundColor: selesai || aktif ? "var(--color-primary)" : "var(--color-surface-variant)",
-                        color: selesai || aktif ? "var(--color-on-primary)" : "var(--color-on-surface-variant)",
-                        boxShadow: aktif ? "0 0 0 4px rgba(0,106,67,0.2)" : "var(--shadow-sm)",
+                        backgroundColor: selesai || aktif ? "var(--color-lime)" : "var(--color-surface)",
+                        color: "#000000",
+                        border: "2px solid #000000",
+                        boxShadow: aktif ? "var(--shadow-md)" : "var(--shadow-sm)",
                         transition: "background-color var(--transition-base), box-shadow var(--transition-base)",
                       }}
                     >
@@ -493,8 +495,8 @@ function InputData({ onNavigate }) {
                             padding: "0 16px",
                             display: "flex",
                             alignItems: "center",
-                            backgroundColor: "var(--color-surface-container-low)",
-                            borderLeft: "1px solid var(--color-border)",
+                            backgroundColor: "var(--color-pastel)",
+                            borderLeft: "2px solid #000000",
                             borderRadius: "0 var(--radius-lg) var(--radius-lg) 0",
                             fontSize: "var(--text-sm)",
                             fontWeight: "var(--font-weight-semibold)",
@@ -616,13 +618,14 @@ function InputData({ onNavigate }) {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.5rem",
-                border: "1px solid var(--color-secondary)",
-                borderRadius: "var(--radius-lg)",
-                backgroundColor: "transparent",
-                color: "var(--color-secondary)",
+                border: "2px solid #000000",
+                borderRadius: "var(--radius-full)",
+                backgroundColor: "var(--color-surface)",
+                color: "#000000",
                 fontSize: "var(--text-sm)",
-                fontWeight: "var(--font-weight-semibold)",
-                padding: "10px 18px",
+                fontWeight: "var(--font-weight-bold)",
+                padding: "10px 20px",
+                boxShadow: "var(--shadow-sm)",
                 cursor: "pointer",
                 transition: "background-color var(--transition-fast)",
               }}
@@ -690,7 +693,7 @@ function InputData({ onNavigate }) {
                 </li>
               </ul>
 
-              <div style={{ marginTop: "var(--space-5)", backgroundColor: "var(--color-surface-container-low)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", padding: "12px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+              <div style={{ marginTop: "var(--space-5)", backgroundColor: "var(--color-pastel)", border: "2px solid #000000", borderRadius: "var(--radius-lg)", padding: "12px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <Ikon name="info" size={18} style={{ color: "var(--color-secondary)", marginTop: "2px" }} />
                 <p style={{ margin: 0, fontSize: "var(--text-xs)", color: "var(--color-on-surface-variant)", lineHeight: 1.6 }}>
                   Pastikan data tonase akurat — angka ini menjadi dasar ranking dan alokasi distribusi.

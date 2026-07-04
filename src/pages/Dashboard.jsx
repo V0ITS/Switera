@@ -172,9 +172,8 @@ function HeroStrip({ nama, role }) {
   return (
     <Card
       style={{
-        background: "linear-gradient(135deg, #f0fdf4 0%, #eff4ff 100%)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-xl)",
+        backgroundColor: "var(--color-pastel-card)",
+        borderRadius: "var(--radius-2xl)",
         padding: "var(--space-5) var(--space-6)",
         minHeight: "80px",
         boxSizing: "border-box",
@@ -213,13 +212,13 @@ function HeroStrip({ nama, role }) {
             style={{
               display: "inline-flex",
               marginTop: "var(--space-2)",
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
+              backgroundColor: "var(--color-lime)",
+              border: "2px solid #000000",
               borderRadius: "var(--radius-full)",
-              padding: "2px 10px",
+              padding: "2px 12px",
               fontSize: "var(--text-xs)",
-              color: "var(--color-primary)",
-              fontWeight: "var(--font-weight-semibold)",
+              color: "#000000",
+              fontWeight: "var(--font-weight-bold)",
             }}
           >
             {role}
@@ -554,10 +553,10 @@ function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
           <div
             className="bento-span-full"
             style={{
-              backgroundColor: "transparent",
-              border: "1px solid rgba(245,158,11,0.3)",
-              borderLeft: "3px solid var(--color-warning)",
-              borderRadius: "var(--radius-md)",
+              backgroundColor: "var(--color-warning-bg)",
+              border: "2px solid #000000",
+              borderLeft: "8px solid var(--color-warning-text)",
+              borderRadius: "var(--radius-lg)",
               padding: "var(--space-3) var(--space-4)",
               display: "flex",
               alignItems: "center",
@@ -698,11 +697,12 @@ function DashboardAdmin({ permintaan, keputusan, userAktif, onNavigate }) {
                             width: "40px",
                             height: "40px",
                             borderRadius: "var(--radius-full)",
-                            backgroundColor: "rgba(0, 134, 86, 0.12)",
+                            backgroundColor: "var(--color-pastel)",
+                            border: "2px solid #000000",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            color: "var(--color-primary)",
+                            color: "#000000",
                           }}
                         >
                           {item.ikon}
@@ -964,14 +964,14 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                 justifyContent: "space-between",
                 marginBottom: "var(--space-3)",
                 paddingBottom: "var(--space-3)",
-                borderBottom: "1px solid var(--color-border)",
+                borderBottom: "2px solid #000000",
               }}
             >
               <span
                 style={{
                   fontSize: "var(--text-sm)",
-                  fontWeight: "var(--font-weight-semibold)",
-                  color: "var(--color-text-secondary)",
+                  fontWeight: "var(--font-weight-bold)",
+                  color: "#000000",
                   textTransform: "uppercase",
                   letterSpacing: "var(--tracking-wider)",
                 }}
@@ -980,12 +980,13 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
               </span>
               <span
                 style={{
-                  backgroundColor: "var(--color-surface-3)",
-                  border: "1px solid var(--color-border)",
+                  backgroundColor: "var(--color-pastel)",
+                  border: "2px solid #000000",
                   fontSize: "var(--text-xs)",
-                  padding: "2px 8px",
+                  fontWeight: "var(--font-weight-bold)",
+                  padding: "2px 10px",
                   borderRadius: "var(--radius-full)",
-                  color: "var(--color-text-secondary)",
+                  color: "#000000",
                 }}
               >
                 {rankingKota.length} kota
@@ -1001,7 +1002,7 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                 ]}
                 data={rankingRows}
                 getRowStyle={(_baris, index) =>
-                  index === 0 ? { backgroundColor: "rgba(242,167,27,0.06)" } : undefined
+                  index === 0 ? { backgroundColor: "var(--color-pastel-card)" } : undefined
                 }
               />
             ) : (
@@ -1012,9 +1013,8 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
             <Card
               style={{
-                backgroundColor: "var(--color-surface-2)",
-                border: "1px solid var(--color-border-mid)",
-                borderRadius: "var(--radius-xl)",
+                backgroundColor: "var(--color-pastel-card)",
+                borderRadius: "var(--radius-2xl)",
                 padding: "var(--space-6)",
               }}
             >
@@ -1024,12 +1024,12 @@ function DashboardManajer({ permintaan, keputusan, userAktif, daftarKota, stokTb
                     <span
                       style={{
                         display: "inline-block",
-                        backgroundColor: "var(--color-primary-subtle)",
-                        border: "1px solid var(--color-primary)",
-                        color: "var(--color-primary)",
+                        backgroundColor: "var(--color-lime)",
+                        border: "2px solid #000000",
+                        color: "#000000",
                         fontSize: "var(--text-2xs)",
-                        fontWeight: "var(--font-weight-semibold)",
-                        padding: "3px 8px",
+                        fontWeight: "var(--font-weight-bold)",
+                        padding: "3px 10px",
                         borderRadius: "var(--radius-full)",
                         marginBottom: "var(--space-3)",
                       }}
@@ -1162,8 +1162,8 @@ function DashboardLogistik({ keputusan, userAktif }) {
                   width: "8px",
                   height: "8px",
                   borderRadius: "50%",
-                  backgroundColor: dotIndex <= stepIndex ? "var(--color-primary)" : "transparent",
-                  border: dotIndex <= stepIndex ? "none" : "1.5px solid var(--color-border-mid)",
+                  backgroundColor: dotIndex <= stepIndex ? "var(--color-lime)" : "transparent",
+                  border: "2px solid #000000",
                   flexShrink: 0,
                 }}
               />
@@ -1292,8 +1292,7 @@ function DashboardLogistik({ keputusan, userAktif }) {
         {latestKeputusan ? (
           <Card
             style={{
-              border: "1px solid var(--color-border-mid)",
-              borderLeft: "3px solid var(--color-accent)",
+              borderLeft: "8px solid var(--color-lime)",
               borderRadius: "var(--radius-lg)",
               padding: "var(--space-5) var(--space-6)",
               display: "flex",
@@ -1374,8 +1373,9 @@ function DashboardLogistik({ keputusan, userAktif }) {
                   key={statusKey}
                   style={{
                     backgroundColor: "var(--color-surface-container-low)",
-                    border: "1px solid var(--color-border)",
+                    border: "2px solid #000000",
                     borderRadius: "var(--radius-xl)",
+                    boxShadow: "var(--shadow-sm)",
                     padding: "var(--space-3)",
                     display: "flex",
                     flexDirection: "column",
@@ -1391,7 +1391,7 @@ function DashboardLogistik({ keputusan, userAktif }) {
                     <span style={{ fontFamily: "var(--font-heading)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-on-surface)" }}>
                       {labelKolom}
                     </span>
-                    <span style={{ marginLeft: "auto", fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-bold)", backgroundColor: kolomWarna.bg, color: kolomWarna.dot, borderRadius: "var(--radius-full)", padding: "2px 8px" }}>
+                    <span style={{ marginLeft: "auto", fontSize: "var(--text-2xs)", fontWeight: "var(--font-weight-bold)", backgroundColor: kolomWarna.bg, color: kolomWarna.dot, border: "2px solid #000000", borderRadius: "var(--radius-full)", padding: "2px 8px" }}>
                       {itemsKolom.length}
                     </span>
                   </div>
@@ -1432,14 +1432,15 @@ function DashboardLogistik({ keputusan, userAktif }) {
                           style={{
                             marginTop: "2px",
                             alignSelf: "flex-start",
-                            border: "1px solid var(--color-border)",
-                            borderRadius: "var(--radius-md)",
-                            backgroundColor: "transparent",
-                            color: "var(--color-primary)",
+                            border: "2px solid #000000",
+                            borderRadius: "var(--radius-full)",
+                            backgroundColor: "var(--color-lime)",
+                            color: "#000000",
                             fontFamily: "var(--font-body)",
                             fontSize: "var(--text-xs)",
-                            fontWeight: "var(--font-weight-semibold)",
-                            padding: "5px 10px",
+                            fontWeight: "var(--font-weight-bold)",
+                            padding: "5px 14px",
+                            boxShadow: "var(--shadow-sm)",
                             cursor: "pointer",
                             transition: "background-color var(--transition-fast)",
                           }}
@@ -1495,16 +1496,16 @@ function DashboardLogistik({ keputusan, userAktif }) {
                 onBlur={() => setIsSelectFocused(false)}
                 style={{
                   width: "100%",
-                  border: `1px solid ${isSelectFocused ? "var(--color-primary)" : "var(--color-border)"}`,
-                  borderRadius: "var(--radius-sm)",
-                  backgroundColor: "var(--color-surface-2)",
+                  border: "2px solid #000000",
+                  borderRadius: "var(--radius-lg)",
+                  backgroundColor: isSelectFocused ? "var(--color-pastel)" : "#ffffff",
                   color: "var(--color-text-primary)",
                   fontFamily: "var(--font-body)",
                   fontSize: "var(--text-sm)",
-                  padding: "9px 12px",
+                  padding: "10px 14px",
                   outline: "none",
-                  boxShadow: isSelectFocused ? "0 0 0 3px var(--color-primary-subtle)" : "none",
-                  transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
+                  boxShadow: "var(--shadow-sm)",
+                  transition: "background-color var(--transition-fast)",
                 }}
               >
                 {statusOptions.map((status) => (
@@ -1531,15 +1532,16 @@ function DashboardLogistik({ keputusan, userAktif }) {
                       style={{
                         width: "100%",
                         border: modalErrors.armada
-                          ? "1px solid var(--color-danger)"
-                          : "1px solid var(--color-border)",
-                        borderRadius: "var(--radius-sm)",
-                        backgroundColor: "var(--color-surface-2)",
+                          ? "2px solid var(--color-danger)"
+                          : "2px solid #000000",
+                        borderRadius: "var(--radius-lg)",
+                        backgroundColor: "#ffffff",
                         color: "var(--color-text-primary)",
                         fontFamily: "var(--font-body)",
                         fontSize: "var(--text-sm)",
-                        padding: "9px 12px",
+                        padding: "10px 14px",
                         outline: "none",
+                        boxShadow: "var(--shadow-sm)",
                         boxSizing: "border-box",
                       }}
                     />
@@ -1559,15 +1561,16 @@ function DashboardLogistik({ keputusan, userAktif }) {
                       style={{
                         width: "100%",
                         border: modalErrors.eta
-                          ? "1px solid var(--color-danger)"
-                          : "1px solid var(--color-border)",
-                        borderRadius: "var(--radius-sm)",
-                        backgroundColor: "var(--color-surface-2)",
+                          ? "2px solid var(--color-danger)"
+                          : "2px solid #000000",
+                        borderRadius: "var(--radius-lg)",
+                        backgroundColor: "#ffffff",
                         color: "var(--color-text-primary)",
                         fontFamily: "var(--font-body)",
                         fontSize: "var(--text-sm)",
-                        padding: "9px 12px",
+                        padding: "10px 14px",
                         outline: "none",
+                        boxShadow: "var(--shadow-sm)",
                         boxSizing: "border-box",
                       }}
                     />

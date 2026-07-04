@@ -69,15 +69,16 @@ const fieldLabelTextStyle = {
 
 const fieldBaseStyle = {
   width: "100%",
-  border: "1px solid var(--color-border-mid)",
-  borderRadius: "var(--radius-sm)",
-  backgroundColor: "var(--color-surface-2)",
+  border: "2px solid #000000",
+  borderRadius: "var(--radius-lg)",
+  backgroundColor: "var(--color-surface)",
   color: "var(--color-text-primary)",
   fontFamily: "var(--font-body)",
   fontSize: "var(--text-sm)",
   padding: "10px 14px",
   outline: "none",
   boxSizing: "border-box",
+  boxShadow: "var(--shadow-sm)",
   transition:
     "border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)",
 };

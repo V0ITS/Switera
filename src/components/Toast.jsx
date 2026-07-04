@@ -30,10 +30,10 @@ function showToast({ type = "info", message, subMessage, duration = 3000, action
 }
 
 const typeConfig = {
-  success: { borderColor: "var(--color-success)", icon: "✓", iconColor: "var(--color-success)" },
-  error: { borderColor: "var(--color-danger)", icon: "✕", iconColor: "var(--color-danger)" },
-  warning: { borderColor: "var(--color-warning)", icon: "⚠", iconColor: "var(--color-warning)" },
-  info: { borderColor: "var(--color-info)", icon: "ℹ", iconColor: "var(--color-info)" },
+  success: { bg: "var(--color-success-bg)", icon: "✓", iconColor: "var(--color-success-text)" },
+  error: { bg: "var(--color-danger-bg)", icon: "✕", iconColor: "var(--color-danger-text)" },
+  warning: { bg: "var(--color-warning-bg)", icon: "⚠", iconColor: "var(--color-warning-text)" },
+  info: { bg: "var(--color-info-bg)", icon: "ℹ", iconColor: "var(--color-info-text)" },
 };
 
 function ToastItem({ toast }) {
@@ -63,12 +63,13 @@ function ToastItem({ toast }) {
         alignItems: "center",
         gap: "var(--space-3)",
         padding: "var(--space-3) var(--space-5) var(--space-3) var(--space-4)",
-        borderRadius: "var(--radius-md)",
-        boxShadow: "var(--shadow-lg)",
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--shadow-md)",
         minWidth: "280px",
         maxWidth: "380px",
-        backgroundColor: "var(--color-surface-2)",
-        borderLeft: `3px solid ${config.borderColor}`,
+        backgroundColor: "var(--color-surface)",
+        border: "2px solid #000000",
+        borderLeft: `8px solid ${config.iconColor}`,
         overflow: "hidden",
         ...(toast.exiting
           ? {
@@ -79,7 +80,22 @@ function ToastItem({ toast }) {
           : { animation: "slideInRight 250ms var(--ease-out) both" }),
       }}
     >
-      <span style={{ color: config.iconColor, fontSize: "var(--text-md)", flexShrink: 0 }}>
+      <span
+        style={{
+          color: config.iconColor,
+          backgroundColor: config.bg,
+          border: "2px solid #000000",
+          borderRadius: "var(--radius-full)",
+          width: "28px",
+          height: "28px",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "var(--text-sm)",
+          fontWeight: "var(--font-weight-bold)",
+          flexShrink: 0,
+        }}
+      >
         {config.icon}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -119,16 +135,15 @@ function ToastItem({ toast }) {
             bottom: 0,
             left: 0,
             right: 0,
-            height: "2px",
-            backgroundColor: config.borderColor,
-            opacity: 0.3,
+            height: "3px",
+            backgroundColor: config.bg,
           }}
         >
           <div
             style={{
               height: "100%",
               width: `${progress}%`,
-              backgroundColor: config.borderColor,
+              backgroundColor: config.iconColor,
               transition: "width 100ms linear",
             }}
           />

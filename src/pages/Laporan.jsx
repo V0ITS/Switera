@@ -46,9 +46,10 @@ function PeriodePills({ value, onChange }) {
       style={{
         display: "flex",
         gap: "4px",
-        backgroundColor: "var(--color-surface-2)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-md)",
+        backgroundColor: "#ffffff",
+        border: "2px solid #000000",
+        borderRadius: "var(--radius-full)",
+        boxShadow: "var(--shadow-sm)",
         padding: "3px",
       }}
     >
@@ -61,14 +62,13 @@ function PeriodePills({ value, onChange }) {
             type="button"
             onClick={() => onChange(key)}
             style={{
-              padding: "5px 10px",
-              borderRadius: "var(--radius-sm)",
-              border: "none",
+              padding: "5px 12px",
+              borderRadius: "var(--radius-full)",
+              border: active ? "2px solid #000000" : "2px solid transparent",
               fontSize: "var(--text-2xs)",
-              fontWeight: active ? "var(--font-weight-semibold)" : "var(--font-weight-medium)",
-              color: active ? "#fff" : "var(--color-text-muted)",
-              backgroundColor: active ? "var(--color-primary)" : "transparent",
-              boxShadow: active ? "var(--shadow-sm)" : "none",
+              fontWeight: "var(--font-weight-bold)",
+              color: active ? "#000000" : "var(--color-text-muted)",
+              backgroundColor: active ? "var(--color-lime)" : "transparent",
               cursor: "pointer",
               whiteSpace: "nowrap",
               fontFamily: "var(--font-body)",
@@ -569,7 +569,7 @@ function Laporan({ onNavigate }) {
     : ["Riwayat Keputusan", "Tren Permintaan"];
 
   const TabBar = (
-    <div style={{ position: "relative", display: "inline-flex", borderBottom: "1px solid var(--color-border)" }}>
+    <div style={{ position: "relative", display: "inline-flex", borderBottom: "2px solid #000000" }}>
       {tabLabels.map((label, index) => (
         <button
           key={label}
@@ -582,8 +582,8 @@ function Laporan({ onNavigate }) {
             background: "transparent",
             fontFamily: "var(--font-body)",
             fontSize: "var(--text-sm)",
-            fontWeight: "var(--font-weight-semibold)",
-            color: activeTab === index ? "var(--color-primary)" : "var(--color-on-surface-variant)",
+            fontWeight: "var(--font-weight-bold)",
+            color: activeTab === index ? "#000000" : "var(--color-text-muted)",
             cursor: "pointer",
             transition: "color var(--transition-fast)",
           }}
@@ -595,12 +595,14 @@ function Laporan({ onNavigate }) {
         aria-hidden="true"
         style={{
           position: "absolute",
-          bottom: "-1px",
+          bottom: "-2px",
           left: 0,
           width: "180px",
-          height: "3px",
+          height: "4px",
           borderRadius: "var(--radius-full)",
-          backgroundColor: "var(--color-primary)",
+          backgroundColor: "var(--color-lime-bold)",
+          border: "1px solid #000000",
+          boxSizing: "border-box",
           transform: `translateX(${activeTab * 180}px)`,
           transition: "transform 250ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}

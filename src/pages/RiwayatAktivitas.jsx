@@ -94,25 +94,23 @@ function RiwayatAktivitas({ onNavigate }) {
 
   const fieldStyle = {
     width: "100%",
-    border: "1px solid var(--color-border)",
-    borderRadius: "var(--radius-sm)",
-    backgroundColor: "var(--color-surface-2)",
+    border: "2px solid #000000",
+    borderRadius: "var(--radius-lg)",
+    backgroundColor: "#ffffff",
     color: "var(--color-text-primary)",
     fontFamily: "var(--font-body)",
     fontSize: "var(--text-sm)",
-    padding: "9px 12px",
+    padding: "10px 14px",
     outline: "none",
     boxSizing: "border-box",
-    transition:
-      "border-color var(--transition-input), box-shadow var(--transition-input)",
+    boxShadow: "var(--shadow-sm)",
+    transition: "background-color var(--transition-input)",
   };
 
+  // Fokus ala neo brutalist: latar pastel, border tetap hitam.
   const getFieldStyle = (field) => ({
     ...fieldStyle,
-    borderColor:
-      focusedField === field ? "var(--color-primary)" : "var(--color-border)",
-    boxShadow:
-      focusedField === field ? "0 0 0 3px var(--color-primary-glow)" : "none",
+    backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
   });
 
   const labelStyle = {

@@ -30,7 +30,7 @@ const getRankColor = (rank) => {
     return { backgroundColor: "rgba(184,115,51,0.12)", color: "#b87333" };
   }
 
-  return { backgroundColor: "var(--color-surface-2)", color: "var(--color-text-secondary)" };
+  return { backgroundColor: "var(--color-surface-container-low)", color: "var(--color-text-secondary)" };
 };
 
 function GrafikRankingHorizontal({ ranking }) {
@@ -312,7 +312,7 @@ function AnalisisRanking({ onNavigate }) {
               ]}
               data={rows}
               getRowStyle={(_baris, index) =>
-                index === 0 ? { backgroundColor: "rgba(0,106,67,0.05)" } : undefined
+                index === 0 ? { backgroundColor: "var(--color-pastel-card)" } : undefined
               }
             />
           </Card>
