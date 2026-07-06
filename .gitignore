@@ -5,3 +5,8 @@ vite-dev.err
 dist/
 contohUI-UX/
 .planning/research/.cache/
+
+# Catatan handoff sesi pribadi (bukan materi repo)
+.continue-here.md
+# Dump ekspor desain Google Stitch (referensi lokal, terlalu berat untuk repo)
+stitch_*/

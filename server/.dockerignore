@@ -1,0 +1,8 @@
+# node_modules host = biner Windows; container meng-install-nya sendiri.
+node_modules
+# .env di-inject saat runtime lewat env_file di docker-compose, jangan
+# dibekukan ke dalam image.
+.env
+npm-debug.log*
+Dockerfile
+.dockerignore

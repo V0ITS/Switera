@@ -11,6 +11,40 @@ services:
       - "5432:5432"
     volumes:
       - switera_pgdata:/var/lib/postgresql/data
+    # Server menunggu kondisi ini "healthy" sebelum start, supaya migrate
+    # tidak jalan sebelum Postgres siap menerima koneksi.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U switera -d switera"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # JWT_SECRET, PORT, CORS_ORIGIN, dll tetap dibaca dari server/.env yang
+    # sudah ada (tidak perlu diketik ulang / di-commit).
+    env_file:
+      - ./server/.env
+    environment:
+      # Override HANYA saat jalan di dalam Docker: backend konek ke service
+      # `db`, bukan localhost. server/.env (mode host) tidak tersentuh, jadi
+      # `npm run dev` di host tetap jalan seperti biasa. `environment` menang
+      # atas `env_file`, jadi baris ini yang dipakai di dalam container.
+      DATABASE_URL: postgresql://switera:switera_dev_password@db:5432/switera
+    ports:
+      - "4000:4000"
+    volumes:
+      # Bind mount source dari host -> hot reload lewat node --watch.
+      - ./server:/app
+      # Anonymous volume mempertahankan node_modules hasil build image
+      # (termasuk Prisma Client Linux) agar tidak tertimpa bind mount host.
+      - /app/node_modules
+    # Terapkan migrasi + seed idempoten, lalu start server ber-hot-reload.
+    command: sh -c "npx prisma migrate deploy && node prisma/seed.js && npm run dev"
 
 volumes:
   switera_pgdata:
