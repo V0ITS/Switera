@@ -27,10 +27,19 @@ import {
   getMisRekomendasiPrioritas,
   getMisKeputusanBerjalan,
   getMisProyeksiStok,
+  getKpi,
+  getTargetKpi,
+  setTargetKpi,
+  getRiwayatKpi,
   sinkronNotifikasiMis,
 } from "../api/apiClient";
 import { showToast } from "../components/Toast";
-import { computeExceptions, computeSlaBreaches } from "../utils/mis";
+import {
+  computeExceptions,
+  computeSlaBreaches,
+  computePemenuhanPerKota,
+  computeSiklusDetail,
+} from "../utils/mis";
 
 const formatterTanggalHero = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
@@ -1191,30 +1200,453 @@ function ProyeksiStok({ proyeksi, onMintaStok }) {
   );
 }
 
+// ── Bagian 6 — Kinerja vs Target (management by objectives) ─────────────────
+// Realisasi KPI tidak berdiri sendiri: selalu dibandingkan dengan target yang
+// ditetapkan manajer (/mis/target-kpi), dan tiap kartu bisa diklik untuk
+// drill-down rincian pembentuk angkanya.
+
+const STATUS_TARGET_GAYA = {
+  tercapai: { label: "Tercapai", bg: "var(--color-lime)", warna: "#000000" },
+  meleset: { label: "Meleset", bg: "var(--color-danger-bg)", warna: "var(--color-danger-text)" },
+  "tak-terukur": { label: "Tak terukur", bg: "var(--color-surface)", warna: "var(--color-text-muted)" },
+};
+
+function ChipTargetStatus({ status }) {
+  const gaya = STATUS_TARGET_GAYA[status] ?? STATUS_TARGET_GAYA["tak-terukur"];
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        border: "2px solid #000000",
+        borderRadius: "var(--radius-full)",
+        padding: "2px 10px",
+        backgroundColor: gaya.bg,
+        fontSize: "var(--text-2xs)",
+        fontWeight: "var(--font-weight-bold)",
+        color: gaya.warna,
+      }}
+    >
+      {gaya.label}
+    </span>
+  );
+}
+
+function KartuKpi({ label, nilai, targetLabel, status, ikon, onClick }) {
+  return (
+    <Card
+      hoverable={Boolean(onClick)}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onClick(); } } : undefined}
+      style={{
+        padding: "var(--space-5)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--space-2)",
+        minHeight: "148px",
+        cursor: onClick ? "pointer" : "default",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-2)" }}>
+        <span style={{ fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "var(--tracking-wider)" }}>
+          {label}
+        </span>
+        <span style={{ width: "36px", height: "36px", flexShrink: 0, display: "grid", placeItems: "center", border: "2px solid #000000", borderRadius: "var(--radius-full)", backgroundColor: "var(--color-pastel)" }}>
+          <IkonMS name={ikon} size={20} style={{ color: "#000000" }} />
+        </span>
+      </div>
+      <span style={{ fontFamily: "var(--font-heading)", fontSize: "var(--text-3xl)", fontWeight: "var(--font-weight-bold)", letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-on-surface)" }}>
+        {nilai}
+      </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-2)", flexWrap: "wrap" }}>
+        <span style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>{targetLabel}</span>
+        {status ? <ChipTargetStatus status={status} /> : null}
+      </div>
+      {onClick ? (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "var(--text-2xs)", color: "var(--color-text-muted)" }}>
+          <IkonMS name="search_insights" size={14} />
+          Klik untuk rincian
+        </span>
+      ) : null}
+    </Card>
+  );
+}
+
+function KinerjaVsTarget({ kpi, onDrill, onAturTarget }) {
+  if (!kpi) {
+    return <SkeletonChart height="148px" />;
+  }
+  const { target } = kpi;
+  return (
+    <Card>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap", marginBottom: "var(--space-4)" }}>
+        <div>
+          <SectionHeader>Kinerja vs Target</SectionHeader>
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
+            Realisasi KPI dibandingkan dengan target yang Anda tetapkan. Klik kartu untuk menelusuri pembentuk angkanya.
+          </p>
+        </div>
+        <Tombol label="Atur Target" variant="sekunder" onClick={onAturTarget} />
+      </div>
+      <div className="app-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(170px, 1fr))", gap: "var(--space-3)" }}>
+        <KartuKpi
+          label="Tingkat Pemenuhan"
+          nilai={`${kpi.tingkatPemenuhan}%`}
+          targetLabel={`Target: ≥ ${target.targetPemenuhan}%`}
+          status={kpi.status.pemenuhan}
+          ikon="task_alt"
+          onClick={() => onDrill("pemenuhan")}
+        />
+        <KartuKpi
+          label="Rata Waktu Kirim"
+          nilai={kpi.rataWaktuPengiriman !== null ? `${kpi.rataWaktuPengiriman} hari` : "—"}
+          targetLabel={`Target: ≤ ${target.targetWaktuKirim} hari`}
+          status={kpi.status.waktuKirim}
+          ikon="local_shipping"
+          onClick={() => onDrill("waktuKirim")}
+        />
+        <KartuKpi
+          label="Utilisasi Kapasitas"
+          nilai={`${kpi.utilisasiKapasitas}%`}
+          targetLabel={`Target: ≥ ${target.targetUtilisasi}%`}
+          status={kpi.status.utilisasi}
+          ikon="speed"
+          onClick={() => onDrill("utilisasi")}
+        />
+        <KartuKpi
+          label="Keputusan Aktif"
+          nilai={String(kpi.keputusanAktif)}
+          targetLabel={`Eskalasi bila menunggu > ${target.maxHariEskalasi} hari`}
+          ikon="pending_actions"
+        />
+      </div>
+    </Card>
+  );
+}
+
+// ── Bagian 7 — Tren Kinerja (riwayat snapshot KPI harian) ────────────────────
+function TrenKinerjaChart({ riwayat, targetPemenuhan }) {
+  const sig = useMemo(
+    () => JSON.stringify([riwayat.map((r) => [r.tingkatPemenuhan, r.utilisasiKapasitas]), targetPemenuhan]),
+    [riwayat, targetPemenuhan]
+  );
+
+  const buildData = () => ({
+    labels: riwayat.map((r) => r.tanggal.slice(5)),
+    datasets: [
+      {
+        label: "Tingkat Pemenuhan (%)",
+        data: riwayat.map((r) => r.tingkatPemenuhan),
+        borderColor: "#4c6700",
+        backgroundColor: "rgba(188, 248, 25, 0.30)",
+        fill: true,
+        tension: 0.3,
+        pointRadius: 2,
+        borderWidth: 2,
+      },
+      {
+        label: "Utilisasi Kapasitas (%)",
+        data: riwayat.map((r) => r.utilisasiKapasitas),
+        borderColor: "#1a56ba",
+        backgroundColor: "rgba(26, 86, 186, 0.10)",
+        fill: false,
+        tension: 0.3,
+        pointRadius: 2,
+        borderWidth: 2,
+      },
+      ...(targetPemenuhan
+        ? [
+            {
+              label: "Target Pemenuhan",
+              data: riwayat.map(() => targetPemenuhan),
+              borderColor: "#ba1a1a",
+              borderDash: [6, 6],
+              pointRadius: 0,
+              borderWidth: 2,
+              fill: false,
+            },
+          ]
+        : []),
+    ],
+  });
+
+  const { canvasRef, error: chartError, isReady } = useLiveChart({
+    sig,
+    canDraw: riwayat.length > 1,
+    buildConfig: () => ({
+      type: "line",
+      data: buildData(),
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: chartAnimationDefaults,
+        plugins: {
+          legend: { display: true, labels: { font: { family: "Bricolage Grotesque" }, usePointStyle: true, boxWidth: 8 } },
+          tooltip: {
+            ...chartTooltipDefaults,
+            callbacks: { label(context) { return `${context.dataset.label}: ${formatterAngka.format(context.parsed.y)}${context.dataset.label.includes("%") || context.dataset.label.includes("Target") ? "%" : ""}`; } },
+          },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { ...chartTickDefaults } },
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: { ...chartGridDefaults },
+            ticks: { ...chartTickDefaults, callback(value) { return `${value}%`; } },
+          },
+        },
+      },
+    }),
+    applyData: (chart) => {
+      const next = buildData();
+      chart.data.labels = next.labels;
+      chart.data.datasets = next.datasets;
+    },
+  });
+
+  if (chartError) {
+    return <EmptyState pesan={chartError} />;
+  }
+
+  return (
+    <div style={{ height: "260px" }}>
+      {isReady ? null : <SkeletonChart height="260px" />}
+      <canvas ref={canvasRef} aria-label="Tren kinerja KPI harian" style={{ display: isReady ? "block" : "none" }} />
+    </div>
+  );
+}
+
+function TrenKinerja({ riwayat, targetPemenuhan }) {
+  if (!riwayat) {
+    return <SkeletonChart height="260px" />;
+  }
+  return (
+    <Card>
+      <SectionHeader>Tren Kinerja</SectionHeader>
+      <p style={{ margin: "0 0 var(--space-4)", fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
+        Snapshot KPI direkam otomatis setiap hari — grafik ini menjawab apakah kinerja distribusi membaik
+        dari waktu ke waktu, dibandingkan garis target.
+      </p>
+      {riwayat.length > 1 ? (
+        <TrenKinerjaChart riwayat={riwayat} targetPemenuhan={targetPemenuhan} />
+      ) : (
+        <EmptyState pesan="Riwayat KPI belum cukup untuk menampilkan tren (butuh minimal 2 hari)." />
+      )}
+    </Card>
+  );
+}
+
+// ── Drill-down KPI: rincian pembentuk angka, dihitung dari cache store ────────
+const DRILL_JUDUL = {
+  pemenuhan: "Rincian Tingkat Pemenuhan per Kota",
+  waktuKirim: "Rincian Siklus Pengiriman Selesai",
+  utilisasi: "Rincian Utilisasi Kapasitas per Kota",
+};
+
+function ModalDrillKpi({ jenis, onTutup }) {
+  const { permintaan = [], keputusan = [], daftarKota = [] } = store.getState();
+
+  let konten = null;
+  if (jenis === "pemenuhan") {
+    const detail = computePemenuhanPerKota(permintaan, keputusan);
+    konten = detail.length > 0 ? (
+      <Tabel
+        kolom={[
+          { key: "kota", label: "Kota" },
+          { key: "totalPermintaan", label: "Permintaan (ton)", numeric: true },
+          { key: "alokasi", label: "Alokasi (ton)", numeric: true },
+          { key: "persen", label: "Pemenuhan", numeric: true },
+        ]}
+        data={detail.map((item) => ({
+          id: item.kota,
+          kota: item.kota,
+          totalPermintaan: formatTonase(item.totalPermintaan),
+          alokasi: formatTonase(item.alokasi),
+          persen: (
+            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: item.persen < 50 ? "var(--color-danger-text)" : item.persen < 100 ? "var(--color-warning-text)" : "var(--color-success-text)" }}>
+              {item.persen}%
+            </span>
+          ),
+        }))}
+      />
+    ) : (
+      <EmptyState pesan="Belum ada data permintaan untuk dirinci." />
+    );
+  } else if (jenis === "waktuKirim") {
+    const detail = computeSiklusDetail(keputusan);
+    konten = detail.length > 0 ? (
+      <Tabel
+        kolom={[
+          { key: "kota", label: "Kota" },
+          { key: "volume", label: "Volume (ton)", numeric: true },
+          { key: "siklusJam", label: "Siklus (jam)", numeric: true },
+          { key: "eta", label: "ETA" },
+          { key: "tepat", label: "Ketepatan" },
+        ]}
+        data={detail.map((item) => ({
+          id: item.id,
+          kota: item.kota,
+          volume: formatTonase(item.volume),
+          siklusJam: <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>{item.siklusJam}</span>,
+          eta: item.eta ? formatDate(item.eta) : "—",
+          tepat:
+            item.tepatWaktu === null ? (
+              <span style={{ color: "var(--color-text-muted)", fontSize: "var(--text-xs)" }}>Tanpa ETA</span>
+            ) : item.tepatWaktu ? (
+              <span style={{ color: "var(--color-success-text)", fontSize: "var(--text-xs)", fontWeight: 600 }}>Tepat waktu</span>
+            ) : (
+              <span style={{ color: "var(--color-danger-text)", fontSize: "var(--text-xs)", fontWeight: 600 }}>Terlambat</span>
+            ),
+        }))}
+      />
+    ) : (
+      <EmptyState pesan="Belum ada pengiriman selesai dengan data waktu lengkap." />
+    );
+  } else if (jenis === "utilisasi") {
+    const alokasiByKota = keputusan.reduce((map, item) => {
+      map.set(item.kota_tujuan, (map.get(item.kota_tujuan) || 0) + (Number(item.volume_tbs) || 0));
+      return map;
+    }, new Map());
+    const detail = daftarKota
+      .map((kota) => {
+        const alokasi = alokasiByKota.get(kota.nama) || 0;
+        const persen = kota.kapasitas > 0 ? Math.min(100, Math.round((alokasi / kota.kapasitas) * 100)) : 0;
+        return { kota: kota.nama, kapasitas: kota.kapasitas, alokasi, persen };
+      })
+      .sort((a, b) => b.persen - a.persen);
+    konten = detail.length > 0 ? (
+      <Tabel
+        kolom={[
+          { key: "kota", label: "Kota" },
+          { key: "kapasitas", label: "Kapasitas (ton)", numeric: true },
+          { key: "alokasi", label: "Alokasi (ton)", numeric: true },
+          { key: "persen", label: "Utilisasi", numeric: true },
+        ]}
+        data={detail.map((item) => ({
+          id: item.kota,
+          kota: item.kota,
+          kapasitas: formatTonase(item.kapasitas),
+          alokasi: formatTonase(item.alokasi),
+          persen: (
+            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: item.persen >= 90 ? "var(--color-danger-text)" : "var(--color-on-surface)" }}>
+              {item.persen}%
+            </span>
+          ),
+        }))}
+      />
+    ) : (
+      <EmptyState pesan="Belum ada kota terdaftar." />
+    );
+  }
+
+  return (
+    <Modal
+      judul={DRILL_JUDUL[jenis] ?? "Rincian KPI"}
+      onTutup={onTutup}
+      konten={<div style={{ maxHeight: "60vh", overflowY: "auto" }}>{konten}</div>}
+    />
+  );
+}
+
+// ── Modal Atur Target KPI ────────────────────────────────────────────────────
+const FIELD_TARGET = [
+  { key: "targetPemenuhan", label: "Target tingkat pemenuhan (%)", min: 1, max: 100 },
+  { key: "targetWaktuKirim", label: "Target rata-rata waktu kirim (hari)", min: 0.5, max: 30, step: 0.5 },
+  { key: "targetUtilisasi", label: "Target utilisasi kapasitas (%)", min: 1, max: 100 },
+  { key: "minHariPasokan", label: "Hari pasokan minimum sebelum peringatan", min: 1, max: 90 },
+  { key: "maxHariEskalasi", label: "Batas hari keputusan menunggu sebelum eskalasi", min: 1, max: 30 },
+];
+
+function ModalAturTarget({ target, onTutup, onTersimpan }) {
+  const [form, setForm] = useState(() =>
+    Object.fromEntries(FIELD_TARGET.map((f) => [f.key, String(target[f.key] ?? "")]))
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  const simpan = async () => {
+    setIsSaving(true);
+    try {
+      const body = Object.fromEntries(FIELD_TARGET.map((f) => [f.key, Number(form[f.key])]));
+      await setTargetKpi(body);
+      showToast({ type: "success", message: "Target KPI berhasil diperbarui." });
+      onTersimpan();
+    } catch (error) {
+      showToast({ type: "error", message: error.message || "Gagal menyimpan target KPI." });
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Modal
+      judul="Atur Target KPI"
+      onTutup={onTutup}
+      konten={
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+          <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--color-text-secondary)", lineHeight: 1.6 }}>
+            Target ini menjadi acuan seluruh indikator: status KPI, ambang peringatan stok, dan eskalasi
+            keputusan. Perubahan tercatat di riwayat aktivitas.
+          </p>
+          {FIELD_TARGET.map((f) => (
+            <label key={f.key} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <span style={{ fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-semibold)", color: "var(--color-text-secondary)" }}>
+                {f.label}
+              </span>
+              <input
+                type="number"
+                min={f.min}
+                max={f.max}
+                step={f.step ?? 1}
+                value={form[f.key]}
+                onChange={(event) => setForm((prev) => ({ ...prev, [f.key]: event.target.value }))}
+                style={{ width: "100%", maxWidth: "220px", border: "2px solid #000000", borderRadius: "var(--radius-lg)", backgroundColor: "var(--color-surface)", fontFamily: "var(--font-body)", fontSize: "var(--text-sm)", padding: "10px 14px", outline: "none", boxShadow: "var(--shadow-sm)", boxSizing: "border-box" }}
+              />
+            </label>
+          ))}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", flexWrap: "wrap", marginTop: "var(--space-2)" }}>
+            <Tombol label="Batal" variant="sekunder" onClick={onTutup} disabled={isSaving} />
+            <Tombol label={isSaving ? "Menyimpan..." : "Simpan Target"} onClick={simpan} disabled={isSaving} />
+          </div>
+        </div>
+      }
+    />
+  );
+}
+
 function DashboardManajer({ userAktif, onNavigate }) {
   const [situasi, setSituasi] = useState(null);
   const [tindakan, setTindakan] = useState(null);
   const [prioritas, setPrioritas] = useState(null);
   const [berjalan, setBerjalan] = useState(null);
   const [proyeksi, setProyeksi] = useState(null);
+  const [kpi, setKpi] = useState(null);
+  const [riwayatKpi, setRiwayatKpi] = useState(null);
   const [batalTarget, setBatalTarget] = useState(null);
+  const [drillKpi, setDrillKpi] = useState(null);
+  const [aturTarget, setAturTarget] = useState(false);
 
   const muat = useCallback(async () => {
     // allSettled: tiap panel muat mandiri — satu endpoint gagal (mis. 404
     // sebelum backend di-restart, atau 401 sesi habis) tidak lagi membuat
     // seluruh dashboard kosong. Setter hanya dipanggil untuk yang berhasil.
-    const [s, t, p, b, pr] = await Promise.allSettled([
+    const [s, t, p, b, pr, k, rk] = await Promise.allSettled([
       getMisSituasiHariIni(),
       getMisTindakanMendesak(),
       getMisRekomendasiPrioritas(),
       getMisKeputusanBerjalan(),
       getMisProyeksiStok(),
+      getKpi(),
+      getRiwayatKpi(30),
     ]);
     if (s.status === "fulfilled") setSituasi(s.value);
     if (t.status === "fulfilled") setTindakan(t.value);
     if (p.status === "fulfilled") setPrioritas(p.value);
     if (b.status === "fulfilled") setBerjalan(b.value);
     if (pr.status === "fulfilled") setProyeksi(pr.value);
+    if (k.status === "fulfilled") setKpi(k.value);
+    if (rk.status === "fulfilled") setRiwayatKpi(rk.value);
   }, []);
 
   useEffect(() => {
@@ -1263,11 +1695,26 @@ function DashboardManajer({ userAktif, onNavigate }) {
         <HeroStrip nama={userAktif?.nama} role={userAktif?.role} />
 
         <SituasiHariIni situasi={situasi} />
+        <KinerjaVsTarget kpi={kpi} onDrill={setDrillKpi} onAturTarget={() => setAturTarget(true)} />
+        <TrenKinerja riwayat={riwayatKpi} targetPemenuhan={kpi?.target?.targetPemenuhan} />
         <TindakanMendesakPanel tindakan={tindakan} onNavigate={onNavigate} />
         <KotaPrioritas prioritas={prioritas} onNavigate={onNavigate} />
         <KeputusanBerjalan berjalan={berjalan} onBatal={setBatalTarget} />
         <ProyeksiStok proyeksi={proyeksi} onMintaStok={mintaTambahStok} />
       </div>
+
+      {drillKpi ? <ModalDrillKpi jenis={drillKpi} onTutup={() => setDrillKpi(null)} /> : null}
+
+      {aturTarget && kpi ? (
+        <ModalAturTarget
+          target={kpi.target}
+          onTutup={() => setAturTarget(false)}
+          onTersimpan={() => {
+            setAturTarget(false);
+            muat();
+          }}
+        />
+      ) : null}
 
       {batalTarget ? (
         <Modal

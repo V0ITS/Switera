@@ -148,6 +148,9 @@ const getMisProyeksiStok = () => apiFetch("/mis/proyeksi-stok");
 const getKpi = () => apiFetch("/mis/kpi");
 const getEfisiensiLogistik = () => apiFetch("/efisiensi-logistik");
 const sinkronNotifikasiMis = () => apiFetch("/mis/sinkron-notifikasi", { method: "POST" });
+const getTargetKpi = () => apiFetch("/mis/target-kpi");
+const setTargetKpi = (body) => apiFetch("/mis/target-kpi", { method: "PUT", body });
+const getRiwayatKpi = (hari = 30) => apiFetch(`/mis/riwayat-kpi?hari=${hari}`);
 
 export {
   apiFetch,
@@ -165,4 +168,7 @@ export {
   getKpi,
   getEfisiensiLogistik,
   sinkronNotifikasiMis,
+  getTargetKpi,
+  setTargetKpi,
+  getRiwayatKpi,
 };
