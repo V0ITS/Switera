@@ -498,6 +498,32 @@ export async function sinkronNotifikasiMis() {
     }
   }
 
+  // Target meleset (menutup loop management-by-objectives): beri tahu manajer
+  // bila realisasi indikator kinerja berada di bawah target yang ia tetapkan.
+  const kpi = await getKpiManajer();
+  if (kpi.status.pemenuhan === "meleset") {
+    const judul = "Target pemenuhan belum tercapai";
+    if (!(await adaNotifikasiTerbaru(judul))) {
+      await tambahNotifikasi({
+        judul,
+        pesan: `Tingkat pemenuhan saat ini ${kpi.tingkatPemenuhan}%, masih di bawah target ${kpi.target.targetPemenuhan}%.`,
+        tipe: "perhatian",
+      });
+      dibuat.push(judul);
+    }
+  }
+  if (kpi.status.waktuKirim === "meleset") {
+    const judul = "Waktu kirim melebihi target";
+    if (!(await adaNotifikasiTerbaru(judul))) {
+      await tambahNotifikasi({
+        judul,
+        pesan: `Rata-rata waktu pengiriman ${kpi.rataWaktuPengiriman} hari, melebihi target ${kpi.target.targetWaktuKirim} hari.`,
+        tipe: "perhatian",
+      });
+      dibuat.push(judul);
+    }
+  }
+
   return { dibuat: dibuat.length, judul: dibuat, snapshotDirekam };
 }
 

@@ -15,6 +15,7 @@ import {
   sinkronNotifikasiMis,
 } from "../services/misService.js";
 import { getTargetKpi, setTargetKpi } from "../services/targetKpiService.js";
+import { buatBriefingHarian } from "../services/briefingService.js";
 
 /**
  * Router MIS untuk Manajer Distribusi. Semua endanya bersifat READ dan khusus
@@ -61,6 +62,9 @@ router.put(
     }
   }
 );
+
+// Briefing harian AI (AI-3): naratif Gemini dari agregat MIS, on-demand.
+router.post("/mis/briefing-harian", ...hanyaManajer, bungkus(buatBriefingHarian));
 
 // Riwayat snapshot KPI harian untuk grafik Tren Kinerja (?hari=30, maks 90).
 router.get("/mis/riwayat-kpi", ...hanyaManajer, async (req, res, next) => {
