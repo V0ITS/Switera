@@ -142,6 +142,17 @@ function RiwayatAktivitas({ onNavigate }) {
     backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
   });
 
+  // Input date native (khususnya iOS Safari) kadang tidak sepenuhnya patuh
+  // box-sizing/width di lebar sempit -- padding horizontal dikurangi untuk
+  // memberi ruang ekstra ke widget kalender bawaan OS, plus maxWidth sebagai
+  // pengaman tambahan agar tidak melebihi lebar wrapper-nya.
+  const getDateFieldStyle = (field) => ({
+    ...fieldStyle,
+    maxWidth: "100%",
+    padding: "10px 8px",
+    backgroundColor: focusedField === field ? "var(--color-pastel)" : "#ffffff",
+  });
+
   const labelStyle = {
     display: "flex",
     flexDirection: "column",
@@ -220,7 +231,7 @@ function RiwayatAktivitas({ onNavigate }) {
                 onFocus={() => setFocusedField("dari")}
                 onBlur={() => setFocusedField("")}
                 onChange={(event) => setDariTanggal(event.target.value)}
-                style={getFieldStyle("dari")}
+                style={getDateFieldStyle("dari")}
               />
             </div>
 
@@ -232,7 +243,7 @@ function RiwayatAktivitas({ onNavigate }) {
                 onFocus={() => setFocusedField("sampai")}
                 onBlur={() => setFocusedField("")}
                 onChange={(event) => setSampaiTanggal(event.target.value)}
-                style={getFieldStyle("sampai")}
+                style={getDateFieldStyle("sampai")}
               />
             </div>
           </div>
