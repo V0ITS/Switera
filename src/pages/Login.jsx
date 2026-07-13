@@ -130,7 +130,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           backgroundPosition: "center, center, center",
           backgroundColor: "var(--color-bg)",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
           padding: "var(--space-6)",
           boxSizing: "border-box",
@@ -202,6 +202,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           style={{
             position: "relative",
             width: "min(460px, 90vw)",
+            margin: "auto 0",
             boxSizing: "border-box",
             backgroundColor: "#ffffff",
             border: "3px solid #000000",
