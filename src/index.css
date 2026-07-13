@@ -2,7 +2,7 @@
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
 body{font-family:var(--font-body);font-size:var(--text-base);
 line-height:var(--leading-normal);background:var(--color-bg);
-color:var(--color-text-primary);min-height:100vh}
+color:var(--color-text-primary);min-height:100vh;overflow-x:hidden}
 h1,h2,h3,h4{font-family:var(--font-heading);
 letter-spacing:var(--tracking-tight);font-weight:var(--font-weight-bold)}
 ::-webkit-scrollbar{width:10px;height:10px}
