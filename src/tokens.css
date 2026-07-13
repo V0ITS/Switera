@@ -895,6 +895,13 @@ input[type="number"].field-no-spinner::-webkit-outer-spin-button {
     direction: ltr !important;
   }
 }
+@media (max-width: 600px) {
+  .landing-demo-tab-btn {
+    padding: 10px 6px !important;
+    font-size: var(--text-xs) !important;
+    gap: 4px !important;
+  }
+}
 
 /* ===== Leaflet map theming ===== */
 .leaflet-container {
