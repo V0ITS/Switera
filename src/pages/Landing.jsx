@@ -705,9 +705,11 @@ function Landing({ onNavigate }) {
                   <button
                     key={tab.label}
                     type="button"
+                    className="landing-demo-tab-btn"
                     onClick={() => setDemoTab(i)}
                     style={{
                       flex: 1,
+                      minWidth: 0,
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
