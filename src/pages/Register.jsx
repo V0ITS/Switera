@@ -150,6 +150,7 @@ function Register({ onNavigate, onClose, onSwitchToLogin }) {
           padding: "var(--space-6)",
           boxSizing: "border-box",
           overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         <span

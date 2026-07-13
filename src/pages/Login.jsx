@@ -135,6 +135,7 @@ function Login({ onNavigate, onClose, onSwitchToRegister }) {
           padding: "var(--space-6)",
           boxSizing: "border-box",
           overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         <span
