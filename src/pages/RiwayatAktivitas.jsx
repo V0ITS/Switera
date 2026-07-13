@@ -145,6 +145,7 @@ function RiwayatAktivitas({ onNavigate }) {
     display: "flex",
     flexDirection: "column",
     gap: "0.45rem",
+    minWidth: 0,
     color: "var(--color-text-secondary)",
     fontWeight: 500,
     fontSize: "var(--text-sm)",
