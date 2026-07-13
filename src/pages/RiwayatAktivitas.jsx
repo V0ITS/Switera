@@ -122,6 +122,7 @@ function RiwayatAktivitas({ onNavigate }) {
 
   const fieldStyle = {
     width: "100%",
+    minWidth: 0,
     border: "2px solid #000000",
     borderRadius: "var(--radius-lg)",
     backgroundColor: "#ffffff",
