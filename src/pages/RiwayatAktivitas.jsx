@@ -175,7 +175,7 @@ function RiwayatAktivitas({ onNavigate }) {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
               gap: "1rem",
             }}
           >
